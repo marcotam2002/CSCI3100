@@ -1,3 +1,8 @@
+![react](https://img.shields.io/github/package-json/dependency-version/lovelycutepanda/csci2720-project/react)
+![react-toastify](https://img.shields.io/github/package-json/dependency-version/lovelycutepanda/csci2720-project/react-toastify)
+![javascript](https://img.shields.io/badge/logo-javascript-blue?logo=javascript)
+![bcrypt](https://img.shields.io/github/package-json/dependency-version/lovelycutepanda/csci2720-project/bcrypt)
+
 # Overview
 This is the project of 2023-24 2nd semester CSCI3100 Group G4.
 
