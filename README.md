@@ -1,6 +1,6 @@
 ![react](https://img.shields.io/github/package-json/dependency-version/lovelycutepanda/csci2720-project/react)
 ![react-toastify](https://img.shields.io/github/package-json/dependency-version/lovelycutepanda/csci2720-project/react-toastify)
-![javascript](https://img.shields.io/badge/:badgeContent)
+![javascript](https://img.shields.io/github/package-json/dependency-version/marcotam2002/CSCI3100/javascript)
 ![bcrypt](https://img.shields.io/github/package-json/dependency-version/lovelycutepanda/csci2720-project/bcrypt)
 
 # Overview
