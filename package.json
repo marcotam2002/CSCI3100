@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/marcotam2002/CSCI3100#readme",
   "dependencies": {
-    "express": "^4.19.1"
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.1",
+    "pg": "^8.11.3",
+    "pg-pool": "^3.6.1",
+    "react": "^18.2.0"
   }
 }
