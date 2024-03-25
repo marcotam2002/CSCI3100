@@ -1,0 +1,22 @@
+{
+  "name": "csci3100",
+  "version": "1.0.0",
+  "description": "This is the project of 2023-24 2nd semester CSCI3100 Group G4.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcotam2002/CSCI3100.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marcotam2002/CSCI3100/issues"
+  },
+  "homepage": "https://github.com/marcotam2002/CSCI3100#readme",
+  "dependencies": {
+    "express": "^4.19.1"
+  }
+}
