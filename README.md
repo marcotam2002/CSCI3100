@@ -14,3 +14,4 @@ O Ching Lam https://github.com/chinglamhm
 
 # Updates
 25/3/2024: Start the framework of the project
+30/3/2024: Finish the basic framework of the project, start the connection to database and local server
