@@ -12,6 +12,34 @@ Ng Yuk Fung https://github.com/ngyukfung <br>
 Leung Ka Lun https://github.com/kalunLL <br>
 O Ching Lam https://github.com/chinglamhm
 
+# Project Setup
+
+Follow the steps below to run the project:
+
+1. Install the project dependencies:
+    ```shell
+    npm install vite
+    ```
+
+2. Navigate to the `frontend` directory:
+    ```shell
+    cd frontend
+    ```
+
+3. Start the development server:
+    ```shell
+    npm run dev
+    ```
+
+4. Open your web browser and browse the following URL:
+    ```
+    http://localhost:5173
+    ```
+
+   Note: The project uses port 5173 for running the application.
+
+That's it! The project should now be up and running.
+
 # Updates
 25/3/2024: Start the framework of the project
 30/3/2024: Finish the basic framework of the project, start the connection to database and local server
