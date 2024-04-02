@@ -300,22 +300,26 @@ class UserHandler extends AccountHandler {
       * @param {string} postID - The ID of the post to be reposted
     */
     try {
-        // Check if the user has already reposted the post
-        if (this.RepostPostID.includes(postID)) {
-            return { success: false, message: 'User has already reposted the post' };
-        }
+      
+      // Retrive the userID of the post from post database
+      const client = await pool.connect();
+      const queryText = 'SELECT userID FROM User.posts WHERE postID = $1';
+      const values = [postID];
+      const result = await client.query(queryText, values);
+      client.release();
 
-        // If not, repost the post, and update the repost count in the database
-        const client = await pool.connect();
-        const queryText = 'UPDATE Post.posts SET reposts = reposts + 1 WHERE postID = $1';
-        const values = [postID];
-        await client.query(queryText, values);
-        client.release();
+      // Check if the user is private
+      if (await this.isPrivate(result.rows[0].userID)) {
+          return { success: false, message: 'User is private' };
+      }
 
-        // Add the postID to the list of reposted posts
-        this.RepostPostID.push(postID);
-        return { success: true, message: 'Post reposted successfully' };
-
+      // Repost the post
+      const client2 = await pool.connect();
+      const queryText2 = 'INSERT INTO User.posts (userID, postContent, attachments) VALUES ($1, $2, $3)';
+      const values2 = [this.userID, `Reposted from ${result.rows[0].userID}`, result.rows[0].attachments];
+      await client2.query(queryText2, values2);
+      client2.release();
+        
     } catch (error) {
         console.error('Error reposting post:', error);
         return { success: false, message: 'Failed to repost post' };
@@ -323,10 +327,9 @@ class UserHandler extends AccountHandler {
   }
   
   // Method to comment on a post
-  async commentPost(userID, postID, comment) {
+  async commentPost(postID, comment) {
     /*
       * Comment on a post in the database
-      * @param {string} userID - The ID of the user commenting on the post
       * @param {string} postID - The ID of the post to be commented on
       * @param {string} comment - The content of the comment
     */
@@ -334,7 +337,7 @@ class UserHandler extends AccountHandler {
         // Insert comment into the database
         const client = await pool.connect();
         const queryText = 'INSERT INTO User.comments (userID, postID, comment) VALUES ($1, $2, $3)';
-        const values = [userID, postID, comment];
+        const values = [this.userID, postID, comment];
         await client.query(queryText, values);
         client.release();
 
@@ -359,8 +362,7 @@ class UserHandler extends AccountHandler {
         const queryText = 'SELECT * FROM User.accounts WHERE username LIKE $1';
         const values = [`%${keyword}%`];
         const result = await client.query(queryText, values);
-
-        result.rows = result.rows.concat(result2.rows);
+        client.release();
 
         return { success: true, message: 'Users retrieved successfully', users: result.rows };
     } catch (error) {
@@ -370,15 +372,14 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to follow other users
-  async followUser(userID, targetUserID) {
+  async followUser(targetUserID) {
     /*
       * Follow another user in the database
-      * @param {string} userID - The ID of the own user
       * @param {string} targetUserID - The ID of the user want to follow
     */
     try {
         // Check if the user is already following the target user
-        if (await this.isFollowing(userID, targetUserID)) {
+        if (await this.isFollowing(this.userID, targetUserID)) {
             return { success: false, message: 'User is already following the target user' };
         }
 
@@ -387,7 +388,7 @@ class UserHandler extends AccountHandler {
             // If public, follow the target user
             const client = await pool.connect();
             const queryText = 'INSERT INTO User.followers (userID, followingID) VALUES ($1, $2)';
-            const values = [userID, targetUserID];
+            const values = [this.userID, targetUserID];
             await client.query(queryText, values);
             client.release();
             return { success: true, message: 'Followed user successfully' };
@@ -396,17 +397,9 @@ class UserHandler extends AccountHandler {
         // If not, send follow request to the target user
         const client = await pool.connect();
         // Append userID to target user's list of pending followers
-
-        // Waiting for update
-        /*
-
-
-
-
-
-
-
-        */
+        const queryText2 = 'INSERT INTO User.pending_followers (userID, pendingFollowerID) VALUES ($1, $2)';
+        const values2 = [targetUserID, this.userID];
+        await client.query(queryText2, values2);
 
         client.release();
 
