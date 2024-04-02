@@ -40,13 +40,14 @@ class UserHandler extends AccountHandler {
 
   }
 
+  // Method to check uniqueness of username
+
   // Method to edit user own profile
-  async editProfile(userID, editType, content) {
+  async editProfile(userID, content) {
     /*
       * Edit user profile in the database
       * @param {string} userID - The ID of the user whose profile is to be edited, assume the userID is the own user
-      * @param {string} editType - The type of information to be edited
-      * @param {string} content - The new content to be updated
+      * @param {list} content - The new content to be updated, "username", "description", "privacy"
     */
     try {
         // Edit user profile in the database
@@ -274,13 +275,6 @@ class UserHandler extends AccountHandler {
         const values = [`%${keyword}%`];
         const result = await client.query(queryText, values);
 
-        // Search for userID by keyword in the database
-        const queryText2 = 'SELECT * FROM User.accounts WHERE userID LIKE $1';
-        const values2 = [`%${keyword}%`];
-        const result2 = await client.query(queryText2, values2);
-        client.release();
-
-        // Combine results from both queries
         result.rows = result.rows.concat(result2.rows);
 
         return { success: true, message: 'Users retrieved successfully', users: result.rows };
