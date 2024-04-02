@@ -7,20 +7,41 @@
  * O Ching Lam 1155159131
  */
 
-/* template of formatting
-<name> {
-    font-family:    ;
-    font-size:      ;
-    color:          ;
-} 
-
- */
-
 /* Styles for Heading */
 h1 {
-    font-family:  Arial, sans-serif;
-    font-size: 40px;
-    color: black;
+    font-weight: normal;
+    font-family: Calibri Light;
+    font-size: 80px;
+}
+
+h2 {
+    font-weight: normal;
+    font-family: Calibri Light;
+    font-size: 64px;
+}
+
+h3 {
+    font-weight: normal;
+    font-family: Calibri Light;
+    font-size: 56px;
+}
+
+h4 {
+    font-weight: normal;
+    font-family: Calibri Light;
+    font-size: 48px;
+}
+
+h5 {
+    font-weight: normal;
+    font-family: Calibri Light;
+    font-size: 36px;
+}
+
+h6 {
+    font-weight: normal;
+    font-family: Calibri Light;
+    font-size: 24px;
 }
 
 /* Styles for Paragraphs */
