@@ -20,6 +20,6 @@ app.get("/test",async(req, res)=>{
 });
 
 
-app.listen(7000,()=>{
-    console.log("server started on localhost:7000");
+app.listen(5164,()=>{
+    console.log("server started on localhost:5164");
 });

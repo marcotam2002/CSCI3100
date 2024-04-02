@@ -18,20 +18,28 @@ Follow the steps below to run the project:
 
 1. Install the project dependencies:
     ```shell
-    npm install vite
+    npm install vite express
     ```
 
-2. Navigate to the `frontend` directory:
-    ```shell
-    cd frontend
-    ```
+2. Navigate to the `backend` directory and start the backend server
 
-3. Start the development server:
     ```shell
+    cd backend
     npm run dev
     ```
 
-4. Open your web browser and browse the following URL:
+3. Open your web browser and browse the following URL:
+    ```
+    http://localhost:7000
+    ```
+
+4. Navigate to the `frontend` directory and start the frontend server
+    ```shell
+    cd frontend
+    npm run dev
+    ```
+
+5. Open your web browser and browse the following URL:
     ```
     http://localhost:5173
     ```
