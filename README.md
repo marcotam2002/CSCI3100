@@ -10,7 +10,7 @@ Tam King Man https://github.com/marcotam2002 <br>
 Tsang Ho Yin https://github.com/Andrewolf2002 <br>
 Ng Yuk Fung https://github.com/ngyukfung <br>
 Leung Ka Lun https://github.com/kalunLL <br>
-O Ching Lam https://github.com/chinglamhm
+O Ching Lam https://github.com/chinglamhm <br>
 
 # Project Setup
 
