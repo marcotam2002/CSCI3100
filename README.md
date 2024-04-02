@@ -18,7 +18,7 @@ Follow the steps below to run the project:
 
 1. Install the project dependencies:
     ```shell
-    npm install vite
+    npm install vite express
     ```
 
 2. Navigate to the `backend` directory and start the backend server
