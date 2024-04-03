@@ -540,7 +540,52 @@ class UserHandler extends AccountHandler {
         console.error('Error checking if user is private:', error);
         return false;
     }
-  } 
+  }
+  
+  // Method to check if security answers are correct
+  async checkSecurityAnswers(securityAnswers) {
+    /*
+      * Check if the security answers are correct
+      * @param {string[]} securityAnswers - The security answers of the account to check
+    */
+    try {
+        // Check if the security answers are correct
+        const client = await pool.connect();
+        const queryText = 'SELECT securityAnswers FROM User.accounts WHERE userID = $1';
+        const values = [this.userID];
+        const result = await client.query(queryText, values);
+        client.release();
+
+        return result.rows[0].securityAnswers === securityAnswers;
+    } catch (error) {
+        console.error('Error checking security answers:', error);
+        return false;
+    }
+  }
+
+  // Method to reset password
+  async resetPassword(newPassword) {
+    /*
+      * Forget password and recover the account
+      * @param {string} newPassword - The new password to be updated, assume we have checked the security answers
+    */
+    try {
+        // Generate a new hashed password
+        const salt = utils.generateSalt();
+        const newHashedPassword = utils.hashPassword(newPassword, salt);
+
+        // Update the password in the database
+        const queryText2 = 'UPDATE User.accounts SET hashedPassword = $1, salt = $2 WHERE username = $3';
+        const values2 = [newHashedPassword, salt, this.userID];
+        await client.query(queryText2, values2);
+        client.release();
+
+        return { success: true, message: 'Password reset successfully', newPassword };
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        return { success: false, message: 'Failed to reset password' };
+    }
+  }
 }
 
 module.exports = UserHandler;
