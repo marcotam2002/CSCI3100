@@ -1,0 +1,29 @@
+/*
+ * Group members:
+ * Tam King Man 1155160072
+ * Tsang Ho Yin 1155159307
+ * Ng Yuk Fung 1155176966
+ * Leung Ka Lun 1155157403
+ * O Ching Lam 1155159131
+ */
+
+#headerContainer {
+    display: flex;
+    gap: 400px;
+    align-items: center;
+    justify-content: center;
+    line-height: 20%;
+    width: 1000px;
+    height: 180px;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%);
+  }
+
+button.sideBarButton {
+    border: none;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+}
