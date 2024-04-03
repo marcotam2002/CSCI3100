@@ -15,16 +15,14 @@
   transform: translate(-50%);
 }
 #sideBar {
-  align-items: center;
-  justify-content: center;
+  position: fixed; 
   width: 180px;
-  position: fixed;
 }
+
 #main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 790px;
+  border: 1px solid #BFBFBF;
+  border-radius: 10px;
   position: absolute;
   left: 210px;
 }
