@@ -17,7 +17,7 @@ function Header({ subTitle, currPage }) {
     <div id="headerContainer">
       <div>
         <h1>
-          <b>Soru</b>
+          <b>SORU</b>
         </h1>
         <h5>{subTitle}</h5>
       </div>
