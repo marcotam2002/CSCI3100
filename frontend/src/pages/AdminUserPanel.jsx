@@ -8,21 +8,33 @@
  */
 
 //todo: link "Soru" to main page
-import './AdminUserPanel.css';
-import "./format.css"
-import {Header, SideBarButton} from "./components";
+import "./AdminUserPanel.css";
+import "./format.css";
+import { Header, SideBarButton } from "./components";
 import React from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
 
-function UserTable() {
+function UserTable({ users }) {
   return (
     <table id="userTable">
-    <tr>
-      <th><h6>userID</h6></th>
-      <th><h6>userID</h6></th>
-      <th><h6>userID</h6></th>
-    </tr>
+      <tr>
+        <th>UserID</th>
+        <th>Username</th>
+        <th>Action</th>
+      </tr>
+      {users.map((user) => (
+        <tr key={user.id}>
+          <td>{user.id}</td>
+          <td>{user.username}</td>
+          <td>
+            <div id="actionButtons">
+              <button>Edit</button>
+              <button id="deleteButton">Delete</button>
+            </div>
+          </td>
+        </tr>
+      ))}
     </table>
   );
 }
@@ -30,14 +42,22 @@ function UserTable() {
 function AdminUserPanel() {
   return (
     <body>
-      <Header subTitle={"Admin Panel"} currPage={"User Manager"}/>
+      <Header subTitle={"Admin Panel"} currPage={"User Manager"} />
       <div id="bodyContainer">
         <div id="sideBar">
-          <SideBarButton image={userIcon} name={"User Manager"} color={"#1D67CD"}/>
-          <SideBarButton image={postIcon} name={"Post Manager"} color={"black"}/>
+          <SideBarButton
+            image={userIcon}
+            name={"User Manager"}
+            color={"#1D67CD"}
+          />
+          <SideBarButton
+            image={postIcon}
+            name={"Post Manager"}
+            color={"black"}
+          />
         </div>
         <div id="main">
-          <UserTable/>
+          <UserTable users={testUsers} />
         </div>
       </div>
     </body>

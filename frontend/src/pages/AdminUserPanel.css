@@ -29,6 +29,42 @@
   left: 210px;
 }
 
-table.userTable {
+#userTable {
   border-collapse: collapse;
+  width: 100%;
+  
+}
+
+#userTable th, #userTable td {
+  text-align: left;
+  font-weight: normal;
+  padding-left:30px;
+  padding: 15px;
+}
+
+#userTable th {
+  font-family: Brandon Grotesque;
+  font-size: 24px;
+  padding-bottom: 5px;
+}
+#userTable td {
+  font-family: Assistant Light;
+  font-size: 20px;
+}
+#actionButtons {
+  display: flex;
+}
+#actionButtons button {
+  font-weight: bold;
+  font-family: Brandon Grotesque;
+  font-size: 20px;
+  background-color: transparent;
+  margin-right: 40px;
+  border-radius: 12px;
+}
+
+#deleteButton {
+  color: red;
+  border-color: red;
+  border-style: solid;
 }
