@@ -8,45 +8,45 @@
  */
 
 /* Styles for Heading */
-h1 {
+h1,h2,h3,h4,h5,h6 {
     font-weight: normal;
     font-family: Calibri Light;
+}
+
+h1 {
     font-size: 80px;
 }
 
 h2 {
-    font-weight: normal;
-    font-family: Calibri Light;
     font-size: 64px;
 }
 
 h3 {
-    font-weight: normal;
-    font-family: Calibri Light;
     font-size: 56px;
 }
 
 h4 {
-    font-weight: normal;
-    font-family: Calibri Light;
     font-size: 48px;
 }
 
 h5 {
-    font-weight: normal;
-    font-family: Calibri Light;
     font-size: 36px;
 }
 
 h6 {
-    font-weight: normal;
-    font-family: Calibri Light;
     font-size: 24px;
 }
 
 /* Styles for Paragraphs */
-p1 {
-    font-family:  Arial, sans-serif;
+p {
+    font-weight: lighter;
+    font-family: Calibri;
+    font-size: 20px;
+}
+
+p.p2 {
     font-size: 16px;
-    color: black;
+}
+p.p3 {
+    font-size: 14px;
 }
