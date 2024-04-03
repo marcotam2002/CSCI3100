@@ -10,8 +10,11 @@
 // The fllowing codes are assisted by Copilot
 
 class MessageHandler {
-    constructor() {
-      // Initialize any necessary properties or dependencies
+    constructor(time, senderID, receiverID, message) {
+      this.time = time;
+      this.senderID = senderID;
+      this.receiverID = receiverID;
+      this.message = message;
     }
     
     // Method to send a message
