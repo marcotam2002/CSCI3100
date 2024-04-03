@@ -30,7 +30,7 @@ function Header({ subTitle, currPage }) {
 
 function SideBarButton({ image, name, color }) {
   return (
-    <button type="button" class="sideBarButton">
+    <button type="button" id="sideBarButton">
       <img src={image} alt="" width="33px" height="33px" />
       <p style={{ color: color }}>{name}</p>
     </button>
