@@ -13,9 +13,9 @@ const pool = require('./database');
 const AccountHandler = require('./accounthandler');
 
 class AdminHandler extends AccountHandler {
-  constructor() {
-    super();
-    // Additional initialization specific to admin handler
+  constructor(userID, username, salt, hashedPassword, isAdmin) {
+    super(userID, username, salt, hashedPassword);
+    this.isAdmin = isAdmin;
   }
 
   // Method to get all users

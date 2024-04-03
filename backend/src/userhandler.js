@@ -12,11 +12,24 @@
 const pool = require('./database');
 const utils = require('./utils');
 const AccountHandler = require('./accounthandler');
+const PostHandler = require('./posthandler');
+const CommentHandler = require('./commenthandler');
+const MessageHandler = require('./messagehandler');
 
 class UserHandler extends AccountHandler {
-  constructor() {
-    super();
-    
+  constructor(userID, username, salt, hashedPassword, posts, comments, isActive, followers, followings, LikePostID, LikedCommentID, pendingFollowers,securityAnswers, description, is_private) {
+    super(userID, username, salt, hashedPassword);
+    this.posts = posts;
+    this.comments = comments;
+    this.isActivwe = isActive;
+    this.followers = followers;
+    this.followings = followings;
+    this.LikedPostID = LikePostID;
+    this.LikedCommentID = LikedCommentID;
+    this.pendingFollowers = pendingFollowers;
+    this.securityAnswers = securityAnswers;
+    this.description = description;
+    this.is_private = is_private;
   }
 
   // Method to create a new user || register

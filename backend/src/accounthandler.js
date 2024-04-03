@@ -13,12 +13,12 @@ const pool = require('./database');
 const utils = require('./utils');
 
 class AccountHandler {
-    constructor(attributes) {
+    constructor(userID, username, salt, hashedPassword) {
       // Initialize any necessary properties or connections
-      this.userID = attributes.userID || null;
-      this.username = attributes.username || null;
-      this.salt = attributes.salt || null;
-      this.hashedPassword = attributes.hashedPassword || null;
+      this.userID = userID;
+      this.username = username;
+      this.salt = salt;
+      this.hashedPassword = hashedPassword;
     }
 
     // Method to authenticate an account | log in
@@ -48,6 +48,23 @@ class AccountHandler {
           console.error('Error authenticating account:', error);
           return { success: false, message: 'Failed to authenticate account' };
       }
+    }
+
+    // Method to log in
+    async logIn(username, account_input_password) {
+      const authenticationResult = await this.authenticateAccount(username, account_input_password);
+      if (authenticationResult.success) {
+          // Set the session to indicate that the user is logged in
+          return { success: true, message: 'Logged in successfully' };
+      } else {
+          return { success: false, message: 'Failed to log in' };
+      }
+    }
+
+    // Method to log out
+    async logOut() {
+      // Clear the session to indicate that the user is logged out
+      return { success: true, message: 'Logged out successfully' };
     }
 
   }
