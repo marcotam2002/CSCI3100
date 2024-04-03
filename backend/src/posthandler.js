@@ -74,13 +74,33 @@ class PostHandler {
     }
 
     // Method to edit post
-    async editPost(editContent) {
-        
+    async editPost(editedContent, removeRequest) {
+        // Edit post in the database
+        const client = await pool.connect();
+        const queryText = 'UPDATE User.posts SET postContent = $1 WHERE postID = $2';
+        const values = [editedContent, this.postID];
+        await client.query(queryText, values);
+
+        // if removeRequest is not empty, remove the attachments and update the new attachments
+        if (removeRequest.length > 0) {
+            const queryText2 = 'SELECT attachments FROM User.posts WHERE postID = $1';
+            const values2 = [postID];
+            const result = await client.query(queryText2, values2);
+            const attachments = result.rows[0].attachments;
+            // remove the attachments with index in removeRequest
+            for (let i = removeRequest.length - 1; i >= 0; i--) {
+                attachments.splice(removeRequest[i], 1);
+            }
+            const queryText3 = 'UPDATE User.posts SET attachments = $1 WHERE postID = $2';
+            const values3 = [attachments, postID];
+            await client.query(queryText3, values3);
+        }
     }
 
     // Method to share post
     async sharePost() {
-
+        const query = `INSERT INTO post (postID, content, authorID, creationDate, likes) VALUES \
+        (${this.postID}, ${this.content}, ${this.authorID}, ${this.creationDate}, ${this.likes})`;
     }
 
 }

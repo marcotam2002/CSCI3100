@@ -17,8 +17,7 @@ const CommentHandler = require('./commenthandler');
 const MessageHandler = require('./messagehandler');
 
 class UserHandler extends AccountHandler {
-  constructor(userID, username, salt, hashedPassword, posts, comments, isActive, followers, followings, LikePostID, LikedCommentID,\
-     pendingFollowers,securityAnswers, description, is_private) {
+  constructor(userID, username, salt, hashedPassword, posts, comments, isActive, followers, followings, LikePostID, LikedCommentID, pendingFollowers,securityAnswers, description, is_private) {
     super(userID, username, salt, hashedPassword);
     this.posts = posts;
     this.comments = comments;
