@@ -10,17 +10,37 @@
 //todo: link "Soru" to main page
 import './AdminUserPanel.css';
 import "./format.css"
+import {Header, SideBarButton} from "./components";
+import React from "react";
+import userIcon from "../assets/user.svg";
+import postIcon from "../assets/post.svg";
+
+function UserTable() {
+  return (
+    <table id="userTable">
+    <tr>
+      <th><h6>userID</h6></th>
+      <th><h6>userID</h6></th>
+      <th><h6>userID</h6></th>
+    </tr>
+    </table>
+  );
+}
+
 function AdminUserPanel() {
   return (
-    <div class="headerContainer">
-    <div class="leftHeader">
-        <h1><b>Soru</b></h1>
-        <h5>Admin Panel</h5>
-    </div>
-    <div class="rightHeader">
-        <h2>User Manager</h2>
-    </div>
-</div>
+    <body>
+      <Header subTitle={"Admin Panel"} currPage={"User Manager"}/>
+      <div id="bodyContainer">
+        <div id="sideBar">
+          <SideBarButton image={userIcon} name={"User Manager"} color={"#1D67CD"}/>
+          <SideBarButton image={postIcon} name={"Post Manager"} color={"black"}/>
+        </div>
+        <div id="main">
+          <UserTable/>
+        </div>
+      </div>
+    </body>
   );
 }
 
