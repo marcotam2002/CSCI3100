@@ -8,6 +8,12 @@
  */
 
  
+body{
+    margin: 0;
+    padding: 0;
+    background-color: white; /* light purple background */
+}
+
 @font-face {
     font-family: Brandon Grotesque;
     src: url(../assets/Brandon_light.otf);
