@@ -14,32 +14,38 @@ import { Header, SideBarButton } from "./components";
 import React, {useState} from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
-
 /*Just for testing*/
-const testUsers = [
-  { id: "0000001", username: "FirstUser", password: "<PASSWORD>" },
-  { id: "0000002", username: "Name", password: "<PASSWORD>" },
-  { id: "0000003", username: "zerozeroTHREE", password: "<PASSWORD>" },
-  { id: "0000004", username: "IHATEPROJECT", password: "<PASSWORD>" },
-];
 
-function UserTable({ users, view }) {
-  const viewUser = (user) => {
-    window.confirm(`You shoulb be able to view ${user.username} profile.`)
+const testUsers = [
+  {
+    userid: 1,
+    username: 'FirstUser',
+    salt: 'e9b2fe0aa5c9f351359557eb098e6ded',
+    password: 'df48327d5c1ad56b58cb630bb557fba133b89353261c3e672cb7c5e1b3ebc332c3d9033035ac5ae6cb86866015748d816872274d0bdc3a3bd0ac7fb201b92408',
+    secureqans: '123',
+    privacy: 'public',
+    description: "I don't know what to write here",
+    active: true,
+    usertype: 'user'
   }
+]
+function UserTable({ users, view }) {
   const deleteUser = (user) => {
     window.confirm(`You shoulb be able to delete ${user.username}.`)
   }
   return (
     <table id="userTable">
+      <thead>
       <tr>
         <th>UserID</th>
         <th>Username</th>
         <th>Action</th>
       </tr>
+      </thead>
       {users.map((user) => (
-        <tr key={user.id}>
-          <td>{user.id}</td>
+        <tbody key={user.userid}>
+        <tr>
+          <td>{user.userid}</td>
           <td>{user.username}</td>
           <td>
             <div id="actionButtons">
@@ -48,6 +54,7 @@ function UserTable({ users, view }) {
             </div>
           </td>
         </tr>
+        </tbody>
       ))}
     </table>
   );
@@ -74,10 +81,11 @@ function AdminUserPanel() {
   };
 
   return (
-    <body>
-
+    <div>
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeUserProfile}>
+        <div onClick={e => e.stopPropagation()}>
         <UserProfile user={currUser}/>
+        </div>
       </div>
 
       <Header subTitle={"Admin Panel"} currPage={"User Manager"} />
@@ -100,7 +108,7 @@ function AdminUserPanel() {
           <UserTable users={testUsers} view={openUserProfile} />
         </div>
       </div>
-    </body>
+    </div>
   );
 }
 
