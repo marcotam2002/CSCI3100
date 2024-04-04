@@ -13,34 +13,57 @@ const pool = require('./database');
 const utils = require('./utils');
 
 class AccountHandler {
-    constructor(userID, username, salt, hashedPassword) {
+    constructor(userID, username, salt, hashedPassword, userType) {
       // Initialize any necessary properties or connections
       this.userID = userID;
       this.username = username;
       this.salt = salt;
       this.hashedPassword = hashedPassword;
+      this.userType = userType;
     }
 
-    // Method to authenticate an account | log in
     async authenticateAccount(username, account_input_password) {
+      /*
+        * Authenticate the account with the given username and password
+        * Return an object with the following properties:
+        * - success: true if the authentication is successful, false otherwise
+        * - message: a message indicating the result of the authentication
+        * - userType: 'user' if the account is a user, 'admin' if the account is an admin, 'none' if the account does not exist
+      */
       try {
-          // Retrieve account information from the database
           const client = await pool.connect();
-          const queryText = 'SELECT * FROM accounts WHERE username = $1';
-          const values = [username];
-          const result = await client.query(queryText, values);
+  
+          // Check if the username exists in the users table
+          const userQueryText = 'SELECT * FROM users WHERE username = $1';
+          const userValues = [username];
+          const userResult = await client.query(userQueryText, userValues);
+  
+          // Check if the username exists in the admins table if not found in users table
+          let account = userResult.rows[0];
+          this.userType = 'user';
+          if (userResult.rows.length === 0) {
+              this.userType = 'none'
+              const adminQueryText = 'SELECT * FROM admins WHERE username = $1';
+              const adminValues = [username];
+              const adminResult = await client.query(adminQueryText, adminValues);
+              if (adminResult.rows.length > 0) {
+                  account = adminResult.rows[0];
+                  this.userType = 'admin';
+              }
+          }
+  
           client.release();
-
-          // Check if the account exists
-          if (result.rows.length === 0) {
+  
+          // If account not found, return failure message
+          if (account.length === 0) {
               return { success: false, message: 'Account not found' };
           }
-
+  
           // Check if the password is correct
-          const account = result.rows[0];
           const account_input_hashedPassword = utils.hashPassword(account_input_password, account.salt);
-          if (account_input_hashedPassword === account.hashed_password) {
-              return { success: true, message: 'Authentication successful' };
+          if (account_input_hashedPassword === account.password) {
+              // Return authentication successful message along with account type
+              return { success: true, message: 'Authentication successful', userType: this.userType };
           } else {
               return { success: false, message: 'Incorrect password' };
           }
@@ -49,6 +72,7 @@ class AccountHandler {
           return { success: false, message: 'Failed to authenticate account' };
       }
     }
+  
 
     // Method to log in
     async logIn(username, account_input_password) {
