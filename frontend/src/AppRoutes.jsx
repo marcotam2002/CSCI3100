@@ -1,9 +1,20 @@
+/*
+ * Group members:
+ * Tam King Man 1155160072
+ * Tsang Ho Yin 1155159307
+ * Ng Yuk Fung 1155176966
+ * Leung Ka Lun 1155157403
+ * O Ching Lam 1155159131
+ */
+
 import {Navigate, Route, Routes} from "react-router-dom";
 import UserHomepage from "./pages/UserHomepage";
 import SearchPage from "./pages/SearchPage";
 import Login from "./pages/LoginPage"
 import AdminUserPanel from "./pages/AdminUserPanel";
+import RegistrationForm from "./pages/RegistrationForm";
 import AdminPostPanel from "./pages/AdminPostPanel";
+
 const AppRoutes=()=>{
     return(
         <Routes>
@@ -12,6 +23,7 @@ const AppRoutes=()=>{
             <Route path="/homepage" element = {<UserHomepage/>}/>
             <Route path="/admin/usermanager" element = {<AdminUserPanel/>}/>
             <Route path="/admin/postmanager" element = {<AdminPostPanel/>}/>  
+            {/* <Route path="/register" element= {<RegistrationForm/>}/> */}
         </Routes>
     );
 };

@@ -1,0 +1,33 @@
+.RegistrationForm {
+    color: white;
+}
+
+.h2 {
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    text-align: center;
+}
+
+.text-danger {
+    color: red;
+}
+
+.text-success {
+    color: blueviolet;
+}
+
+.btn-primary {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.02s ease-out, color 0.02s ease-out;
+    transition-delay: 0.01s;
+}
+
+.btn-primary:hover {
+    background-color: #555;
+}
