@@ -17,6 +17,4 @@ const pool = new Pool({
   port: 5432,
 });
 
-module.exports = {
-  query: (text, params) => pool.query(text, params)
-};
+module.exports = pool;
