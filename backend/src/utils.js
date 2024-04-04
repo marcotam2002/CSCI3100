@@ -9,13 +9,19 @@
 
 // The fllowing codes are assisted by Copilot
 
-generateSalt = () => {
-    const crypto = require('crypto');
+const crypto = require('crypto');
+
+const generateSalt = () => {
     return crypto.randomBytes(16).toString('hex');
 }
 
-
-hashPassword = (password, salt) => {
-    const crypto = require('crypto');
+const hashPassword = (password, salt) => {
     const hash = crypto.createHmac('sha512', salt);
+    hash.update(password);
+    return hash.digest('hex');
 }
+
+module.exports = {
+    generateSalt,
+    hashPassword
+};
