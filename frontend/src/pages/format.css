@@ -7,25 +7,63 @@
  * O Ching Lam 1155159131
  */
 
-/* template of formatting
-<name> {
-    font-family:    ;
-    font-size:      ;
-    color:          ;
-} 
-
- */
+ 
+@font-face {
+    font-family: Brandon Grotesque;
+    src: url(../assets/Brandon_light.otf);
+  }
+  
+@font-face {
+font-family: Assistant Light;
+src: url(../assets/Assistant-Light.ttf);
+}
 
 /* Styles for Heading */
+h1,h2,h3,h4,h5,h6 {
+    font-weight: normal;
+    font-family: Brandon Grotesque;
+}
+
 h1 {
-    font-family:  Arial, sans-serif;
-    font-size: 40px;
-    color: black;
+    font-size: 80px;
+}
+
+h2 {
+    font-size: 64px;
+}
+
+h3 {
+    font-size: 56px;
+}
+
+h4 {
+    font-size: 48px;
+}
+
+h5 {
+    font-size: 36px;
+}
+
+h6 {
+    font-size: 24px;
 }
 
 /* Styles for Paragraphs */
-p1 {
-    font-family:  Arial, sans-serif;
+p {
+    font-weight: normal;
+    font-family: Assistant Light;
+    font-size: 20px;
+}
+
+p.p2 {
     font-size: 16px;
-    color: black;
+}
+
+p.p3 {
+    font-size: 14px;
+}
+
+/* Styles for Button */
+button {
+    cursor: pointer;
 }

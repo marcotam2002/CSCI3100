@@ -9,6 +9,7 @@
 
 import React from 'react';
 import './LoginPage.css';
+import './format.css';
 import SoruIcon from '../assets/SoruIcon.png'
 import reactLogo from '../assets/react.svg'
 
@@ -22,7 +23,7 @@ const Login = () => {
             </div>
             <div className="right-column">
                 <form>
-                    <h1>Login to see more</h1>
+                    <h5 className="centered-text">Login to see more</h5>
                     <input type="text" placeholder="Username" required />
                     <input type="password" placeholder="Password" required />
                     <div className="forgot-password">
