@@ -17,11 +17,11 @@ const CommentHandler = require('./commenthandler');
 const MessageHandler = require('./messagehandler');
 
 class UserHandler extends AccountHandler {
-  constructor(userID, username, salt, hashedPassword, posts, comments, isActive, followers, followings, LikePostID, LikedCommentID, pendingFollowers,securityAnswers, description, is_private) {
+  constructor(userID, username, salt, hashedPassword, userType, posts, comments, isActive, followers, followings, LikePostID, LikedCommentID, pendingFollowers,securityAnswers, description, is_private) {
     super(userID, username, salt, hashedPassword);
     this.posts = posts;
     this.comments = comments;
-    this.isActivwe = isActive;
+    this.isActive = isActive;
     this.followers = followers;
     this.followings = followings;
     this.LikedPostID = LikePostID;
@@ -30,6 +30,7 @@ class UserHandler extends AccountHandler {
     this.securityAnswers = securityAnswers;
     this.description = description;
     this.is_private = is_private;
+    this.userType = userType;
   }
 
   async createUser(username, password, securityAnswers) {
