@@ -6,8 +6,8 @@ async function testAdminFunctions() {
 
   const adminHandler = new AdminHandler();
 
-//   const allUsers = await adminHandler.getAllUsers();
-//   console.log('All users:', allUsers);
+  const allUsers = await adminHandler.getAllUsers();
+  console.log('All users:', allUsers);
 
 //   const userID = 1;
 //   const user = await adminHandler.getUser(userID);

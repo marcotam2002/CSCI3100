@@ -17,7 +17,7 @@ const CommentHandler = require('./commenthandler');
 const MessageHandler = require('./messagehandler');
 
 class UserHandler extends AccountHandler {
-  constructor(userID, username, salt, hashedPassword, userType, pendingFollowers,securityAnswer, description, isPrivate) {
+  constructor(userID, username, salt, hashedPassword, userType, pendingFollowers, securityAnswer, description, isPrivate, isActive) {
     super(userID, username, salt, hashedPassword, userType);
     this.pendingFollowers = pendingFollowers;
     this.securityAnswer = securityAnswer;
@@ -36,9 +36,9 @@ class UserHandler extends AccountHandler {
         // Update user profile accordingly in the database
         const client = await pool.connect();
 
-        username = content[0];
-        description = content[1];
-        privacy = content[2];
+        const username = content[0];
+        const description = content[1];
+        const privacy = content[2];
 
         // Check if the username is already taken
         const queryText = 'SELECT * FROM users WHERE username = $1';
@@ -81,19 +81,13 @@ class UserHandler extends AccountHandler {
       * return {list[]} - The user profile ["username", "description", "privacy",  "post"]
     */
     try {
-        // Retrieve user information from the database
         const client = await pool.connect();
 
-        // Retrieve username, description, and privacy from the database
         const queryText = 'SELECT username, description, privacy FROM users WHERE userID = $1';
         const values = [this.userID];
         const result = await client.query(queryText, values);
         const userProfile = result.rows[0];
-        const username = userProfile.username;
-        const description = userProfile.description;
-        const privacy = userProfile.privacy;
 
-        // Retrieve posts from the database
         const queryText2 = 'SELECT * FROM posts WHERE authorID = $1';
         const values2 = [this.userID];
         const result2 = await client.query(queryText2, values2);
@@ -101,16 +95,14 @@ class UserHandler extends AccountHandler {
 
         client.release();
 
-        return {
-          success: true,
-          message: 'User profile retrieved successfully',
-          user: [username, description, privacy, posts]
-        };
+        return { success: true, message: 'User profile retrieved successfully', userProfile: userProfile };
+
     } catch (error) {
         console.error('Error retrieving user profile:', error);
         return { success: false, message: 'Failed to retrieve user profile' };
     }
   }
+
 
   // Method to view other users' profile
   async viewProfile(targetUserID) {
@@ -122,7 +114,7 @@ class UserHandler extends AccountHandler {
     try {
         // Retrieve target user information from the database
         const client = await pool.connect();
-        const queryText = 'SELECT * FROM User.accounts WHERE userID = $1';
+        const queryText = 'SELECT * FROM users WHERE userID = $1';
         const values = [targetUserID];
         const result = await client.query(queryText, values);
 
@@ -133,12 +125,12 @@ class UserHandler extends AccountHandler {
 
         // Check if target user is public
         const targetUser = result.rows[0];
-        if (targetUser.is_private === false) {
+        if (targetUser.privacy === 'public') {
             return { success: true, message: 'Target user profile retrieved successfully', targetUser };
         }
 
         // If target user is private, check if the user is following the target user
-        const isFollowing = await this.isFollowing(userID, targetUserID);
+        const isFollowing = await this.isFollowing(this.userID, targetUserID);
         if (isFollowing) {
             
           // Retrieve username, description, and privacy from the database
@@ -520,7 +512,7 @@ class UserHandler extends AccountHandler {
     try {
         // Check if the user is following the target user
         const client = await pool.connect();
-        const queryText = 'SELECT * FROM followRelationships WHERE followerID = $1 AND followingID = $2';
+        const queryText = 'SELECT * FROM relationships WHERE followerID = $1 AND followingID = $2';
         const values = [userID, targetUserID];
         const result = await client.query(queryText, values);
         client.release();

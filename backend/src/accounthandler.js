@@ -83,10 +83,11 @@ class AccountHandler {
               return { success: false, message: 'Account not found' };
           }
 
-          // Get the salt and hashed password of the user
-          const queryText = 'SELECT salt, password FROM users WHERE username = $1';
+          // Get the userID, salt and hashed password of the user
+          const queryText = 'SELECT userid, salt, password FROM users WHERE username = $1';
           const values = [username];
           const result = await client.query(queryText, values);
+          this.userID = result.rows[0].userid;
           this.salt = result.rows[0].salt;
           this.hashedPassword = result.rows[0].password;
   
@@ -94,7 +95,7 @@ class AccountHandler {
           const account_input_hashedPassword = hashPassword(account_input_password, this.salt);
           if (account_input_hashedPassword === this.hashedPassword) {
               // Return authentication successful message along with account type
-              return { success: true, message: 'Authentication successful' };
+              return { success: true, message: 'Authentication successful', userID: this.userID};
           } else {
               return { success: false, message: 'Incorrect password' };
           }
