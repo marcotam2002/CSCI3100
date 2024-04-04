@@ -10,7 +10,7 @@
 // The fllowing codes are assisted by Copilot
 
 const pool = require('./database');
-const utils = require('./utils');
+const { generateSalt, hashPassword } = require('./utils');
 const AccountHandler = require('./accounthandler');
 const PostHandler = require('./posthandler');
 const CommentHandler = require('./commenthandler');
@@ -577,28 +577,24 @@ class UserHandler extends AccountHandler {
   }
   
   // Method to check if security answers are correct
-  async checkSecurityAnswers(securityAnswers) {
+  async checkSecurityAnswer(securityAnswer) {
     /*
       * Check if the security answers are correct
-      * @param {string[]} securityAnswers - The security answers of the account to check
+      * @param {string} securityAnswer - The security answer of the account to check
     */
     try {
         // Check if the security answers are correct
         const client = await pool.connect();
-        const queryText = 'SELECT secureq1Ans, secureq2Ans, secureq3Ans FROM users WHERE userID = $1';
+        const queryText = 'SELECT secureqAns FROM users WHERE userID = $1';
         const values = [this.userID];
         const result = await client.query(queryText, values);
         client.release();
 
         // Retrieve the security answers from the result
-        const retrievedSecurityAnswers = [
-          result.rows[0].secureq1Ans,
-          result.rows[0].secureq2Ans,
-          result.rows[0].secureq3Ans
-        ];
+        const retrievedSecurityAnswer = result.rows[0].secureqans;
 
         // Check if the provided security answers match the retrieved security answers
-        return JSON.stringify(retrievedSecurityAnswers) === JSON.stringify(securityAnswers);
+        return JSON.stringify(retrievedSecurityAnswer) === JSON.stringify(securityAnswer);
     } catch (error) {
         console.error('Error checking security answers:', error);
         return false;
@@ -613,8 +609,10 @@ class UserHandler extends AccountHandler {
     */
     try {
         // Generate a new hashed password
-        const salt = utils.generateSalt();
-        const newHashedPassword = utils.hashPassword(newPassword, salt);
+        const salt = generateSalt();
+        const newHashedPassword = hashPassword(newPassword, salt);
+
+        const client = await pool.connect();
 
         // Update the password in the database
         const queryText2 = 'UPDATE users SET password = $1, salt = $2 WHERE userID = $3';

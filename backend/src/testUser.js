@@ -55,6 +55,14 @@ async function testUserFunctions() {
     // const following2 = await User.getFollowing();
     // console.log(following2)
 
+    // Test secure question
+    const secureResult = await User.checkSecurityAnswer('123');
+    console.log(secureResult)
+
+    // Test reset password
+    const resetResult = await User.resetPassword('sdasdacsdasd');
+    console.log(resetResult)
+
     console.log('Test ended.')
 }
 
