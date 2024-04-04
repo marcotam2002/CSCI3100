@@ -10,14 +10,17 @@
 // The fllowing codes are assisted by Copilot
 
 const pool = require('./database');
+const media = require('./mediahandler');
 
 class PostHandler {
-    constructor(postID, content, authorID, creationDate, likes) {
+    constructor(postID, authorID, content, privacy, creationTime, likeIDs, attachmentURL) {
       this.postID = postID;
-      this.content = content;
       this.authorID = authorID;
-      this.creationDate = creationDate;
-      this.likes = likes;
+      this.content = content;
+      this.privacy = privacy;
+      this.creationTime = creationTime;
+      this.likeIDs = likeIDs; // a list of userID who liked this post
+      this.attachmentURL = attachmentURL;
     }
     
     // Method to get postID
@@ -25,41 +28,58 @@ class PostHandler {
         return this.postID;
     }
 
-    // Method to get content
-    async getContent() {
-        return this.content;
-    }
-
     // Method to get authorID
     async getAuthorID() {
         return this.authorID;
     }
 
-    // Method to get creationDate
+    // Method to get content
+    async getContent() {
+        return this.content;
+    }
+
+    // Method to get creationTime
     async getCreationDate() {
-        return this.creationDate;
+        return this.creationTime;
     }
 
     // Method to get likes
     async getLikes() {
-        return this.likes;
+        return this.likeIDs;
     }
     
     // Method to like a post
-    async likePost(postID) {
-        const query = `UPDATE post SET likes = likes + 1 WHERE postID = ${postID}`;
+    async likePost(userID, postID) {
+        /*
+        * like a post in the database
+        * param: userID - the ID of the user who likes the post
+        * param: postID - the ID of the post to be liked
+        */
         try {
-            await pool.query(query);
+            const client = await pool.connect();
+            const query = 'UPDATE posts SET likeIDs = array_append(likeIDs, $1) WHERE postID = $2;'
+            const values = [userID, postID];
+            await client.query(query, values);
+            client.release();
+            return { success: true, message: 'Post liked'};
         } catch (error) {
             console.log(error);
         }
     }
 
     // Method to unlike a post
-    async unlikePost(postID) {
-        const query = `UPDATE post SET likes = likes - 1 WHERE postID = ${postID}`;
+    async unlikePost(userID, postID) {
+        /*
+        * unlike a post in the database
+        * param: postID - the ID of the post to be unliked
+        */
         try {
-            await pool.query(query);
+            const client = await pool.connect();
+            const query = 'UPDATE posts SET likeIDs = array_remove(likeIDs, $1) WHERE postID = $2';
+            const values = [postID];
+            await client.query(query, values);
+            client.release();
+            return { success: true, message: 'Post unliked'};
         } catch (error) {
             console.log(error);
         }
@@ -69,9 +89,22 @@ class PostHandler {
 
     // Method to create post
     async createPost() {
-        const query = `INSERT INTO post (postID, content, authorID, creationDate, likes) VALUES \
-        (${this.postID}, ${this.content}, ${this.authorID}, ${this.creationDate}, ${this.likes})`;
+        try {
+            const client = await pool.connect();
+            const queryText = 'INSERT INTO posts (content, authorID, attachmentsURL) VALUES ($1, $2, $3) RETURNING postID';
+            const values = [this.content, this.authorID, this.attachmentsURL];
+            const result = await client.query(queryText, values);
+    
+            // Get the postID of the newly created post
+            const postID = result.rows[0].postID;
+            client.release();
+            return { success: true, message: 'Post created successfully', postID };
+        } catch (error) {
+            console.error('Error creating post:', error);
+            return { success: false, message: 'Failed to create post' };
+        }
     }
+    
 
     // Method to edit post
     async editPost(editedContent, removeRequest) {

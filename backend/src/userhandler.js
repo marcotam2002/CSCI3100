@@ -208,7 +208,7 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to create a new post
-  async createPost(postContent, attachments) {
+  async createPost(postContent, attachmentsURL) {
     /*
       * Create a new post in the database
       * @param {string} postContent - The content of the post
@@ -216,13 +216,12 @@ class UserHandler extends AccountHandler {
     */
     try {
         // Insert post information into the database
-        const client = await pool.connect();
-        const queryText = 'INSERT INTO posts (authorID, content, privacy) VALUES ($1, $2, $3)';
-        const values = [this.userID, postContent, 'public'];
-        await client.query(queryText, values);
-        client.release();
-
-        return { success: true, message: 'Post created successfully' };
+        const post = new PostHandler();
+        post.authorID = this.userID;
+        post.content = postContent;
+        post.attachmentsURL = attachmentsURL;
+        const postID = post.createPost();
+        return { success: true, message: 'Post created successfully'};
     } catch (error) {
         console.error('Error creating post:', error);
         return { success: false, message: 'Failed to create post' };
@@ -296,20 +295,16 @@ class UserHandler extends AccountHandler {
       * @param {string} postID - The ID of the post to be liked
     */
     try {
+      
+      const post = new PostHandler(postID);
+      
       // Check if the user has already liked the post
-      if (this.LikePostID.includes(postID)) {
+      if (post.LikePostID.includes(postID)) {
           return { success: false, message: 'User has already liked the post' };
       }
-
       // If not, like the post, and update the like count in the database
-      const client = await pool.connect();
-      const queryText = 'UPDATE posts SET likes = likes + 1 WHERE postID = $1';
-      const values = [postID];
-      await client.query(queryText, values);
-      client.release();
-
-      // Add the postID to the list of liked posts
-      this.LikePostID.push(postID);
+      post.likePost(this.userID, postID);
+      
       return { success: true, message: 'Post liked successfully' };
 
     } catch (error) {
@@ -326,20 +321,15 @@ class UserHandler extends AccountHandler {
     */
 
     try {
-      // Check if the user has already liked the post
-      if (!this.LikePostID.includes(postID)) {
-          return { success: false, message: 'User has not liked the post' };
+      // Check if the user has liked the post
+      const post = new PostHandler(postID);
+      
+      if (!post.LikePostID.includes(postID)) {
+          return { success: false, message: 'User hasnt liked the post' };
       }
+      // If liked, unlike the post
+      post.unlikePost(this.userID, postID);
 
-      // If not, unlike the post, and update the like count in the database
-      const client = await pool.connect();
-      const queryText = 'UPDATE posts SET likes = likes - 1 WHERE postID = $1';
-      const values = [postID];
-      await client.query(queryText, values);
-      client.release();
-
-      // Remove the postID from the list of liked posts
-      this.LikePostID.splice(this.LikePostID.indexOf(postID), 1);
       return { success: true, message: 'Post unliked successfully' };
 
     } catch (error) {
