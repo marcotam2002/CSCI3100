@@ -74,6 +74,8 @@ input[type="password"] {
 
 
 #RegForm {
+    border: 2px solid #ccc;
+    border-radius: 20px;
     width: auto;
     height: auto;
     position: absolute;

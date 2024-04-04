@@ -27,6 +27,12 @@ export default function RegistrationForm() {
       setSuccessMessage("");
       return;
     }
+
+    if (secans1 === "" || secans2 === "" || secans3 === ""){
+        setErrorMessage("Please input answers to all security questions.");
+        setSuccessMessage("");
+        return;
+    }
   
       // Password validation
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/;
@@ -75,11 +81,14 @@ export default function RegistrationForm() {
       // Reset the form fields
       setUsername("");
       setPassword("");
+      setsecans1("");
+      setsecans2("");
+      setsecans3("");
     };
   
     return (
       <div className="RegisterForm">
-        <h2>Registration Form</h2>
+        <h2 style={{textAlign: "center"}}>Registration Form</h2>
         <p>Please set a password with a length ranging from 6 to 20 characters, with at least one character and one number.</p>
         <form onSubmit={handleSubmit} id="registrationForm">
           <div>
@@ -115,7 +124,7 @@ export default function RegistrationForm() {
           </div>
           {errorMessage && <p className="text-danger">{errorMessage}</p>}
           {successMessage && <p className="text-success">{successMessage}</p>}
-          <button className="btn btn-primary" style={{margin: "5px auto"}} type="submit">Register</button>
+          <button className="btn-primary" style={{margin: "5px 5px"}} type="submit">Register</button>
         </form>
       </div>
     );

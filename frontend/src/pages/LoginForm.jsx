@@ -15,7 +15,8 @@ import { useNavigate } from 'react-router';
 function LoginForm() {
 
     const [state, setState] = useState(false);
-    const popUpRef = useRef(null);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
     const openRegForm = () => {
         setState(true);
@@ -24,82 +25,69 @@ function LoginForm() {
         setState(false);
       };
 
-      const handleClickOutside = (event) => {
-        if (state && popUpRef.current && !popUpRef.current.contains(event.target) && !event.target.closest('#RegForm')) {
-          closeRegForm();
-        }
-      };
-      
-      useEffect(() => {
-        const handleOutsideClick = (event) => {
-          handleClickOutside(event);
-        };
-      
-        document.addEventListener('click', handleOutsideClick);
-        return () => {
-          document.removeEventListener('click', handleOutsideClick);
-        };
-      }, []);
       
     const navigate = useNavigate();
     //load saved username from cookie
 
         
     //handler for fetching of the form
-    useEffect(() => {
-        document.getElementById('loginForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const name = document.getElementById('usernameInput').value;
-            const password = document.getElementById('pswInput').value;
-            const data = {
-                username: name,
-                password: password
-            };
-      
-            // use POST method to send a request to the server
-            const response = await fetch('/', { 
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data)
-            });
-            if (response.status === 200){
-                //successful login
-                const resdata = await response.json()
-                document.cookie = "username="+ name;
-                document.cookie = "userID" + resdata.userID
-                document.cookie = "role="+ resdata.role;
-                navigate('/homepage')
-            }else{
-                //bad login: return error message
-                console.log(response.body)
-                document.getElementById('usernameInput').value = '';
-                document.getElementById('pswInput').value = '';
-            }
-        })
+    const handleSubmit = async (event) => {
+          event.preventDefault();
+          
+          const data = {
+              username: username,
+              password: password
+          };
     
-    })
+          // use POST method to send a request to the server
+          const response = await fetch('/', { 
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if (response.status === 200){
+              //successful login
+              const resdata = await response.json()
+              document.cookie = "username="+ name;
+              document.cookie = "userID" + resdata.userID
+              document.cookie = "role="+ resdata.role;
+              navigate('/homepage')
+          }else{
+              //bad login: return error message
+              console.log("Error")
+              setPassword("");
+              setUsername("");
+          }
+    
+    }
 
     return (
         <div>
-            <div ref={popUpRef} className={`popupBox ${state ? "show" : ""}`}>
+            <div className={`popupBox ${state ? "show" : ""}`} onClick={closeRegForm}>
+              <div onClick={e => e.stopPropagation()}>
                 <div id='RegForm'>
                     <RegistrationForm />
                 </div>
+              </div>
             </div>
-            <div className="form-box" id="loginForm">
+            <div className="form-box">
                 <h5 className="centered-text">Login to see more</h5>
-                <label htmlFor="username">Username*</label>
-                <input id="usernameInput" type="text" placeholder="Enter your username" required />
-                <label htmlFor="password">Password*</label>
-                <input id="pswInput" type="password" placeholder="Enter your password" required />
-                <br></br>
-                <button className="forgot-password">Forget Password</button>
-                <br></br>
-                <button className="submit">Login</button>
-                <hr className="line" />
-                <button className="register-btn" onClick={()=>openRegForm()}>Register</button>
+                <form onSubmit={handleSubmit} id="LoginForm">
+                  <label htmlFor="username">Username*</label>
+                  <input id="usernameInput" type="text" placeholder="Enter your username" value={username}
+                      onChange={(event) => setUsername(event.target.value)} required />
+                  <label htmlFor="password">Password*</label>
+                  <input id="pswInput" type="password" placeholder="Enter your password" required value={password}
+                      onChange={(event) => setPassword(event.target.value)} />
+                  <br></br>
+                  <button className="forgot-password">Forget Password</button>
+                  <br></br>
+                  <button className="submit" type="submit">Login</button>
+                  <hr className="line" />
+                  <button className="register-btn" onClick={()=>openRegForm()}>Register</button>
+                </form>
             </div>
         </div>
     );
