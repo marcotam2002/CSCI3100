@@ -8,78 +8,60 @@
  */
 
 
-.container {
+ .container {
     display: flex;
+    height: 100vh;
+    background-color:rgb(219, 212, 237); 
+    padding: 20px; 
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    padding: 0;
-    background-color: #f0e6f4
 }
 
-.left-column {
-    flex: 1;
-    text-align: center;
+.left-side {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    margin-right: 10px; 
 }
 
-.right-column {
-    flex: 1;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin:0 auto;
-    text-align: center;
+/* Additional styling for elements */
+.left-side img {
+    width: 300px;
+    align-self: flex-start;
 }
 
 
-h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
+.left-side h3,
+.left-side p {
+    align-items: center;
+    margin: 0; 
 }
 
-p {
-    font-size: 16px;
-    margin-bottom: 20px;
+.right-side {
+    display: flex;
+    flex-direction: column; 
 }
 
-form {
-    margin-bottom: 20px;
-    background-color: #ffffff; /* white background for login form */
+.form-box {
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    padding: 20px; 
+    margin-bottom: 20px; 
 }
-
-input[type="text"],
-input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
 
 .forgot-password {
     text-align: left;
-    margin-bottom: 20px;
+    ;
 }
-
-.register-btn {
-    width: 100%;
-    padding: 10px;
-    background-color: #4caf50; /* green button color */
+.submit-btn, .register-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
-
-.register-btn:hover {
-    background-color: #45a049; /* darker shade of green on hover */
-}
-
-.line {
-    margin: 20px 0;
-    border-top: 1px solid #ccc;
+.submit-btn:hover, .register-btn:hover {
+    background-color: #0056b3;
 }
