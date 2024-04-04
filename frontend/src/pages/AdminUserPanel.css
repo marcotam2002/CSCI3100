@@ -7,21 +7,22 @@
  * O Ching Lam 1155159131
  */
 
- #bodyContainer {
+#bodyContainer {
   width: 1000px;
   position: absolute;
   top: 180px;
   left: 50%;
   transform: translate(-50%);
 }
+
 #sideBar {
-  position: fixed; 
+  position: fixed;
   width: 180px;
 }
 
 #main {
   width: 790px;
-  border: 1px solid #BFBFBF;
+  border: 1px solid #bfbfbf;
   border-radius: 10px;
   position: absolute;
   left: 210px;
@@ -30,13 +31,13 @@
 #userTable {
   border-collapse: collapse;
   width: 100%;
-  
 }
 
-#userTable th, #userTable td {
+#userTable th,
+#userTable td {
   text-align: left;
   font-weight: normal;
-  padding-left:30px;
+  padding-left: 30px;
   padding: 15px;
 }
 
@@ -45,24 +46,37 @@
   font-size: 24px;
   padding-bottom: 5px;
 }
+
 #userTable td {
   font-family: Assistant Light;
   font-size: 20px;
 }
+
 #actionButtons {
   display: flex;
 }
+
 #actionButtons button {
-  font-weight: bold;
   font-family: Brandon Grotesque;
   font-size: 20px;
   background-color: transparent;
   margin-right: 40px;
   border-radius: 12px;
+  border: 1px solid;
 }
 
 #deleteButton {
   color: red;
   border-color: red;
   border-style: solid;
+}
+
+#viewButton:hover {
+  background-color: black;
+  color: white;
+}
+
+#deleteButton:hover {
+  background-color: red;
+  color: white;
 }
