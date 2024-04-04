@@ -36,7 +36,7 @@ input[type="password"] {
     color: blue;
 }
 
-.submit-btn,
+.submit,
 .register-btn {
     padding: 10px 20px;
     background-color: #007bff;
@@ -49,9 +49,9 @@ input[type="password"] {
     transition-delay: 0.01s;
 }
 
-.submit-btn:hover,
+.submit:hover,
 .register-btn:hover {
-    background-color: #555; /* Changed */
+    background-color: #555;
 }
 
 .line {
