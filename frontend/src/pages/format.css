@@ -73,3 +73,19 @@ p.p3 {
 button {
     cursor: pointer;
 }
+
+/* Styles for Pop-up Box */
+.popupBox {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  .popupBox.show {
+    display: block;
+  }

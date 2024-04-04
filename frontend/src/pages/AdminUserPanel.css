@@ -80,3 +80,13 @@
   background-color: red;
   color: white;
 }
+
+#userProfile {
+  width: 540px;
+  height: 600px;
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+}

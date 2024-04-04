@@ -11,7 +11,7 @@
 import "./AdminUserPanel.css";
 import "./format.css";
 import { Header, SideBarButton } from "./components";
-import React from "react";
+import React, {useState} from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
 
@@ -23,7 +23,7 @@ const testUsers = [
   { id: "0000004", username: "IHATEPROJECT", password: "<PASSWORD>" },
 ];
 
-function UserTable({ users }) {
+function UserTable({ users, view }) {
   const viewUser = (user) => {
     window.confirm(`You shoulb be able to view ${user.username} profile.`)
   }
@@ -43,7 +43,7 @@ function UserTable({ users }) {
           <td>{user.username}</td>
           <td>
             <div id="actionButtons">
-            <button type="button" id="viewButton" onClick={()=>viewUser(user)}>View</button>
+            <button type="button" id="viewButton" onClick={()=>view(user)}>View</button>
               <button type="button" id="deleteButton" onClick={()=>deleteUser(user)}>Delete</button>
             </div>
           </td>
@@ -53,9 +53,33 @@ function UserTable({ users }) {
   );
 }
 
+function UserProfile({user}) {
+  return (
+    <div id="userProfile">
+        <h1>{user.username}</h1>
+    </div>
+  );
+}
+
 function AdminUserPanel() {
+
+  const [state, setState] = useState(false);
+  const [currUser, setCurrUser] = useState(testUsers[0]);
+  const openUserProfile = (user) => {
+    setState(true);
+    setCurrUser(user);
+  };
+  const closeUserProfile = () => {
+    setState(false);
+  };
+
   return (
     <body>
+
+      <div className={`popupBox ${state ? "show" : ""}`} onClick={closeUserProfile}>
+        <UserProfile user={currUser}/>
+      </div>
+
       <Header subTitle={"Admin Panel"} currPage={"User Manager"} />
       <div id="bodyContainer">
         <div id="sideBar">
@@ -73,7 +97,7 @@ function AdminUserPanel() {
           />
         </div>
         <div id="main">
-          <UserTable users={testUsers} />
+          <UserTable users={testUsers} view={openUserProfile} />
         </div>
       </div>
     </body>
