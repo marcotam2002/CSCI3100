@@ -26,39 +26,6 @@ class UserHandler extends AccountHandler {
     this.isActive = isActive;
   }
 
-  async createUser(username, password, securityAnswers) {
-    try {
-      const client = await pool.connect();
-  
-      // Check the uniqueness of the username
-      // Find if the given username is already in the database
-      const queryText = 'SELECT * FROM users WHERE username = $1';
-      const values = [username];
-      const result = await client.query(queryText, values);
-  
-      // if the username is already taken, return an error
-      if (result.rows.length > 0) {
-        client.release();
-        return { success: false, message: 'Username already taken' };
-      }
-  
-      // Generate salt and hashed password
-      const salt = utils.generateSalt();
-      const hashedPassword = utils.hashPassword(password, salt);
-  
-      // Insert new user into the database
-      const queryText2 = 'INSERT INTO users (username, password, salt, secureq1Ans, secureq2Ans, secureq3Ans) VALUES ($1, $2, $3, $4, $5, $6)';
-      const values2 = [username, hashedPassword, salt, securityAnswers[0], securityAnswers[1], securityAnswers[2]];
-      await client.query(queryText2, values2);
-      client.release();
-      return { success: true, message: 'User created successfully' };
-  
-    } catch (error) {
-      console.error('Error creating a user:', error);
-      return { success: false, message: 'Failed to create user' };
-    }
-  }
-
   // Method to edit user own profile
   async editProfile(content) {
     /*
