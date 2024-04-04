@@ -27,3 +27,7 @@
     align-items: center;
     padding-left: 0px;
   }
+
+#sideBarButton:hover p{
+  font-weight: bold;
+}
