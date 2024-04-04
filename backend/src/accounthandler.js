@@ -13,13 +13,14 @@ const pool = require('./database');
 const utils = require('./utils');
 
 class AccountHandler {
-    constructor(userID, username, salt, hashedPassword, userType) {
+    constructor(userID, username, salt, hashedPassword, userType, isPrivate) {
       // Initialize any necessary properties or connections
       this.userID = userID;
       this.username = username;
       this.salt = salt;
       this.hashedPassword = hashedPassword;
       this.userType = userType;
+      this.isPrivate = isPrivate;
     }
 
     async authenticateAccount(username, account_input_password) {
@@ -34,7 +35,7 @@ class AccountHandler {
           const client = await pool.connect();
   
           // Check if the username exists in the users table
-          const userQueryText = 'SELECT * FROM users WHERE username = $1';
+          const userQueryText = 'SELECT userID FROM users WHERE username = $1';
           const userValues = [username];
           const userResult = await client.query(userQueryText, userValues);
   
