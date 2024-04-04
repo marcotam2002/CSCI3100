@@ -385,6 +385,32 @@ class UserHandler extends AccountHandler {
     }
   }
 
+  // Method to get all following users
+  async getFollowing() {
+    /*
+      * Retrieve all following users from the database
+      * return {list[]} - The list of following users
+    */
+    try {
+        // Retrieve following users from the database
+        const client = await pool.connect();
+        const queryText = 'SELECT followingID FROM relationships WHERE followerID = $1';
+        const values = [this.userID];
+        const result = await client.query(queryText, values);
+        client.release();
+        
+        // Extract followingIDs from the result
+        const followingIDs = result.rows.map(row => row.followingid);
+        
+        return { success: true, message: 'Following users retrieved successfully', following: followingIDs };
+
+    } catch (error) {
+        console.error('Error retrieving following users:', error);
+        return { success: false, message: 'Failed to retrieve following users' };
+    }
+}
+
+
   // Method to follow other users
   async followUser(targetUserID) {
     /*
@@ -397,23 +423,27 @@ class UserHandler extends AccountHandler {
             return { success: false, message: 'User is already following the target user' };
         }
 
+        // Retrieve the privacy of the target user
+        const client = await pool.connect();
+        const queryText = 'SELECT privacy FROM users WHERE userID = $1';
+        const values = [targetUserID];
+        const result = await client.query(queryText, values);
+
         // Check if the target user is public
-        if (!await this.isPrivate(targetUserID)) {
-            // If public, follow the target user
-            const client = await pool.connect();
-            const queryText = 'INSERT INTO followRelationships (followerID, followingID) VALUES ($1, $2)';
-            const values = [this.userID, targetUserID];
-            await client.query(queryText, values);
+        if (result.rows[0].privacy === 'public') {
+            // If the target user is public, append userID to target user's list of followers
+            const queryText2 = 'INSERT INTO relationships (followerID, followingID) VALUES ($1, $2)';
+            const values2 = [this.userID, targetUserID];
+            await client.query(queryText2, values2);
             client.release();
-            return { success: true, message: 'Followed user successfully' };
+            return { success: true, message: 'User followed successfully' };
         }
 
         // If not, send follow request to the target user
-        const client = await pool.connect();
         // Append userID to target user's list of pending followers
-        const queryText2 = 'INSERT INTO followRequests (followerID, followingID) VALUES ($1, $2)';
-        const values2 = [targetUserID, this.userID];
-        await client.query(queryText2, values2);
+        const queryText3 = 'INSERT INTO followRequests (followerID, followingID) VALUES ($1, $2)';
+        const values3 = [this.userID, targetUserID];
+        await client.query(queryText3, values3);
 
         client.release();
 
@@ -432,7 +462,7 @@ class UserHandler extends AccountHandler {
 
     try {
         const client = await pool.connect();
-        const queryText = 'INSERT INTO followRelationships (followerID, followingID) VALUES ($1, $2)';
+        const queryText = 'INSERT INTO relationships (followerID, followingID) VALUES ($1, $2)';
         const values = [awaitAcceptFollowerID, this.userID];
         await client.query(queryText, values);
 
@@ -464,7 +494,7 @@ class UserHandler extends AccountHandler {
 
         // Unfollow the target user
         const client = await pool.connect();
-        const queryText = 'DELETE FROM followRelationships WHERE followerID = $1 AND followingID = $2';
+        const queryText = 'DELETE FROM relationships WHERE followerID = $1 AND followingID = $2';
         const values = [this.userID, targetUserID];
         await client.query(queryText, values);
         client.release();

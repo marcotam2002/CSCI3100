@@ -9,15 +9,15 @@ async function testUserFunctions() {
 
     const user = {
         userID: 5,
-        username: 'testuser4',
+        username: 'hehehe',
         salt: '411c0f12c1afd75457fd0b8a5d8e8be3',
         password: 'bce45819669f93d652fdc1f80328eec914b8d1c28b9495dadfb9a295aadba71de477dd0cf31360002d032182efb9879c019c9606685add6769344f4ccf1d8ca9',
         secureqans: '123',
-        privacy: 'public',
-        description: null,
+        privacy: 'private',
+        description: 'this is a test description',
         active: true,
         usertype: 'user'
-    }
+      };
 
     // Create a new user
     const User = new UserHandler(user.userID, user.username, user.salt, user.password, user.usertype, user.privacy, user.active);
@@ -37,8 +37,23 @@ async function testUserFunctions() {
     // console.log(profile)
 
     // Test view other user's profile
-    const otherUser = await User.viewProfile(7);
-    console.log(otherUser)
+    // const otherUser = await User.viewProfile(7);
+    // console.log(otherUser)
+
+    // Test follow user
+    // const followResult = await User.followUser(7);
+    // console.log(followResult)
+
+    // Show all following
+    // const following = await User.getFollowing();
+    // console.log(following)
+
+    // Test unfollow user
+    // const unfollowResult = await User.unfollowUser(7);
+    // console.log(unfollowResult)
+
+    // const following2 = await User.getFollowing();
+    // console.log(following2)
 
     console.log('Test ended.')
 }

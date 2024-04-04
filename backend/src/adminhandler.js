@@ -66,6 +66,20 @@ class AdminHandler extends AccountHandler {
     }
   }
 
+  // Method to get all posts
+  async getAllPosts() {
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM posts';
+      const result = await client.query(queryText);
+      client.release();
+      return result.rows;
+    } catch (error) {
+      console.error('Error getting all posts:', error);
+      return [];
+    }
+  }
+
   // Method to delete a post
   async deletePost(postID) {
     try {
