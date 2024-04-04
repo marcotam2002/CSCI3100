@@ -62,3 +62,8 @@ p.p2 {
 p.p3 {
     font-size: 14px;
 }
+
+/* Styles for Button */
+button {
+    cursor: pointer;
+}
