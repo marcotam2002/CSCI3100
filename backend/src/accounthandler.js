@@ -10,37 +10,92 @@
 // The fllowing codes are assisted by Copilot
 
 const pool = require('./database');
-const utils = require('./utils');
+const { generateSalt, hashPassword } = require('./utils');
 
 class AccountHandler {
-    constructor(userID, username, salt, hashedPassword) {
+    constructor(userID, username, salt, hashedPassword, userType, isPrivate) {
       // Initialize any necessary properties or connections
       this.userID = userID;
       this.username = username;
       this.salt = salt;
       this.hashedPassword = hashedPassword;
+      this.userType = userType;
+      this.isPrivate = isPrivate;
     }
 
-    // Method to authenticate an account | log in
-    async authenticateAccount(username, account_input_password) {
+    async createUser(username, password, securityAnswer = '123') {
       try {
-          // Retrieve account information from the database
-          const client = await pool.connect();
-          const queryText = 'SELECT * FROM accounts WHERE username = $1';
-          const values = [username];
-          const result = await client.query(queryText, values);
+        const client = await pool.connect();
+    
+        // Check the uniqueness of the username
+        // Find if the given username is already in the database
+        const queryText = 'SELECT userID FROM users WHERE username = $1';
+        const values = [username];
+        const result = await client.query(queryText, values);
+    
+        // if the username is already taken, return an error
+        if (result.rows.length > 0) {
           client.release();
+          return { success: false, message: 'Username already taken' };
+        }
+    
+        // Generate salt and hashed password
+        const salt = generateSalt();
+        const hashedPassword = hashPassword(password, salt);
+    
+        // Insert new user into the database
+        const queryText2 = 'INSERT INTO users (username, password, salt, secureqAns, privacy) VALUES ($1, $2, $3, $4, $5)';
+        const values2 = [username, hashedPassword, salt, securityAnswer, 'public'];
+        await client.query(queryText2, values2);
 
-          // Check if the account exists
-          if (result.rows.length === 0) {
+        // assign the user ID to the object
+        const queryText3 = 'SELECT userID FROM users WHERE username = $1';
+        const values3 = [username];
+        const result3 = await client.query(queryText3, values3);
+        this.userID = result3.rows[0].userid;
+
+        client.release();
+        return { success: true, message: 'User created successfully' };
+    
+      } catch (error) {
+        console.error('Error creating a user:', error);
+        return { success: false, message: 'Failed to create user' };
+      }
+    }
+
+    async authenticateAccount(username, account_input_password) {
+      /*
+        * Authenticate the account with the given username and password
+        * param {string} username - The username of the account
+        * param {string} password - The password of the account
+      */
+      try {
+          const client = await pool.connect();
+  
+          // Check if the username exists in the users table
+          const userQueryText = 'SELECT userID FROM users WHERE username = $1';
+          const userValues = [username];
+          const userResult = await client.query(userQueryText, userValues);
+  
+          // If the username does not exist, return failure message
+          if (userResult.rows.length === 0) {
+              client.release();
               return { success: false, message: 'Account not found' };
           }
 
+          // Get the userID, salt and hashed password of the user
+          const queryText = 'SELECT userid, salt, password FROM users WHERE username = $1';
+          const values = [username];
+          const result = await client.query(queryText, values);
+          this.userID = result.rows[0].userid;
+          this.salt = result.rows[0].salt;
+          this.hashedPassword = result.rows[0].password;
+  
           // Check if the password is correct
-          const account = result.rows[0];
-          const account_input_hashedPassword = utils.hashPassword(account_input_password, account.salt);
-          if (account_input_hashedPassword === account.hashed_password) {
-              return { success: true, message: 'Authentication successful' };
+          const account_input_hashedPassword = hashPassword(account_input_password, this.salt);
+          if (account_input_hashedPassword === this.hashedPassword) {
+              // Return authentication successful message along with account type
+              return { success: true, message: 'Authentication successful', userID: this.userID};
           } else {
               return { success: false, message: 'Incorrect password' };
           }
@@ -48,23 +103,6 @@ class AccountHandler {
           console.error('Error authenticating account:', error);
           return { success: false, message: 'Failed to authenticate account' };
       }
-    }
-
-    // Method to log in
-    async logIn(username, account_input_password) {
-      const authenticationResult = await this.authenticateAccount(username, account_input_password);
-      if (authenticationResult.success) {
-          // Set the session to indicate that the user is logged in
-          return { success: true, message: 'Logged in successfully' };
-      } else {
-          return { success: false, message: 'Failed to log in' };
-      }
-    }
-
-    // Method to log out
-    async logOut() {
-      // Clear the session to indicate that the user is logged out
-      return { success: true, message: 'Logged out successfully' };
     }
 
   }

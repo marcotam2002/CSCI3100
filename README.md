@@ -19,7 +19,7 @@ Follow the steps below to run the project:
 1. Navigate to the `frontend` directory, install the project dependencies and start the frontend server
     ```shell
     cd frontend
-    npm install vite express
+    npm install pg vite express
     npm run dev
     ```
 
