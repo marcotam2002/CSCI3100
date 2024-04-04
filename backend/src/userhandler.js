@@ -208,7 +208,7 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to create a new post
-  async createPost(postContent, attachmentsURL) {
+  async createPost(postContent, attachmentURL) {
     /*
       * Create a new post in the database
       * @param {string} postContent - The content of the post
@@ -216,12 +216,15 @@ class UserHandler extends AccountHandler {
     */
     try {
         // Insert post information into the database
-        const post = new PostHandler();
-        post.authorID = this.userID;
-        post.content = postContent;
-        post.attachmentsURL = attachmentsURL;
-        const postID = post.createPost();
-        return { success: true, message: 'Post created successfully'};
+        const client = await pool.connect();
+        const queryText = 'INSERT INTO posts (content, authorID, attachmentURL) VALUES ($1, $2, $3) RETURNING postID';
+        const values = [postContent, this.userID, attachmentURL];
+        const result = await client.query(queryText, values);
+
+        // Get the postID of the newly created post
+        const postID = result.rows[0].postID;
+        client.release();
+        return { success: true, message: 'Post created successfully', postID };
     } catch (error) {
         console.error('Error creating post:', error);
         return { success: false, message: 'Failed to create post' };
@@ -234,16 +237,16 @@ class UserHandler extends AccountHandler {
       * Edit own post in the database
       * @param {string} postID - The ID of the post to be edited, assume the post belongs to the user and the post exists
       * @param {string} editedContent - The new content to be updated
-      * @param {int[]} removeRequest - An array of attachment URLs index to be removed
+      * @param {int[]} removeRequest - request to remove the attachment
     */
     try {
         // Edit post in the database
         const client = await pool.connect();
-        const queryText = 'UPDATE User.posts SET postContent = $1 WHERE postID = $2 AND userID = $3';
-        const values = [editContent, postID, userID];
+        const queryText = 'UPDATE posts SET postContent = $1 WHERE postID = $2';
+        const values = [editContent, postID];
         await client.query(queryText, values);
 
-        // if removeRequest is not empty, remove the attachments and update the new attachments
+        // if removeRequest is not empty, remove the attachment
         if (removeRequest.length > 0) {
             const queryText2 = 'SELECT attachments FROM User.posts WHERE postID = $1';
             const values2 = [postID];
@@ -274,8 +277,13 @@ class UserHandler extends AccountHandler {
       * @param {string} postId - The ID of the post to be deleted
     */
     try {
-        // Delete post from the database
+        // Delete likes associated with the post
         const client = await pool.connect();
+        const queryText2 = 'DELETE FROM likes WHERE contentType = $1 AND contentID = $2';
+        const values2 = ['post', postId];
+        await client.query(queryText2, values2);
+
+        // Delete post from the database
         const queryText = 'DELETE FROM posts WHERE postID = $1';
         const values = [postId];
         await client.query(queryText, values);
@@ -296,15 +304,29 @@ class UserHandler extends AccountHandler {
     */
     try {
       
-      const post = new PostHandler(postID);
-      
-      // Check if the user has already liked the post
-      if (post.LikePostID.includes(postID)) {
-          return { success: false, message: 'User has already liked the post' };
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+      const values = ['post', postID, userID];
+      const result = await client.query(queryText, values);
+
+      // If the user has already liked the post, return an error
+      if (result.rows.length > 0) {
+        client.release();
+        return { success: true, message: 'User has already liked the post' };
       }
-      // If not, like the post, and update the like count in the database
-      post.likePost(this.userID, postID);
-      
+
+      // Like the post
+      const likeQuery = 'INSERT INTO likes (contentType, contentID, userID) VALUES ($1, $2, $3)';
+      const likeValues = ['post', postID, userID];
+      await client.query(likeQuery, likeValues);
+
+      // Update the number of likes in the post
+      const updateQuery = 'UPDATE posts SET likes = likes + 1 WHERE postID = $1';
+      const updateValues = [postID];
+      await client.query(updateQuery, updateValues);
+
+      client.release();
+
       return { success: true, message: 'Post liked successfully' };
 
     } catch (error) {
@@ -321,14 +343,29 @@ class UserHandler extends AccountHandler {
     */
 
     try {
+
       // Check if the user has liked the post
-      const post = new PostHandler(postID);
+      const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+      const values = ['post', postID, userID];
+      const result = await client.query(queryText, values);
       
-      if (!post.LikePostID.includes(postID)) {
-          return { success: false, message: 'User hasnt liked the post' };
+      // If the user has not liked the post, return without doing anything
+      if (result.rows.length === 0) {
+          client.release();
+          return { success: false, message: 'User has not liked the post' };
       }
-      // If liked, unlike the post
-      post.unlikePost(this.userID, postID);
+      
+      // Otherwise, remove the like from the database
+      const deleteQuery = 'DELETE FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+      const deleteValues = ['post', postID, userID];
+      await client.query(deleteQuery, deleteValues);
+
+      // Update the number of likes in the post
+      const updateQuery = 'UPDATE posts SET likes = likes - 1 WHERE postID = $1';
+      const updateValues = [postID];
+      await client.query(updateQuery, updateValues);
+      
+      client.release();
 
       return { success: true, message: 'Post unliked successfully' };
 
@@ -415,6 +452,14 @@ class UserHandler extends AccountHandler {
         return { success: false, message: 'Failed to search for users' };
     }
   }
+
+  // Method to like a comment
+
+  // Method to unlike a comment
+
+  // Method to edit a comment
+
+  // Method to delete a comment
 
   // Method to follow other users
   async followUser(targetUserID) {
