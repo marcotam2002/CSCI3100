@@ -11,7 +11,7 @@
 import "./AdminUserPanel.css";
 import "./format.css";
 import { Header, SideBarButton } from "./components";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
 
@@ -72,6 +72,36 @@ function AdminUserPanel() {
   const closeUserProfile = () => {
     setState(false);
   };
+
+  useEffect(() => {
+    // Function to fetch user list
+    const fetchUserList = async () => {
+        try {
+            // Send a GET request to retrieve user list
+            const response = await fetch('/admin/userlist', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+            });
+            if (response.status === 200) {
+                const userList = await response.json();
+                console.log(userList); // Output the list of users (userID, username) for debug
+
+                // save the arguments and pass them in the UserTable component
+
+            } else {
+                // If there's an error, log the error message
+                const errorMessage = await response.text();
+                console.error(errorMessage); // Log the error message
+            }
+        } catch (error) {
+            console.error('Error fetching user list:', error);
+        }
+    };
+
+    fetchUserList();
+}, []); 
 
   return (
     <body>
