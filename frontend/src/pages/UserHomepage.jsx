@@ -60,5 +60,6 @@ function UserHomepage({ posts }) {
       </div>
     );
 };
+}
 
 export default UserHomepage;
