@@ -15,6 +15,8 @@ const AccountHandler = require('./accounthandler');
 const PostHandler = require('./posthandler');
 const CommentHandler = require('./commenthandler');
 const MessageHandler = require('./messagehandler');
+const pool = require('./database');
+const pool = require('./database');
 
 class UserHandler extends AccountHandler {
   constructor(userID, username, salt, hashedPassword, userType, pendingFollowers, securityAnswer, description, isPrivate, isActive) {
@@ -625,6 +627,82 @@ class UserHandler extends AccountHandler {
     } catch (error) {
         console.error('Error resetting password:', error);
         return { success: false, message: 'Failed to reset password' };
+    }
+  }
+
+  // Method to send a message
+  async sendMessage(receiverID, message) {
+    /*
+      * Send a message to another user
+      * @param {string} receiverID - The ID of the user receiving the message
+      * @param {string} message - The content of the message
+    */
+    try {
+      const pool = await pool.connect();
+      const queryText = 'INSERT INTO messages (senderID, receiverID, content) VALUES ($1, $2, $3)';
+      const values = [this.userID, receiverID, message];
+      await pool.query(queryText, values);
+      pool.release();
+      return { success: true, message: 'Message sent successfully' };
+    } catch (error) {
+      console.error('Error sending message:', error);
+      return { success: false, message: 'Failed to send message' };
+    }
+  }
+  
+  // Method to receive messages with a specific user
+  async getMessagesWithUser(targetUserID) {
+    /*
+      * Retrieve messages with a specific user
+      * @param {string} userID - The ID of the user to get messages with
+    */
+    try {
+      const pool = await pool.connect();
+      const queryText = 'SELECT * FROM messages WHERE (senderID = $1 AND receiverID = $2) OR (senderID = $2 AND receiverID = $1)';
+      const values = [this.userID, targetUserID];
+      const result = await pool.query(queryText, values);
+      pool.release();
+      return { success: true, message: 'Messages retrieved successfully', messages: result.rows[0] };
+    } catch (error) {
+      console.error('Error getting messages:', error);
+      return { success: false, message: 'Failed to get messages' };
+    }
+  }
+
+  // Method to get notifications
+  async getNotifications() {
+    /*
+      * Retrieve notifications for the user
+    */
+    try {
+      const client = await this.pool.connect();
+      const queryText = 'SELECT * FROM messages WHERE receiverID = $1 AND read = false';
+      const values = [this.userID];
+      const result = await client.query(queryText, values);
+      client.release();
+
+      // Count the number of messages for each senderID
+      const messageCounts = {};
+      result.rows.forEach(row => {
+          const senderID = row.senderID;
+          if (messageCounts[senderID]) {
+              messageCounts[senderID]++;
+          } else {
+              messageCounts[senderID] = 1;
+          }
+      });
+
+      // Construct the set with senderID and message count
+      const notifications = [];
+      for (const senderID in messageCounts) {
+          notifications.push({ senderID: parseInt(senderID), messageCount: messageCounts[senderID] });
+      }
+
+      // Return the retrieved notifications
+      return { success: true, message: 'Notifications retrieved successfully', notifications: notificationsSet };
+    } catch (error) {
+      console.error('Error getting notifications:', error);
+      return { success: false, message: 'Failed to get notifications' };
     }
   }
 }
