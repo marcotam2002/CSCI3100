@@ -1,0 +1,91 @@
+/*
+ * Group members:
+ * Tam King Man 1155160072
+ * Tsang Ho Yin 1155159307
+ * Ng Yuk Fung 1155176966
+ * Leung Ka Lun 1155157403
+ * O Ching Lam 1155159131
+ */
+
+ 
+body{
+    margin: 0;
+    padding: 0;
+    background-color: white; /* light purple background */
+}
+
+@font-face {
+    font-family: Brandon Grotesque;
+    src: url(../assets/Brandon_light.otf);
+  }
+  
+@font-face {
+font-family: Assistant Light;
+src: url(../assets/Assistant-Light.ttf);
+}
+
+/* Styles for Heading */
+h1,h2,h3,h4,h5,h6 {
+    font-weight: normal;
+    font-family: Brandon Grotesque;
+}
+
+h1 {
+    font-size: 80px;
+}
+
+h2 {
+    font-size: 64px;
+}
+
+h3 {
+    font-size: 56px;
+}
+
+h4 {
+    font-size: 48px;
+}
+
+h5 {
+    font-size: 36px;
+}
+
+h6 {
+    font-size: 24px;
+}
+
+/* Styles for Paragraphs */
+p {
+    font-weight: normal;
+    font-family: Assistant Light;
+    font-size: 20px;
+}
+
+p.p2 {
+    font-size: 16px;
+}
+
+p.p3 {
+    font-size: 14px;
+}
+
+/* Styles for Button */
+button {
+    cursor: pointer;
+}
+
+/* Styles for Pop-up Box */
+.popupBox {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  .popupBox.show {
+    display: block;
+  }

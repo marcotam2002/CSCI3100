@@ -10,53 +10,20 @@
 // The fllowing codes are assisted by Copilot
 
 const pool = require('./database');
-const utils = require('./utils');
+const { generateSalt, hashPassword } = require('./utils');
 const AccountHandler = require('./accounthandler');
 const PostHandler = require('./posthandler');
 const CommentHandler = require('./commenthandler');
 const MessageHandler = require('./messagehandler');
 
 class UserHandler extends AccountHandler {
-  constructor(userID, username, salt, hashedPassword, userType, pendingFollowers,securityAnswer, description, isPrivate) {
+  constructor(userID, username, salt, hashedPassword, userType, pendingFollowers, securityAnswer, description, isPrivate, isActive) {
     super(userID, username, salt, hashedPassword, userType);
     this.pendingFollowers = pendingFollowers;
     this.securityAnswer = securityAnswer;
     this.description = description;
     this.isPrivate = isPrivate;
     this.isActive = isActive;
-  }
-
-  async createUser(username, password, securityAnswers) {
-    try {
-      const client = await pool.connect();
-  
-      // Check the uniqueness of the username
-      // Find if the given username is already in the database
-      const queryText = 'SELECT * FROM users WHERE username = $1';
-      const values = [username];
-      const result = await client.query(queryText, values);
-  
-      // if the username is already taken, return an error
-      if (result.rows.length > 0) {
-        client.release();
-        return { success: false, message: 'Username already taken' };
-      }
-  
-      // Generate salt and hashed password
-      const salt = utils.generateSalt();
-      const hashedPassword = utils.hashPassword(password, salt);
-  
-      // Insert new user into the database
-      const queryText2 = 'INSERT INTO users (username, password, salt, secureq1Ans, secureq2Ans, secureq3Ans) VALUES ($1, $2, $3, $4, $5, $6)';
-      const values2 = [username, hashedPassword, salt, securityAnswers[0], securityAnswers[1], securityAnswers[2]];
-      await client.query(queryText2, values2);
-      client.release();
-      return { success: true, message: 'User created successfully' };
-  
-    } catch (error) {
-      console.error('Error creating a user:', error);
-      return { success: false, message: 'Failed to create user' };
-    }
   }
 
   // Method to edit user own profile
@@ -69,9 +36,9 @@ class UserHandler extends AccountHandler {
         // Update user profile accordingly in the database
         const client = await pool.connect();
 
-        username = content[0];
-        description = content[1];
-        privacy = content[2];
+        const username = content[0];
+        const description = content[1];
+        const privacy = content[2];
 
         // Check if the username is already taken
         const queryText = 'SELECT * FROM users WHERE username = $1';
@@ -114,19 +81,13 @@ class UserHandler extends AccountHandler {
       * return {list[]} - The user profile ["username", "description", "privacy",  "post"]
     */
     try {
-        // Retrieve user information from the database
         const client = await pool.connect();
 
-        // Retrieve username, description, and privacy from the database
         const queryText = 'SELECT username, description, privacy FROM users WHERE userID = $1';
         const values = [this.userID];
         const result = await client.query(queryText, values);
         const userProfile = result.rows[0];
-        const username = userProfile.username;
-        const description = userProfile.description;
-        const privacy = userProfile.privacy;
 
-        // Retrieve posts from the database
         const queryText2 = 'SELECT * FROM posts WHERE authorID = $1';
         const values2 = [this.userID];
         const result2 = await client.query(queryText2, values2);
@@ -134,16 +95,14 @@ class UserHandler extends AccountHandler {
 
         client.release();
 
-        return {
-          success: true,
-          message: 'User profile retrieved successfully',
-          user: [username, description, privacy, posts]
-        };
+        return { success: true, message: 'User profile retrieved successfully', userProfile: userProfile };
+
     } catch (error) {
         console.error('Error retrieving user profile:', error);
         return { success: false, message: 'Failed to retrieve user profile' };
     }
   }
+
 
   // Method to view other users' profile
   async viewProfile(targetUserID) {
@@ -155,7 +114,7 @@ class UserHandler extends AccountHandler {
     try {
         // Retrieve target user information from the database
         const client = await pool.connect();
-        const queryText = 'SELECT * FROM User.accounts WHERE userID = $1';
+        const queryText = 'SELECT * FROM users WHERE userID = $1';
         const values = [targetUserID];
         const result = await client.query(queryText, values);
 
@@ -166,12 +125,12 @@ class UserHandler extends AccountHandler {
 
         // Check if target user is public
         const targetUser = result.rows[0];
-        if (targetUser.is_private === false) {
+        if (targetUser.privacy === 'public') {
             return { success: true, message: 'Target user profile retrieved successfully', targetUser };
         }
 
         // If target user is private, check if the user is following the target user
-        const isFollowing = await this.isFollowing(userID, targetUserID);
+        const isFollowing = await this.isFollowing(this.userID, targetUserID);
         if (isFollowing) {
             
           // Retrieve username, description, and privacy from the database
@@ -453,14 +412,6 @@ class UserHandler extends AccountHandler {
     }
   }
 
-  // Method to like a comment
-
-  // Method to unlike a comment
-
-  // Method to edit a comment
-
-  // Method to delete a comment
-
   // Method to follow other users
   async followUser(targetUserID) {
     /*
@@ -473,23 +424,27 @@ class UserHandler extends AccountHandler {
             return { success: false, message: 'User is already following the target user' };
         }
 
+        // Retrieve the privacy of the target user
+        const client = await pool.connect();
+        const queryText = 'SELECT privacy FROM users WHERE userID = $1';
+        const values = [targetUserID];
+        const result = await client.query(queryText, values);
+
         // Check if the target user is public
-        if (!await this.isPrivate(targetUserID)) {
-            // If public, follow the target user
-            const client = await pool.connect();
-            const queryText = 'INSERT INTO followRelationships (followerID, followingID) VALUES ($1, $2)';
-            const values = [this.userID, targetUserID];
-            await client.query(queryText, values);
+        if (result.rows[0].privacy === 'public') {
+            // If the target user is public, append userID to target user's list of followers
+            const queryText2 = 'INSERT INTO relationships (followerID, followingID) VALUES ($1, $2)';
+            const values2 = [this.userID, targetUserID];
+            await client.query(queryText2, values2);
             client.release();
-            return { success: true, message: 'Followed user successfully' };
+            return { success: true, message: 'User followed successfully' };
         }
 
         // If not, send follow request to the target user
-        const client = await pool.connect();
         // Append userID to target user's list of pending followers
-        const queryText2 = 'INSERT INTO followRequests (followerID, followingID) VALUES ($1, $2)';
-        const values2 = [targetUserID, this.userID];
-        await client.query(queryText2, values2);
+        const queryText3 = 'INSERT INTO followRequests (followerID, followingID) VALUES ($1, $2)';
+        const values3 = [this.userID, targetUserID];
+        await client.query(queryText3, values3);
 
         client.release();
 
@@ -508,7 +463,7 @@ class UserHandler extends AccountHandler {
 
     try {
         const client = await pool.connect();
-        const queryText = 'INSERT INTO followRelationships (followerID, followingID) VALUES ($1, $2)';
+        const queryText = 'INSERT INTO relationships (followerID, followingID) VALUES ($1, $2)';
         const values = [awaitAcceptFollowerID, this.userID];
         await client.query(queryText, values);
 
@@ -540,7 +495,7 @@ class UserHandler extends AccountHandler {
 
         // Unfollow the target user
         const client = await pool.connect();
-        const queryText = 'DELETE FROM followRelationships WHERE followerID = $1 AND followingID = $2';
+        const queryText = 'DELETE FROM relationships WHERE followerID = $1 AND followingID = $2';
         const values = [this.userID, targetUserID];
         await client.query(queryText, values);
         client.release();
@@ -588,7 +543,7 @@ class UserHandler extends AccountHandler {
     try {
         // Check if the user is following the target user
         const client = await pool.connect();
-        const queryText = 'SELECT * FROM followRelationships WHERE followerID = $1 AND followingID = $2';
+        const queryText = 'SELECT * FROM relationships WHERE followerID = $1 AND followingID = $2';
         const values = [userID, targetUserID];
         const result = await client.query(queryText, values);
         client.release();
@@ -623,28 +578,24 @@ class UserHandler extends AccountHandler {
   }
   
   // Method to check if security answers are correct
-  async checkSecurityAnswers(securityAnswers) {
+  async checkSecurityAnswer(securityAnswer) {
     /*
       * Check if the security answers are correct
-      * @param {string[]} securityAnswers - The security answers of the account to check
+      * @param {string} securityAnswer - The security answer of the account to check
     */
     try {
         // Check if the security answers are correct
         const client = await pool.connect();
-        const queryText = 'SELECT secureq1Ans, secureq2Ans, secureq3Ans FROM users WHERE userID = $1';
+        const queryText = 'SELECT secureqAns FROM users WHERE userID = $1';
         const values = [this.userID];
         const result = await client.query(queryText, values);
         client.release();
 
         // Retrieve the security answers from the result
-        const retrievedSecurityAnswers = [
-          result.rows[0].secureq1Ans,
-          result.rows[0].secureq2Ans,
-          result.rows[0].secureq3Ans
-        ];
+        const retrievedSecurityAnswer = result.rows[0].secureqans;
 
         // Check if the provided security answers match the retrieved security answers
-        return JSON.stringify(retrievedSecurityAnswers) === JSON.stringify(securityAnswers);
+        return JSON.stringify(retrievedSecurityAnswer) === JSON.stringify(securityAnswer);
     } catch (error) {
         console.error('Error checking security answers:', error);
         return false;
@@ -659,8 +610,10 @@ class UserHandler extends AccountHandler {
     */
     try {
         // Generate a new hashed password
-        const salt = utils.generateSalt();
-        const newHashedPassword = utils.hashPassword(newPassword, salt);
+        const salt = generateSalt();
+        const newHashedPassword = hashPassword(newPassword, salt);
+
+        const client = await pool.connect();
 
         // Update the password in the database
         const queryText2 = 'UPDATE users SET password = $1, salt = $2 WHERE userID = $3';

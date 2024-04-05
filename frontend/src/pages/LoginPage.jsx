@@ -9,29 +9,25 @@
 
 import React from 'react';
 import './LoginPage.css';
-import SoruIcon from '../assets/SoruIcon.png'
-import reactLogo from '../assets/react.svg'
+import './format.css';
+import SoruIcon from '../assets/SoruIcon.png';
+import LoginForm from './LoginForm';
+import reactLogo from '../assets/react.svg';
 
-const Login = () => {
+function Login() {
     return (
-        <div className="container">
-            <div className="left-column">
+        <div className="container" style={{ backgroundColor: 'lightpurple', marginTop: '20px' }}>
+            <div className="left-side">
                 <img src={SoruIcon} alt="SORU Image" width="200" />
-                <h1>Soru</h1>
-                <p>Where Soul is Touched</p>
+                <div style={{ textAlign: 'left' }}>
+                    <h3>Soru</h3>
+                    <p>Where Soul is Touched</p>
+                </div>
             </div>
-            <div className="right-column">
-                <form>
-                    <h1>Login to see more</h1>
-                    <input type="text" placeholder="Username" required />
-                    <input type="password" placeholder="Password" required />
-                    <div className="forgot-password">
-                        <a href="#">Forgot Password</a>
-                    </div>
-                    <button className='submit-btn'>Submit</button>
-                </form>
-                <div className="line"></div>
-                <button className="register-btn">Register</button>
+            <div className="right-side" style={{ marginLeft: '20px' }}>
+                <div>
+                    <LoginForm />
+                </div>
             </div>
         </div>
     );

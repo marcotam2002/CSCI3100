@@ -7,6 +7,8 @@
  * O Ching Lam 1155159131
  */
 
+import { getCookie } from "./CookieHandlers";
+
 const UserHomepage=()=>{
     return (
         <span>homepage</span>

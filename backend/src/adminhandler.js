@@ -36,7 +36,7 @@ class AdminHandler extends AccountHandler {
   async getUser(userID) {
     try {
       const client = await pool.connect();
-      const queryText = 'SELECT * FROM users WHERE user_id = $1';
+      const queryText = 'SELECT * FROM users WHERE userID = $1';
       const values = [userID];
       const result = await client.query(queryText, values);
       client.release();
@@ -49,31 +49,34 @@ class AdminHandler extends AccountHandler {
 
   // Method to delete a user
   async deleteUser(userID) {
+    /*
+      * delete a user from the database
+      * param: userID - the ID of the user to be deleted
+    */
     try {
       const client = await pool.connect();
-      const queryText = 'DELETE FROM users WHERE user_id = $1';
+      const queryText = 'DELETE FROM users WHERE userID = $1';
       const values = [userID];
       await client.query(queryText, values);
       client.release();
-      return true;
+      return { success: true, message: 'User deleted successfully' };
     } catch (error) {
       console.error('Error deleting user:', error);
-      return false;
+      return { success: false, message: 'Failed to delete user' };
     }
   }
 
-  // Method to search for a user
-  async getUser(userID) {
+  // Method to get all posts
+  async getAllPosts() {
     try {
       const client = await pool.connect();
-      const queryText = 'SELECT * FROM users WHERE user_id = $1';
-      const values = [userID];
-      const result = await client.query(queryText, values);
+      const queryText = 'SELECT * FROM posts';
+      const result = await client.query(queryText);
       client.release();
-      return result.rows[0];
+      return result.rows;
     } catch (error) {
-      console.error('Error getting user:', error);
-      return null;
+      console.error('Error getting all posts:', error);
+      return [];
     }
   }
 
