@@ -72,20 +72,46 @@ p.p3 {
 /* Styles for Button */
 button {
     cursor: pointer;
+    transition: 0.1s;
+
 }
 
 /* Styles for Pop-up Box */
 .popupBox {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-  
-  .popupBox.show {
-    display: block;
-  }
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.popupBox.show {
+  display: block;
+}
+
+/* Style for general page layout */
+#bodyContainer {
+  width: 1000px;
+  position: absolute;
+  top: 180px;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+#sideBar {
+  position: absolute;
+  width: 180px;
+}
+
+#main {
+  width: 790px;
+  border: 1px solid #bfbfbf;
+  max-height: 800px;
+  border-radius: 10px;
+  position: absolute;
+  left: 210px;
+  overflow: auto;
+}

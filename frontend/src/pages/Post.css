@@ -1,0 +1,98 @@
+/*
+ * Group members:
+ * Tam King Man 1155160072
+ * Tsang Ho Yin 1155159307
+ * Ng Yuk Fung 1155176966
+ * Leung Ka Lun 1155157403
+ * O Ching Lam 1155159131
+ */
+
+.post-container {
+   border: 1px solid #ccc;
+   border-radius: 10px;
+   padding: 20px;
+   margin: 10px;
+}
+
+.post-username {
+   font-size: 24px;
+   font-weight: bold;
+   color: black;
+   font-family: Brandon Grotesque;
+}
+
+.post-time {
+   font-size: 16px;
+   color: grey;
+   font-family: Brandon Grotesque;
+   margin-left: 20px;
+}
+
+.like-button img {
+   width: 30px;
+   height: 30px;
+
+}
+.interaction-buttons {
+   display: flex;
+   gap: 10px;
+   align-items: center;
+}
+
+.interaction-buttons img, .comment-button img {
+   width: 30px;
+   height: 30px;
+
+}
+
+.like-button,
+.comment-button {
+   border: none;
+   background: none;
+   padding: 0;
+   display: flex;
+   align-items: center;
+}
+
+.comments, .view-all-comments, .read-more{
+   font-family: Assistant Light;
+}
+
+.comment-text {
+   margin-left: 10px;
+}
+
+.single-post {
+   padding: 20px;
+   margin: 10px;
+}
+
+.addcomments {
+   margin-top: 10px;
+}
+
+.addcomments-btn {
+   background-color: white;
+   color: #1d67cd;
+   border: none;
+   font-family: Assistant Light;
+   font-size: 16px;
+}
+.addcomments input {
+   border: 0px;
+   margin: 0px !important;
+   padding: 0px !important;
+   border-bottom: 1px solid #ccc;
+   height: 40px;
+   font-family: Assistant Light;
+   font-size: 16px;
+}
+
+.addcomments input:focus{
+   outline: none;
+   background-color: #f2f2f2;
+}
+
+.addcomments-btn:hover {
+   font-weight: bold;
+}

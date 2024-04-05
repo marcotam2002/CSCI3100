@@ -7,12 +7,11 @@
  * O Ching Lam 1155159131
  */
 
-import { React, useEffect, useState, useRef } from 'react';
+import { React , useState } from 'react';
 import './LoginForm.css'
 import RegistrationForm from './RegistrationForm';
 import { useNavigate } from 'react-router';
-
-const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+import { Link } from 'react-router-dom';
 
 function LoginForm() {
 
@@ -35,37 +34,33 @@ function LoginForm() {
     //handler for fetching of the form
     const handleSubmit = async (event) => {
           event.preventDefault();
+          
           const data = {
               username: username,
               password: password
           };
-          //console.log(JSON.stringify(data))
-          //console.log(`${API_BASE_URL}/api/user`)
     
           // use POST method to send a request to the server
-          const response = await fetch(`${API_BASE_URL}/api/user/login`, { 
+          const response = await fetch('/', { 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
           });
-          if (response.status == 200){
+          if (response.status === 200){
               //successful login
-              console.log(response.body);
               const resdata = await response.json()
               document.cookie = "username="+ name;
               document.cookie = "userID" + resdata.userID
               document.cookie = "role="+ resdata.role;
               navigate('/homepage')
-              console.log("log in success")
           }else{
               //bad login: return error message
               console.log("Error")
               setPassword("");
               setUsername("");
           }
-          console.log(response);
     
     }
 
@@ -88,7 +83,7 @@ function LoginForm() {
                   <input id="pswInput" type="password" placeholder="Enter your password" required value={password}
                       onChange={(event) => setPassword(event.target.value)} />
                   <br></br>
-                  <button className="forgot-password">Forget Password</button>
+                  <Link to={"/forgetpw"}>Forget Password</Link>
                   <br></br>
                   <button className="submit" type="submit">Login</button>
                   <hr className="line" />

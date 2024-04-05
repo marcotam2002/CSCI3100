@@ -7,27 +7,6 @@
  * O Ching Lam 1155159131
  */
 
-#bodyContainer {
-  width: 1000px;
-  position: absolute;
-  top: 180px;
-  left: 50%;
-  transform: translate(-50%);
-}
-
-#sideBar {
-  position: fixed;
-  width: 180px;
-}
-
-#main {
-  width: 790px;
-  border: 1px solid #bfbfbf;
-  border-radius: 10px;
-  position: absolute;
-  left: 210px;
-}
-
 #userTable {
   border-collapse: collapse;
   width: 100%;
@@ -45,6 +24,9 @@
   font-family: Brandon Grotesque;
   font-size: 24px;
   padding-bottom: 5px;
+  position: sticky;
+  top: 0;
+  background-color: white;
 }
 
 #userTable td {
@@ -60,9 +42,10 @@
   font-family: Brandon Grotesque;
   font-size: 20px;
   background-color: transparent;
+  width: 80px;
   margin-right: 40px;
-  border-radius: 12px;
-  border: 1px solid;
+  border-radius: 16px;
+  border: 2px solid;
 }
 
 #deleteButton {
@@ -89,4 +72,41 @@
   left: 50%;
   transform: translateX(-50%);
   background-color: white;
+}
+#userProfile h3,
+#userProfile h6{
+  margin: 0px;
+  padding-top: 20px;
+  padding-left: 30px;
+  padding-right: 20px;
+}
+
+#userProfile p {
+  margin: 30px;
+  margin-top: 20px;
+  max-height: 100px ;
+  overflow: auto;
+}
+
+#userProfileClose {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%);
+  height: 40px;
+  width: 100px;
+  border-radius: 20px;
+  border: 2px solid#84D7FF;
+  background-color: white;
+  font-family: Assistant Light;
+  font-size: 18px;
+}
+
+#userProfileClose:hover {
+  background-color: #84D7FF;
+  color: white;
+}
+
+#userProfileClose:active {
+  border-color: #1D67CD;
 }
