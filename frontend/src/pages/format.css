@@ -72,6 +72,8 @@ p.p3 {
 /* Styles for Button */
 button {
     cursor: pointer;
+    transition: 0.1s;
+
 }
 
 /* Styles for Pop-up Box */
