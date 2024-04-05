@@ -92,7 +92,7 @@ function AddPost({ user }) {
 }
 
 function SinglePostFrame({ posts }) {
-  
+
   if (!posts) {
     return (
         <div>Post not found!</div>
@@ -100,6 +100,7 @@ function SinglePostFrame({ posts }) {
   }
 
   const [newcomment, setNewComment] = useState("");
+  const [postsState, setPostsState] = useState(posts);
 
   const addComment = (event) => {
     event.preventDefault();
@@ -108,6 +109,42 @@ function SinglePostFrame({ posts }) {
     console.log("Submitted comment:", comment);
     setComment("");
   }
+
+  const ChangeLike = async (postID, event) => {
+    event.preventDefault();
+
+    const updatedPosts = postsState.map((post) => {
+      if (post.postID === postID) {
+        post.liked = !post.liked;
+        post.likes += post.liked ? 1 : -1;
+      }
+      return post;
+    });
+    setPostsState(updatedPosts);
+
+    // for debugging.
+    console.log(updatedPosts);
+
+    // for fetch part
+    const data = {
+      posts: updatedPosts,
+    };
+
+    const response = await fetch('/post/change', { 
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200){
+        // successful update
+        console.log("successful update")
+    }else{
+        // failed update
+        console.log("failed to update")
+    }
+  };
 
   const renderPost = (post) => {
     
@@ -124,12 +161,10 @@ function SinglePostFrame({ posts }) {
             ))}
           </div>
           <div className="interaction-buttons">
-            <button className="like-button">
+            <button className="like-button" onClick={(event) => ChangeLike(post.postID, event)}>
               {post.liked ? <BsHeartFill style={{ color: 'red' }} /> : <BsHeart />}
             </button>
             <span className="like-count">{post.likes}</span>
-            <button className="comment-button"><BsChat /></button>
-            <span className="comment-count">{post.commentnum}</span>
           </div>
           <div className="comments">
             {post.comments.map((comment, index) => (

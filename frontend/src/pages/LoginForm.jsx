@@ -7,7 +7,7 @@
  * O Ching Lam 1155159131
  */
 
-import { React, useEffect, useState, useRef } from 'react';
+import { React , useState } from 'react';
 import './LoginForm.css'
 import RegistrationForm from './RegistrationForm';
 import { useNavigate } from 'react-router';

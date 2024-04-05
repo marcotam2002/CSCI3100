@@ -7,13 +7,52 @@
  * O Ching Lam 1155159131
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import { BsHeartFill, BsHeart, BsChat } from 'react-icons/bs';
 import './format.css'
 import './UserHomepage.css'; 
 
 function UserHomepage({ posts }) {
+
+  const [postsState, setPostsState] = useState(posts);
+
+  const ChangeLike = async (postID, event) => {
+    event.preventDefault();
+
+    const updatedPosts = postsState.map((post) => {
+      if (post.postID === postID) {
+        post.liked = !post.liked;
+        post.likes += post.liked ? 1 : -1;
+      }
+      return post;
+    });
+    setPostsState(updatedPosts);
+
+    // for debugging.
+    console.log(updatedPosts);
+
+    // for fetch part
+    const data = {
+      posts: updatedPosts,
+    };
+
+    const response = await fetch('/post/change', { 
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200){
+        // successful update
+        console.log("successful update")
+    }else{
+        // failed update
+        console.log("failed to update")
+    }
+  };
+  
 
   const renderPost = (post) => {
     return (
@@ -36,11 +75,11 @@ function UserHomepage({ posts }) {
             </div>
           )}
           <div className="interaction-buttons">
-            <button className="like-button">
+            <button className="like-button" onClick={(event) => ChangeLike(post.postID, event)}>
               {post.liked ? <BsHeartFill style={{ color: 'red' }} /> : <BsHeart />}
             </button>
             <span className="like-count">{post.likes}</span>
-            <button className="comment-button"><BsChat /></button>
+            <Link to={`/post/${post.postID}`} className="comment-button"><BsChat /></Link>
             <span className="comment-count">{post.commentnum}</span>
           </div>
           <div className="comments">
