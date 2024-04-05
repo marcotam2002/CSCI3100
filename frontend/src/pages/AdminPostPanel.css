@@ -7,27 +7,6 @@
  * O Ching Lam 1155159131
  */
 
-#bodyContainer {
-  width: 1000px;
-  position: absolute;
-  top: 180px;
-  left: 50%;
-  transform: translate(-50%);
-}
-
-#sideBar {
-  position: fixed;
-  width: 180px;
-}
-
-#main {
-  width: 790px;
-  border: 1px solid #bfbfbf;
-  border-radius: 10px;
-  position: absolute;
-  left: 210px;
-}
-
 #postTable {
   border-collapse: collapse;
   width: 100%;
