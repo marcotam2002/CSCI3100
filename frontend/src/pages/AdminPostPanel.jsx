@@ -37,8 +37,9 @@ function PostTable({ posts, view }) {
     window.confirm(`You should be able to view post: postID:${post.postID} comment.`);
   };
   const viewPostAttachment = (post) => {
-    window.confirm(`You should be able to view post: postID:${post.postID} comment.`);
+    window.confirm(`You should be able to view post: postID:${post.postID} attachment.`);
   };
+  
   return (
     <table id="postTable">
       <thead>

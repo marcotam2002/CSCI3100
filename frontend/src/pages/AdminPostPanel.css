@@ -24,6 +24,9 @@
   font-family: Brandon Grotesque;
   font-size: 24px;
   padding-bottom: 5px;
+  position: sticky;
+  top: 0;
+  background-color: white;
 }
 
 #postTable td {
@@ -41,3 +44,4 @@
   border: 0px;
   padding: 4px;
 }
+
