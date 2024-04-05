@@ -32,11 +32,12 @@ app.post("/api/user/login", async(req, res)=>{
     console.log("Login request received")
     const accountHandler=new AccountHandler();
     const loginResult = await accountHandler.authenticateAccount(req.body.username, req.body.password);
+    //console.log(loginResult)
     if(loginResult.success){
         console.log("Backend database confirmed user existence");
         return res.status(200).send({role: loginResult.usertype, username: req.body.username, userID: loginResult.userID});
     }
-    else return res.status(404).send()
+    else return res.status(404).send({message:loginResult.message})
 });
 
 app.listen(5164,()=>{
