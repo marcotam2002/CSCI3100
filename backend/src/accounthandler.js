@@ -35,6 +35,7 @@ class AccountHandler {
     
         // if the username is already taken, return an error
         if (result.rows.length > 0) {
+          console.log(result.rows)
           client.release();
           return { success: false, message: 'Username already taken' };
         }

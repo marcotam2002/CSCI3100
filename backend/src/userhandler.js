@@ -12,6 +12,7 @@
 const pool = require('./database');
 const { generateSalt, hashPassword } = require('./utils');
 const AccountHandler = require('./accounthandler');
+const { user } = require('pg/lib/defaults');
 
 class UserHandler extends AccountHandler {
   constructor(userID, username, salt, hashedPassword, userType, pendingFollowers, securityAnswer, description, isPrivate, isActive) {
@@ -164,21 +165,27 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to create a new post
-  async createPost(postContent, attachmentURL) {
+  async createPost(postContent, mediaURI) {
     /*
       * Create a new post in the database
       * @param {string} postContent - The content of the post
       * @param {string[]} attachments - An array of attachment URLs
     */
     try {
-        // Insert post information into the database
+        // Check if the user is private or public
         const client = await pool.connect();
-        const queryText = 'INSERT INTO posts (content, authorID, attachmentURL) VALUES ($1, $2, $3) RETURNING postID';
-        const values = [postContent, this.userID, attachmentURL];
+        const queryPrivacy = 'SELECT privacy FROM users WHERE userID = $1';
+        const valuesPri = [this.userID];
+        const resultPri = await client.query(queryPrivacy, valuesPri);
+        const userType = resultPri.rows[0].privacy;
+
+        // Insert post information into the database
+        const queryText = 'INSERT INTO posts (privacy, content, authorID, mediaURI) VALUES ($1, $2, $3, $4) RETURNING postID';
+        const values = [userType, postContent, this.userID, mediaURI];
         const result = await client.query(queryText, values);
 
         // Get the postID of the newly created post
-        const postID = result.rows[0].postID;
+        const postID = result.rows[0].postid;
         client.release();
         return { success: true, message: 'Post created successfully', postID };
     } catch (error) {
@@ -262,7 +269,7 @@ class UserHandler extends AccountHandler {
       
       const client = await pool.connect();
       const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
-      const values = ['post', postID, userID];
+      const values = ['post', postID, this.userID];
       const result = await client.query(queryText, values);
 
       // If the user has already liked the post, return an error
@@ -273,7 +280,7 @@ class UserHandler extends AccountHandler {
 
       // Like the post
       const likeQuery = 'INSERT INTO likes (contentType, contentID, userID) VALUES ($1, $2, $3)';
-      const likeValues = ['post', postID, userID];
+      const likeValues = ['post', postID, this.userID];
       await client.query(likeQuery, likeValues);
 
       // Update the number of likes in the post
@@ -300,9 +307,11 @@ class UserHandler extends AccountHandler {
 
     try {
 
+      const client = await pool.connect();
+
       // Check if the user has liked the post
       const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
-      const values = ['post', postID, userID];
+      const values = ['post', postID, this.userID];
       const result = await client.query(queryText, values);
       
       // If the user has not liked the post, return without doing anything
@@ -313,7 +322,7 @@ class UserHandler extends AccountHandler {
       
       // Otherwise, remove the like from the database
       const deleteQuery = 'DELETE FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
-      const deleteValues = ['post', postID, userID];
+      const deleteValues = ['post', postID, this.userID];
       await client.query(deleteQuery, deleteValues);
 
       // Update the number of likes in the post
@@ -341,22 +350,32 @@ class UserHandler extends AccountHandler {
       
       // Retrive the userID of the post from post database
       const client = await pool.connect();
-      const queryText = 'SELECT userID FROM User.posts WHERE postID = $1';
+      const queryText = 'SELECT authorID FROM posts WHERE postID = $1';
       const values = [postID];
       const result = await client.query(queryText, values);
       client.release();
 
-      // Check if the user is private
-      if (await this.isPrivate(result.rows[0].userID)) {
+      const authorID = result.rows[0].authorid;
+
+      // Check if the user is private, unless they repost their own posts
+      if ((await this.isprivate(authorID)) && result.rows[0].userID !== this.userID) {
           return { success: false, message: 'User is private' };
+      }
+
+      const privacy = 'public';
+
+      if (result.rows[0].userID === this.userID) {
+        privacy = 'private';
       }
 
       // Repost the post
       const client2 = await pool.connect();
-      const queryText2 = 'INSERT INTO User.posts (userID, postContent, attachments) VALUES ($1, $2, $3)';
-      const values2 = [this.userID, `Reposted from ${result.rows[0].userID}`, result.rows[0].attachments];
+      const queryText2 = 'INSERT INTO posts (authorID, content, mediaURI, privacy) VALUES ($1, $2, $3, $4)';
+      const values2 = [this.userID, `Reposted from ${result.rows[0].userID}`, result.rows[0].mediaURI, privacy];
       await client2.query(queryText2, values2);
       client2.release();
+
+      return { success: true, message: 'Post reposted successfully' };
         
     } catch (error) {
         console.error('Error reposting post:', error);
@@ -374,7 +393,7 @@ class UserHandler extends AccountHandler {
     try {
         // Insert comment into the database
         const client = await pool.connect();
-        const queryText = 'INSERT INTO comments (userID, postID, content) VALUES ($1, $2, $3)';
+        const queryText = 'INSERT INTO comments (authorID, postID, content) VALUES ($1, $2, $3)';
         const values = [this.userID, postID, comment];
         await client.query(queryText, values);
         client.release();
@@ -383,6 +402,118 @@ class UserHandler extends AccountHandler {
     } catch (error) {
         console.error('Error commenting on post:', error);
         return { success: false, message: 'Failed to comment on post' };
+    }
+  }
+
+  // Method to like a comment
+  async likeComment(commentID) {
+    try {
+      const client = await pool.connect();
+
+      // Check if the user has liked the comment
+      const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+      const values = ['comment', commentID, this.userID];
+      const result = await client.query(queryText, values);
+      if (result.rows.length > 0) {
+          client.release();
+          return { success: false, message: 'User has already liked the comment' };
+      }
+
+      // Like the comment
+      const likeQuery = 'INSERT INTO likes (contentType, contentID, userID) VALUES ($1, $2, $3)';
+      const likeValues = ['comment', commentID, this.userID];
+      await client.query(likeQuery, likeValues);
+
+      // Update the number of likes in the comment
+      console.log(commentID)
+      const updateQuery = 'UPDATE comments SET likes = likes + 1 WHERE commentID = $1';
+      const updateValues = [commentID];
+      await client.query(updateQuery, updateValues);
+
+      client.release();
+      return { success: true, message: 'Comment liked successfully' };
+    } catch (error) {
+      console.error('Error liking comment:', error);
+      return { success: false, message: 'Failed to like comment' };
+    }
+  }
+
+  // Method to unlike a comment
+  async unlikeComment(commentID) {
+      try{
+        // Check if the user has liked the comment
+        const client = await pool.connect();
+        const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+        const values = ['comment', commentID, this.userID];
+        const result = await client.query(queryText, values);
+        if (result.rows.length === 0) {
+            client.release();
+            return { success: false, message: 'User has not liked the comment' };
+        }
+        
+        // Otherwise, remove the like from the database
+        const deleteQuery = 'DELETE FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+        const deleteValues = ['comment', commentID, this.userID];
+        await client.query(deleteQuery, deleteValues);
+
+        // Update the number of likes in the comment
+        const updateQuery = 'UPDATE comments SET likes = likes - 1 WHERE commentID = $1';
+        const updateValues = [commentID];
+        await client.query(updateQuery, updateValues);
+
+        client.release();
+
+        return { success: true, message: 'Comment unliked successfully' };
+
+      } catch (error) {
+        console.error('Error unliking comment:', error);
+        return { success: false, message: 'Failed to unlike comment' };
+      }
+  }
+
+  // Method to edit own comment
+  async editComment(commentID, editedContent) {
+    /*
+      * Edit own comment in the database
+      * @param {string} commentID - The ID of the comment to be edited, assume the comment belongs to the user and the comment exists
+      * @param {string} editedContent - The new content to be updated
+    */
+    try {
+        // Edit comment in the database
+        const client = await pool.connect();
+        const queryText = 'UPDATE comments SET content = $1 WHERE commentID = $2';
+        const values = [editedContent, commentID];
+        await client.query(queryText, values);
+        client.release();
+
+        return { success: true, message: 'Comment edited successfully' };
+
+    } catch (error) {
+        console.error('Error editing comment:', error);
+        return { success: false, message: 'Failed to edit comment' };
+    }
+  }
+
+  // Method to delete own comment
+  async deleteComment(commentID) {
+    try{
+      // Delete likes associated with the comment
+      const client = await pool.connect();
+      const queryText2 = 'DELETE FROM likes WHERE contentType = $1 AND contentID = $2';
+      const values2 = ['comment', commentID];
+      await client.query(queryText2, values2);
+
+      // Delete comment from the database
+      const queryText = 'DELETE FROM comments WHERE commentID = $1';
+      const values = [commentID];
+      await client.query(queryText, values);
+      client.release();
+
+      return { success: true, message: 'Comment deleted successfully' };
+
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      return { success: false, message: 'Failed to delete comment' };
     }
   }
 
@@ -553,7 +684,7 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to check if the target user is private
-  async isPrivate(targetUserID) {
+  async isprivate(targetUserID) {
     /*
       * Check if the target user is private
       * @param {string} targetUserID - The ID of the target user
