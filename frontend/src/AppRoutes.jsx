@@ -14,6 +14,9 @@ import Login from "./pages/LoginPage"
 import AdminUserPanel from "./pages/AdminUserPanel";
 import RegistrationForm from "./pages/RegistrationForm";
 import AdminPostPanel from "./pages/AdminPostPanel";
+import UserPageTemplate from "./pages/UserPageTemplate";
+
+const testUser = {username: "testUser", password: "test"};
 
 const AppRoutes=()=>{
     return(
@@ -23,6 +26,7 @@ const AppRoutes=()=>{
             <Route path="/homepage" element = {<UserHomepage/>}/>
             <Route path="/admin/usermanager" element = {<AdminUserPanel/>}/>
             <Route path="/admin/postmanager" element = {<AdminPostPanel/>}/>  
+            <Route path="/usertemplate" element = {<UserPageTemplate user={testUser}/>}/> 
             {/* <Route path="/register" element= {<RegistrationForm/>}/> */}
         </Routes>
     );
