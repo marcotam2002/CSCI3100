@@ -13,6 +13,8 @@ import RegistrationForm from './RegistrationForm';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+
 function LoginForm() {
 
     const [state, setState] = useState(false);
@@ -41,7 +43,7 @@ function LoginForm() {
           };
     
           // use POST method to send a request to the server
-          const response = await fetch('/', { 
+          const response = await fetch(`${API_BASE_URL}/api/user/login`, { 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -57,7 +59,8 @@ function LoginForm() {
               navigate('/homepage')
           }else{
               //bad login: return error message
-              console.log("Error")
+              const resdata = await response.json()
+              console.log(response.body.message)
               setPassword("");
               setUsername("");
           }
