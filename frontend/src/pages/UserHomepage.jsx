@@ -59,13 +59,6 @@ function UserHomepage({ posts }) {
         </div>
       </div>
     );
-  };
-
-  return (
-    <div className="user-homepage">
-      {posts.map((post) => renderPost(post))}
-    </div>
-  );
-}
+};
 
 export default UserHomepage;

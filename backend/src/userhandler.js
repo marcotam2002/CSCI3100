@@ -12,9 +12,6 @@
 const pool = require('./database');
 const { generateSalt, hashPassword } = require('./utils');
 const AccountHandler = require('./accounthandler');
-const PostHandler = require('./posthandler');
-const CommentHandler = require('./commenthandler');
-const MessageHandler = require('./messagehandler');
 
 class UserHandler extends AccountHandler {
   constructor(userID, username, salt, hashedPassword, userType, pendingFollowers, securityAnswer, description, isPrivate, isActive) {
@@ -167,7 +164,7 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to create a new post
-  async createPost(postContent, attachments) {
+  async createPost(postContent, attachmentURL) {
     /*
       * Create a new post in the database
       * @param {string} postContent - The content of the post
@@ -176,12 +173,14 @@ class UserHandler extends AccountHandler {
     try {
         // Insert post information into the database
         const client = await pool.connect();
-        const queryText = 'INSERT INTO posts (authorID, content, privacy) VALUES ($1, $2, $3)';
-        const values = [this.userID, postContent, 'public'];
-        await client.query(queryText, values);
-        client.release();
+        const queryText = 'INSERT INTO posts (content, authorID, attachmentURL) VALUES ($1, $2, $3) RETURNING postID';
+        const values = [postContent, this.userID, attachmentURL];
+        const result = await client.query(queryText, values);
 
-        return { success: true, message: 'Post created successfully' };
+        // Get the postID of the newly created post
+        const postID = result.rows[0].postID;
+        client.release();
+        return { success: true, message: 'Post created successfully', postID };
     } catch (error) {
         console.error('Error creating post:', error);
         return { success: false, message: 'Failed to create post' };
@@ -194,16 +193,16 @@ class UserHandler extends AccountHandler {
       * Edit own post in the database
       * @param {string} postID - The ID of the post to be edited, assume the post belongs to the user and the post exists
       * @param {string} editedContent - The new content to be updated
-      * @param {int[]} removeRequest - An array of attachment URLs index to be removed
+      * @param {int[]} removeRequest - request to remove the attachment
     */
     try {
         // Edit post in the database
         const client = await pool.connect();
-        const queryText = 'UPDATE User.posts SET postContent = $1 WHERE postID = $2 AND userID = $3';
-        const values = [editContent, postID, userID];
+        const queryText = 'UPDATE posts SET postContent = $1 WHERE postID = $2';
+        const values = [editedContent, postID];
         await client.query(queryText, values);
 
-        // if removeRequest is not empty, remove the attachments and update the new attachments
+        // if removeRequest is not empty, remove the attachment
         if (removeRequest.length > 0) {
             const queryText2 = 'SELECT attachments FROM User.posts WHERE postID = $1';
             const values2 = [postID];
@@ -234,8 +233,13 @@ class UserHandler extends AccountHandler {
       * @param {string} postId - The ID of the post to be deleted
     */
     try {
-        // Delete post from the database
+        // Delete likes associated with the post
         const client = await pool.connect();
+        const queryText2 = 'DELETE FROM likes WHERE contentType = $1 AND contentID = $2';
+        const values2 = ['post', postId];
+        await client.query(queryText2, values2);
+
+        // Delete post from the database
         const queryText = 'DELETE FROM posts WHERE postID = $1';
         const values = [postId];
         await client.query(queryText, values);
@@ -255,20 +259,30 @@ class UserHandler extends AccountHandler {
       * @param {string} postID - The ID of the post to be liked
     */
     try {
-      // Check if the user has already liked the post
-      if (this.LikePostID.includes(postID)) {
-          return { success: false, message: 'User has already liked the post' };
+      
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+      const values = ['post', postID, userID];
+      const result = await client.query(queryText, values);
+
+      // If the user has already liked the post, return an error
+      if (result.rows.length > 0) {
+        client.release();
+        return { success: true, message: 'User has already liked the post' };
       }
 
-      // If not, like the post, and update the like count in the database
-      const client = await pool.connect();
-      const queryText = 'UPDATE posts SET likes = likes + 1 WHERE postID = $1';
-      const values = [postID];
-      await client.query(queryText, values);
+      // Like the post
+      const likeQuery = 'INSERT INTO likes (contentType, contentID, userID) VALUES ($1, $2, $3)';
+      const likeValues = ['post', postID, userID];
+      await client.query(likeQuery, likeValues);
+
+      // Update the number of likes in the post
+      const updateQuery = 'UPDATE posts SET likes = likes + 1 WHERE postID = $1';
+      const updateValues = [postID];
+      await client.query(updateQuery, updateValues);
+
       client.release();
 
-      // Add the postID to the list of liked posts
-      this.LikePostID.push(postID);
       return { success: true, message: 'Post liked successfully' };
 
     } catch (error) {
@@ -285,20 +299,30 @@ class UserHandler extends AccountHandler {
     */
 
     try {
-      // Check if the user has already liked the post
-      if (!this.LikePostID.includes(postID)) {
+
+      // Check if the user has liked the post
+      const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+      const values = ['post', postID, userID];
+      const result = await client.query(queryText, values);
+      
+      // If the user has not liked the post, return without doing anything
+      if (result.rows.length === 0) {
+          client.release();
           return { success: false, message: 'User has not liked the post' };
       }
+      
+      // Otherwise, remove the like from the database
+      const deleteQuery = 'DELETE FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+      const deleteValues = ['post', postID, userID];
+      await client.query(deleteQuery, deleteValues);
 
-      // If not, unlike the post, and update the like count in the database
-      const client = await pool.connect();
-      const queryText = 'UPDATE posts SET likes = likes - 1 WHERE postID = $1';
-      const values = [postID];
-      await client.query(queryText, values);
+      // Update the number of likes in the post
+      const updateQuery = 'UPDATE posts SET likes = likes - 1 WHERE postID = $1';
+      const updateValues = [postID];
+      await client.query(updateQuery, updateValues);
+      
       client.release();
 
-      // Remove the postID from the list of liked posts
-      this.LikePostID.splice(this.LikePostID.indexOf(postID), 1);
       return { success: true, message: 'Post unliked successfully' };
 
     } catch (error) {
@@ -384,32 +408,6 @@ class UserHandler extends AccountHandler {
         return { success: false, message: 'Failed to search for users' };
     }
   }
-
-  // Method to get all following users
-  async getFollowing() {
-    /*
-      * Retrieve all following users from the database
-      * return {list[]} - The list of following users
-    */
-    try {
-        // Retrieve following users from the database
-        const client = await pool.connect();
-        const queryText = 'SELECT followingID FROM relationships WHERE followerID = $1';
-        const values = [this.userID];
-        const result = await client.query(queryText, values);
-        client.release();
-        
-        // Extract followingIDs from the result
-        const followingIDs = result.rows.map(row => row.followingid);
-        
-        return { success: true, message: 'Following users retrieved successfully', following: followingIDs };
-
-    } catch (error) {
-        console.error('Error retrieving following users:', error);
-        return { success: false, message: 'Failed to retrieve following users' };
-    }
-}
-
 
   // Method to follow other users
   async followUser(targetUserID) {
@@ -624,6 +622,91 @@ class UserHandler extends AccountHandler {
     } catch (error) {
         console.error('Error resetting password:', error);
         return { success: false, message: 'Failed to reset password' };
+    }
+  }
+
+  // Method to send a message
+  async sendMessage(receiverID, message) {
+    /*
+      * Send a message to another user
+      * @param {string} receiverID - The ID of the user receiving the message
+      * @param {string} message - The content of the message
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'INSERT INTO messages (senderID, receiverID, content) VALUES ($1, $2, $3)';
+      const values = [this.userID, receiverID, message];
+      await client.query(queryText, values);
+      client.release();
+      return { success: true, message: 'Message sent successfully' };
+    } catch (error) {
+      console.error('Error sending message:', error);
+      return { success: false, message: 'Failed to send message' };
+    }
+  }
+  
+  // Method to receive messages with a specific user
+  async getMessagesWithUser(targetUserID) {
+    /*
+      * Retrieve messages with a specific user
+      * @param {string} userID - The ID of the user to get messages with
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM messages WHERE (senderID = $1 AND receiverID = $2) OR (senderID = $2 AND receiverID = $1)';
+      const values = [this.userID, targetUserID];
+      const result = await client.query(queryText, values);
+
+      // When we get the messages, we assume the user read the messages
+      const updateQuery = 'UPDATE messages SET read = true WHERE senderID = $1 AND receiverID = $2';
+      const updateValues = [targetUserID, this.userID];
+      await client.query(updateQuery, updateValues);
+
+      client.release();
+      return { success: true, message: 'Messages retrieved successfully', messages: result.rows };
+    } catch (error) {
+      console.error('Error getting messages:', error);
+      return { success: false, message: 'Failed to get messages' };
+    }
+  }
+
+  // Method to get notifications
+  async getNotifications() {
+    /*
+      * Retrieve notifications for the user
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM messages WHERE receiverID = $1 AND read = false';
+      const values = [this.userID];
+      const result = await client.query(queryText, values);
+      client.release();
+
+      // Create a map to store senderID and messageCount
+      const notificationsMap = {};
+
+      // Iterate over the result and update messageCount for each senderID
+      result.rows.forEach(row => {
+          console.log(row)
+          const senderID = row.senderid;
+          if (notificationsMap[senderID]) {
+              notificationsMap[senderID]++;
+          } else {
+              notificationsMap[senderID] = 1;
+          }
+      });
+
+      // Construct the set with senderID and message count
+      const notifications = [];
+      for (const senderID in notificationsMap) {
+          notifications.push({ senderID: senderID, messageCount: notificationsMap[senderID] });
+      }
+
+      // Return the retrieved notifications
+      return { success: true, message: 'Notifications retrieved successfully', notifications: notifications };
+    } catch (error) {
+      console.error('Error getting notifications:', error);
+      return { success: false, message: 'Failed to get notifications' };
     }
   }
 }

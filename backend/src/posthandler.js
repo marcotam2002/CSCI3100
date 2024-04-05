@@ -12,12 +12,14 @@
 const pool = require('./database');
 
 class PostHandler {
-    constructor(postID, content, authorID, creationDate, likes) {
+    constructor(postID, authorID, content, privacy, creationTime, likes, attachmentURL) {
       this.postID = postID;
-      this.content = content;
       this.authorID = authorID;
-      this.creationDate = creationDate;
+      this.content = content;
+      this.privacy = privacy;
+      this.creationTime = creationTime;
       this.likes = likes;
+      this.attachmentURL = attachmentURL;
     }
     
     // Method to get postID
@@ -25,82 +27,45 @@ class PostHandler {
         return this.postID;
     }
 
-    // Method to get content
-    async getContent() {
-        return this.content;
-    }
-
     // Method to get authorID
     async getAuthorID() {
         return this.authorID;
     }
 
-    // Method to get creationDate
+    // Method to get content
+    async getContent() {
+        return this.content;
+    }
+
+    // Method to get creationTime
     async getCreationDate() {
-        return this.creationDate;
+        return this.creationTime;
     }
 
     // Method to get likes
     async getLikes() {
         return this.likes;
     }
-    
-    // Method to like a post
-    async likePost(postID) {
-        const query = `UPDATE post SET likes = likes + 1 WHERE postID = ${postID}`;
+
+    // Method to get posts according to userID
+    async getPostsByUserID(userID) {
         try {
-            await pool.query(query);
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
-    // Method to unlike a post
-    async unlikePost(postID) {
-        const query = `UPDATE post SET likes = likes - 1 WHERE postID = ${postID}`;
-        try {
-            await pool.query(query);
-        } catch (error) {
-            console.log(error);
-        }
-    }
+            const client = await pool.connect();
+            const query = 'SELECT * FROM posts WHERE authorID = $1';
+            const values = [userID];
+            const result = await client.query(query, values);
+            client.release();
 
-    // Method to get recommendation
-
-    // Method to create post
-    async createPost() {
-        const query = `INSERT INTO post (postID, content, authorID, creationDate, likes) VALUES \
-        (${this.postID}, ${this.content}, ${this.authorID}, ${this.creationDate}, ${this.likes})`;
-    }
-
-    // Method to edit post
-    async editPost(editedContent, removeRequest) {
-        // Edit post in the database
-        const client = await pool.connect();
-        const queryText = 'UPDATE User.posts SET postContent = $1 WHERE postID = $2';
-        const values = [editedContent, this.postID];
-        await client.query(queryText, values);
-
-        // if removeRequest is not empty, remove the attachments and update the new attachments
-        if (removeRequest.length > 0) {
-            const queryText2 = 'SELECT attachments FROM User.posts WHERE postID = $1';
-            const values2 = [postID];
-            const result = await client.query(queryText2, values2);
-            const attachments = result.rows[0].attachments;
-            // remove the attachments with index in removeRequest
-            for (let i = removeRequest.length - 1; i >= 0; i--) {
-                attachments.splice(removeRequest[i], 1);
+            return {
+                success: true,
+                message: 'Posts retrieved successfully',
+                posts: result.rows[0]
             }
-            const queryText3 = 'UPDATE User.posts SET attachments = $1 WHERE postID = $2';
-            const values3 = [attachments, postID];
-            await client.query(queryText3, values3);
-        }
-    }
 
-    // Method to share post
-    async sharePost() {
-        const query = `INSERT INTO post (postID, content, authorID, creationDate, likes) VALUES \
-        (${this.postID}, ${this.content}, ${this.authorID}, ${this.creationDate}, ${this.likes})`;
+        } catch (error) {
+            console.error('Error getting posts:', error);
+        }
     }
 
 }

@@ -12,6 +12,7 @@ import UserHomepage from "./pages/UserHomepage";
 import SearchPage from "./pages/SearchPage";
 import Login from "./pages/LoginPage"
 import AdminUserPanel from "./pages/AdminUserPanel";
+import RegistrationForm from "./pages/RegistrationForm";
 import AdminPostPanel from "./pages/AdminPostPanel";
 import UserPageTemplate from "./pages/UserPageTemplate";
 import ForgetPasswordForm from "./pages/ForgetPassword";

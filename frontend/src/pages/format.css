@@ -7,113 +7,85 @@
  * O Ching Lam 1155159131
  */
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: white; /* light purple background */
+ 
+body{
+    margin: 0;
+    padding: 0;
+    background-color: white; /* light purple background */
 }
 
 @font-face {
-  font-family: Brandon Grotesque;
-  src: url(../assets/Brandon_light.otf);
-}
-
+    font-family: Brandon Grotesque;
+    src: url(../assets/Brandon_light.otf);
+  }
+  
 @font-face {
-  font-family: Assistant Light;
-  src: url(../assets/Assistant-Light.ttf);
+font-family: Assistant Light;
+src: url(../assets/Assistant-Light.ttf);
 }
 
 /* Styles for Heading */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: normal;
-  font-family: Brandon Grotesque;
+h1,h2,h3,h4,h5,h6 {
+    font-weight: normal;
+    font-family: Brandon Grotesque;
 }
 
 h1 {
-  font-size: 80px;
+    font-size: 80px;
 }
 
 h2 {
-  font-size: 64px;
+    font-size: 64px;
 }
 
 h3 {
-  font-size: 56px;
+    font-size: 56px;
 }
 
 h4 {
-  font-size: 48px;
+    font-size: 48px;
 }
 
 h5 {
-  font-size: 36px;
+    font-size: 36px;
 }
 
 h6 {
-  font-size: 24px;
+    font-size: 24px;
 }
 
 /* Styles for Paragraphs */
 p {
-  font-weight: normal;
-  font-family: Assistant Light;
-  font-size: 20px;
+    font-weight: normal;
+    font-family: Assistant Light;
+    font-size: 20px;
 }
 
 p.p2 {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 p.p3 {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 /* Styles for Button */
 button {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 /* Styles for Pop-up Box */
 .popupBox {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-.popupBox.show {
-  display: block;
-}
-
-/* Style for general page layout */
-#bodyContainer {
-  width: 1000px;
-  position: absolute;
-  top: 180px;
-  left: 50%;
-  transform: translate(-50%);
-}
-
-#sideBar {
-  position: absolute;
-  width: 180px;
-}
-
-#main {
-  width: 790px;
-  border: 1px solid #bfbfbf;
-  max-height: 1000px;
-  border-radius: 10px;
-  position: absolute;
-  left: 210px;
-  overflow: auto;
-}
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  .popupBox.show {
+    display: block;
+  }
