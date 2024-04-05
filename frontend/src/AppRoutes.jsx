@@ -15,7 +15,6 @@ import AdminUserPanel from "./pages/AdminUserPanel";
 import AdminPostPanel from "./pages/AdminPostPanel";
 import UserPageTemplate from "./pages/UserPageTemplate";
 import ForgetPasswordForm from "./pages/ForgetPassword";
-import Message from "./pages/MessagePage";
 
 const testUser = {username: "testUser", password: "<PASSWORD>"};
 
@@ -29,7 +28,6 @@ const AppRoutes=()=>{
             <Route path="/admin/postmanager" element = {<AdminPostPanel/>}/>  
             <Route path="/usertemplate" element = {<UserPageTemplate user={testUser}/>}/> 
             <Route path="/forgetpw" element= {<ForgetPasswordForm/>}/>
-            <Route path="/message" element = {<Message user={testUser}/>}/>
         </Routes>
     );
 };
