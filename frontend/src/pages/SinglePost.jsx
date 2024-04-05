@@ -10,7 +10,7 @@
 
 import { Header, SideBarButton } from "./components";
 import "./format.css";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
 import searchIcon from "../assets/search.svg";
@@ -91,7 +91,7 @@ function AddPost({ user }) {
     );
 }
 
-function SinglePostFrame({ posts }) {
+function SinglePostFrame({ user , posts }) {
 
   if (!posts) {
     return (
@@ -102,12 +102,51 @@ function SinglePostFrame({ posts }) {
   const [newcomment, setNewComment] = useState("");
   const [postsState, setPostsState] = useState(posts);
 
-  const addComment = (event) => {
+  const addComment = async(postID,event) => {
     event.preventDefault();
     // for debugging.
+    console.log("Submitted comment:", newcomment);
+
+    const newComment = {
+      username: user,
+      text: newcomment,
+    }
     
-    console.log("Submitted comment:", comment);
-    setComment("");
+    const updatedPosts = postsState.map((post) => {
+      if (post.postID === postID) {
+        return {
+          ...post,
+          comments: [...post.comments, newComment],
+          commentnum: post.commentnum + 1
+        };
+      }
+      return post;
+    });
+    setPostsState(updatedPosts);
+
+    // for debugging.
+    console.log(updatedPosts)
+    setNewComment("");
+
+    // for fetch part
+    const data = {
+      posts: updatedPosts,
+    };
+
+    const response = await fetch('/post/change', { 
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200){
+        // successful update
+        console.log("successful update")
+    }else{
+        // failed update
+        console.log("failed to update")
+    }
   }
 
   const ChangeLike = async (postID, event) => {
@@ -175,7 +214,7 @@ function SinglePostFrame({ posts }) {
             ))}
           </div>
           <div className="addcomments">
-            <form onSubmit={addComment}>
+            <form onSubmit={(event) => addComment(post.postID, event)}>
                 <input
                 type="text"
                 placeholder="Leave your comments here"
@@ -183,7 +222,7 @@ function SinglePostFrame({ posts }) {
                 onChange={(event) => setNewComment(event.target.value)}
                 required // Require the input field
                 />
-                <button type="submit">Submit</button>
+                <button className="addcomments-btn" type="submit">Submit</button>
             </form>
           </div>
         </div>
@@ -263,7 +302,7 @@ function SinglePostPage({ user }) {
           />
         </div>
         <div id="main">
-          <SinglePostFrame posts={post} />
+          <SinglePostFrame user={user} posts={post} />
         </div>
       </div>
     </div>
