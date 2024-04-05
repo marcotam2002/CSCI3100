@@ -43,6 +43,35 @@ const testPost = [
     "I want to post nothing here.\n Please go.",
     liked: false,
     likes: 1,
+    commentnum: 3,
+    comments: [
+      { username: "Admin", text: "So rude!" },
+      { username: "Hei", text: "Aiiii......"},
+      { username: "Abdon", text: "Read."},
+    ]
+  },
+  {
+    postID: 3,
+    username: "Billy",
+    time: "8 hours",
+    description:
+    "The sun rose gracefully over the horizon, casting golden hues across the sky.\nBirds chirped joyfully, welcoming the new day with their melodic songs.\nA gentle breeze rustled the leaves of the trees, carrying with it the scent of fresh blooms.\nNature's symphony echoed through the tranquil morning air.",
+    liked: true,
+    likes: 50,
+    commentnum: 2,
+    comments: [
+      { username: "Alice", text: "Beautiful description!" },
+      { username: "Bob", text: "I love mornings like these." }
+    ]
+  },
+  {
+    postID: 4,
+    username: "Tim",
+    time: "17:16",
+    description:
+    "I want to post nothing here.\n Please go.",
+    liked: false,
+    likes: 1,
     commentnum: 1,
     comments: [
       { username: "Admin", text: "So rude!" },

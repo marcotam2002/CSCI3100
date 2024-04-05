@@ -7,6 +7,18 @@
  * O Ching Lam 1155159131
  */
 
+.post-container {
+    margin-bottom: 1%;
+    padding-bottom: 1%;
+}
+
+.post-subcontainer {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+}
+
  .post-header {
     margin-top: 5%;
     margin-left: 5%;
@@ -33,3 +45,27 @@
     margin-left: 5%;
     margin-bottom: 5%;
  }
+
+ .interaction-buttons {
+    margin-left: 5%;
+ }
+
+ .like-button,
+ .comment-button {
+    border: none; 
+    background: none; 
+    padding: 5px; 
+  }
+
+  .comments {
+    margin-left: 5%;
+    margin-top: 2%;
+  }
+
+  .comments .comment-text{
+    margin-left: 2%;
+  }
+
+  .view-all-comments {
+    margin-left: 5%;
+  }
