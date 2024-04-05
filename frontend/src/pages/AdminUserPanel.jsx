@@ -11,7 +11,7 @@
 import "./AdminUserPanel.css";
 import "./format.css";
 import { Header, SideBarButton } from "./components";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
 /*Just for testing*/
@@ -24,11 +24,23 @@ const testUsers = [
     password: 'df48327d5c1ad56b58cb630bb557fba133b89353261c3e672cb7c5e1b3ebc332c3d9033035ac5ae6cb86866015748d816872274d0bdc3a3bd0ac7fb201b92408',
     secureqans: '123',
     privacy: 'public',
-    description: "I don't know what to write here",
+    description: "I don't know what to write here bruh.",
+    active: true,
+    usertype: 'user'
+  },
+  {
+    userid: 2,
+    username: 'Name',
+    salt: 'e9b2fe0aa5c9f351359557eb098e6ded',
+    password: 'df48327d5c1ad56b58cb630bb557fba133b89353261c3e672cb7c5e1b3ebc332c3d9033035ac5ae6cb86866015748d816872274d0bdc3a3bd0ac7fb201b92408',
+    secureqans: '123',
+    privacy: 'private',
+    description: "This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.",
     active: true,
     usertype: 'user'
   }
 ]
+
 function UserTable({ users, view }) {
   const deleteUser = (user) => {
     window.confirm(`You shoulb be able to delete ${user.username}.`)
@@ -36,34 +48,40 @@ function UserTable({ users, view }) {
   return (
     <table id="userTable">
       <thead>
-      <tr>
-        <th>UserID</th>
-        <th>Username</th>
-        <th>Action</th>
-      </tr>
+        <tr>
+          <th>UserID</th>
+          <th>Username</th>
+          <th>Action</th>
+        </tr>
       </thead>
       {users.map((user) => (
         <tbody key={user.userid}>
-        <tr>
-          <td>{user.userid}</td>
-          <td>{user.username}</td>
-          <td>
-            <div id="actionButtons">
-            <button type="button" id="viewButton" onClick={()=>view(user)}>View</button>
-              <button type="button" id="deleteButton" onClick={()=>deleteUser(user)}>Delete</button>
-            </div>
-          </td>
-        </tr>
+          <tr>
+            <td>{user.userid}</td>
+            <td>{user.username}</td>
+            <td>
+              <div id="actionButtons">
+                <button type="button" id="viewButton" onClick={() => view(user)}>View</button>
+                <button type="button" id="deleteButton" onClick={() => deleteUser(user)}>Delete</button>
+              </div>
+            </td>
+          </tr>
         </tbody>
       ))}
     </table>
   );
 }
 
-function UserProfile({user}) {
+function UserProfile({ user, closePopup }) {
   return (
     <div id="userProfile">
-        <h1>{user.username}</h1>
+      <h3>{user.username}</h3>
+      <h6><b>Privacy: </b>{user.privacy}</h6>
+      <h6><b>Description:</b></h6>
+      <p>{user.description}</p>
+      <h6><b>Post:  </b></h6>
+      <div id="userPost"> <p>Maybe imply maybe not</p></div>{/* may do*/}
+      <button type="button" id="userProfileClose" onClick={closePopup}>Close</button>
     </div>
   );
 }
@@ -83,38 +101,38 @@ function AdminUserPanel() {
   useEffect(() => {
     // Function to fetch user list
     const fetchUserList = async () => {
-        try {
-            // Send a GET request to retrieve user list
-            const response = await fetch('/admin/userlist', {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-            });
-            if (response.status === 200) {
-                const userList = await response.json();
-                console.log(userList); // Output the list of users (userID, username) for debug
+      try {
+        // Send a GET request to retrieve user list
+        const response = await fetch('/admin/userlist', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+        if (response.status === 200) {
+          const userList = await response.json();
+          console.log(userList); // Output the list of users (userID, username) for debug
 
-                // save the arguments and pass them in the UserTable component
+          // save the arguments and pass them in the UserTable component
 
-            } else {
-                // If there's an error, log the error message
-                const errorMessage = await response.text();
-                console.error(errorMessage); // Log the error message
-            }
-        } catch (error) {
-            console.error('Error fetching user list:', error);
+        } else {
+          // If there's an error, log the error message
+          const errorMessage = await response.text();
+          console.error(errorMessage); // Log the error message
         }
+      } catch (error) {
+        console.error('Error fetching user list:', error);
+      }
     };
 
     fetchUserList();
-}, []); 
+  }, []);
 
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeUserProfile}>
         <div onClick={e => e.stopPropagation()}>
-        <UserProfile user={currUser}/>
+          <UserProfile user={currUser} closePopup={closeUserProfile} />
         </div>
       </div>
 
@@ -125,13 +143,13 @@ function AdminUserPanel() {
             image={userIcon}
             name={"User Manager"}
             color={"#1D67CD"}
-            func = {()=>alert("This should redirect to user manager.")}
+            func={() => alert("This should redirect to user manager.")}
           />
           <SideBarButton
             image={postIcon}
             name={"Post Manager"}
             color={"black"}
-            func = {()=>alert("This should redirect to post manager.")}
+            func={() => alert("This should redirect to post manager.")}
           />
         </div>
         <div id="main">
