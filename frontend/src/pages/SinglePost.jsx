@@ -99,7 +99,18 @@ function SinglePostFrame({ posts }) {
     )
   }
 
+  const [newcomment, setNewComment] = useState("");
+
+  const addComment = (event) => {
+    event.preventDefault();
+    // for debugging.
+    
+    console.log("Submitted comment:", comment);
+    setComment("");
+  }
+
   const renderPost = (post) => {
+    
     return (
       <div className="post-container " key={post.postID}>
         <div className="post-subcontainer">
@@ -127,6 +138,18 @@ function SinglePostFrame({ posts }) {
                 <span className="comment-text">{comment.text}</span>
               </div>
             ))}
+          </div>
+          <div className="addcomments">
+            <form onSubmit={addComment}>
+                <input
+                type="text"
+                placeholder="Leave your comments here"
+                value={newcomment}
+                onChange={(event) => setNewComment(event.target.value)}
+                required // Require the input field
+                />
+                <button type="submit">Submit</button>
+            </form>
           </div>
         </div>
       </div>
