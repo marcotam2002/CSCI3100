@@ -110,6 +110,25 @@ class AdminHandler extends AccountHandler {
     }
   }
 
+  // Method to get all messages
+  async getAllMessages() {
+    /*
+      * get all messages from the database
+      * This function is only for testing purposes
+      * We should not expose all messages to the admin in a real application
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM messages';
+      const result = await client.query(queryText);
+      client.release();
+      return result.rows;
+    } catch (error) {
+      console.error('Error getting all messages:', error);
+      return [];
+    }
+  }
+
 }
 
 module.exports = AdminHandler;
