@@ -18,6 +18,7 @@ import searchIcon from "../assets/search.svg";
 import messageIcon from "../assets/message.svg";
 import notificationIcon from "../assets/notification.svg";
 import profileIcon from "../assets/user.svg";
+import UserHomepage from "./UserHomepage";
 
 function AddPost({user}) {
   return (
@@ -27,13 +28,6 @@ function AddPost({user}) {
   );
 }
 
-function MainComponent() {
-  return (
-    <div>
-      <h1>I don't know what to write here bruh.</h1>
-    </div>
-  )
-}
 function UserPageTemplate({user}) {
   const [state, setState] = useState(false);
   const openAddPost = () => {
@@ -92,7 +86,7 @@ function UserPageTemplate({user}) {
           />
         </div>
         <div id="main">
-          <MainComponent />
+          <UserHomepage />
         </div>
       </div>
     </div>
