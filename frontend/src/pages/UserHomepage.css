@@ -10,7 +10,14 @@
  .post-header {
     margin-top: 5%;
     margin-left: 5%;
-    margin-bottom: 8%;
+    margin-bottom: 5%;
+    font-size: larger;
+ }
+
+ .post-username {
+    font-family: Brandon Grotesque;
+    font-weight: bold;
+    color: rgb(72, 73, 74);
  }
 
  .post-time {
@@ -20,4 +27,9 @@
  .post-description {
     margin-top: 5px;
     margin-left: 5%;
+ }
+
+ .read-more {
+    margin-left: 5%;
+    margin-bottom: 5%;
  }

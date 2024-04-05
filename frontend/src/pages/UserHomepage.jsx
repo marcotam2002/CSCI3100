@@ -9,6 +9,7 @@
 
 import { getCookie } from "./CookieHandlers";
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './format.css'
 import './UserHomepage.css'; 
 
@@ -23,12 +24,14 @@ function UserHomepage({ posts }) {
         </div>
         <div className="post-description">
           {post.description.split('\n').map((line, index) => (
-            <p key={index}>{line}</p>
+            (index < 3 || post.description.split('\n').length <= 3) && (
+              <p key={index}>{line}</p>
+            )
           ))}
         </div>
         {post.description.split('\n').length > 3 && (
           <div className="read-more">
-            <a href="#">Read More</a>
+            <Link to={'/usertemplate'}>Read More</Link>
           </div>
         )}
         <div className="interaction-buttons">
