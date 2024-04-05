@@ -13,12 +13,26 @@ import './RegistrationForm.css'
 export default function RegistrationForm() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [secans, setsecans] = useState("");
+    const [secans1, setsecans1] = useState("");
+    const [secans2, setsecans2] = useState("");
+    const [secans3, setsecans3] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
   
     const handleSubmit = async (event) => {
       event.preventDefault();
+  
+    if (username === "") {
+      setErrorMessage("Please input a valid username.");
+      setSuccessMessage("");
+      return;
+    }
+
+    if (secans1 === "" || secans2 === "" || secans3 === ""){
+        setErrorMessage("Please input answers to all security questions.");
+        setSuccessMessage("");
+        return;
+    }
   
       // Password validation
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/;
@@ -37,7 +51,9 @@ export default function RegistrationForm() {
       const data = {
         username: username,
         password: password,
-        secans: secans
+        secans1: secans1,
+        secans2: secans2,
+        secans3: secans3,
       }
   
       const response = await fetch('/register', { 
@@ -65,7 +81,9 @@ export default function RegistrationForm() {
       // Reset the form fields
       setUsername("");
       setPassword("");
-      setsecans("");
+      setsecans1("");
+      setsecans2("");
+      setsecans3("");
     };
   
     return (
@@ -75,21 +93,33 @@ export default function RegistrationForm() {
         <form onSubmit={handleSubmit} id="registrationForm">
           <div>
             <label htmlFor="username">Username:</label>
-            <input type="text" id="username" required value={username}
+            <input type="text" id="username" value={username}
               onChange={(event) => setUsername(event.target.value)}
             />
           </div>
           <div>
             <label htmlFor="password">Password:</label>
-            <input type="password" id="password" required value={password}
+            <input type="password" id="password" value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
           <p>Please input answers to the following 3 security questions:</p>
           <div>
-            <label htmlFor="secans">Who is your best friend?</label>
-            <input type="text" id="secans" required value={secans}
-              onChange={(event) => setsecans(event.target.value)}
+            <label htmlFor="secans1">Who is your best friend?</label>
+            <input type="text" id="secans1" value={secans1}
+              onChange={(event) => setsecans1(event.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="secans2">What is your primary school?</label>
+            <input type="text" id="secans2" value={secans2}
+              onChange={(event) => setsecans2(event.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="secans3">What is your favourite hobby?</label>
+            <input type="text" id="secans3" value={secans3}
+              onChange={(event) => setsecans3(event.target.value)}
             />
           </div>
           {errorMessage && <p className="text-danger">{errorMessage}</p>}

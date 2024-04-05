@@ -12,7 +12,7 @@
     align-items: center;
     justify-content: space-between;
     line-height: 20%;
-    position: absolute;
+    position: fixed;
     width: 1000px;
     height: 180px;
     top: 0;
@@ -20,14 +20,6 @@
     transform: translate(-50%);
   }
   
-  #headerContainer h5{
-    margin: 0%;
-  }
-  
-  #leftHeader{
-    margin-bottom: 20px;
-  }
-
   #sideBarButton {
     border: none;
     background-color: transparent;
