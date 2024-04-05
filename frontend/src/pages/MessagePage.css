@@ -1,0 +1,114 @@
+/*
+ * Group members:
+ * Tam King Man 1155160072
+ * Tsang Ho Yin 1155159307
+ * Ng Yuk Fung 1155176966
+ * Leung Ka Lun 1155157403
+ * O Ching Lam 1155159131
+ */
+
+#messageInterface {
+  display: flex;
+  width: 100%;
+  height: 600px;
+}
+
+#userSideBar {
+  width: 200px;
+  border-right: 1px solid #bfbfbf;
+  max-height: 100%;
+  overflow: auto;
+}
+
+#usernameBox {
+  height: 80px;
+  border-bottom: 1px solid #bfbfbf;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+  cursor: pointer;
+  user-select: none;
+}
+
+#usernameBox:hover,
+#usernameBox.selected {
+  background-color: #f2f2f2;
+}
+#usernameBox.last {
+  border-bottom: none;
+}
+
+#usernameBox h6,
+#usernameBox p {
+  margin: 0px;
+  padding-left: 20px;
+}
+
+#usernameBox p {
+  width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#messageBox {
+  width: 590px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+#messageBoxHeader {
+  width: 100%;
+  border-bottom: 1px solid #bfbfbf;
+}
+
+#messageBoxHeader h5 {
+  margin: 0px;
+  padding: 10px;
+  padding-left: 20px;
+}
+
+#message {
+    display: flex;
+    height: 100%;
+    flex-direction: column-reverse;
+}
+
+#sendMessageBox {
+  height: 60px;
+  border-top: 1px solid #bfbfbf;
+  display: flex;
+    align-items: center;
+}
+
+#messageInput
+{
+    width: 480px;
+    padding: 5px;
+    padding-left: 10px;
+    height: 30px;
+    margin: 10px;
+    border: 2px solid #1D67CD;
+    border-radius: 20px;
+    font-family: Assistant Light;
+}
+
+#sendButton img{
+    width: 30px;
+    height: 30px;
+}
+#sendButton {
+  width: 60px;
+  height: 30px;
+  border: none;
+  border-radius: 15px;
+}
+
+#sendButton:hover {
+  background-color: #caeeff;
+}
+
+#sendButton:active {
+    border: 2px solid #1D67CD;
+  }
