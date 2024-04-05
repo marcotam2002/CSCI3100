@@ -110,7 +110,7 @@ function SinglePostFrame({ user, posts }) {
     console.log("Submitted comment:", newcomment);
 
     const newComment = {
-      username: user,
+      username: user.username,
       text: newcomment,
     }
 
@@ -118,8 +118,8 @@ function SinglePostFrame({ user, posts }) {
       if (post.postID === postID) {
         return {
           ...post,
+          commentnum: post.commentnum + 1, 
           comments: [...post.comments, newComment],
-          commentnum: post.commentnum + 1
         };
       }
       return post;
@@ -131,24 +131,24 @@ function SinglePostFrame({ user, posts }) {
     setNewComment("");
 
     // for fetch part
-    const data = {
-      posts: updatedPosts,
-    };
+    // const data = {
+    //   posts: updatedPosts,
+    // };
 
-    const response = await fetch('/post/change', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      // successful update
-      console.log("successful update")
-    } else {
-      // failed update
-      console.log("failed to update")
-    }
+    // const response = await fetch('/post/change', { 
+    //   method: 'PUT',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify(data)
+    // });
+    // if (response.status === 200){
+    //     // successful update
+    //     console.log("successful update")
+    // }else{
+    //     // failed update
+    //     console.log("failed to update")
+    // }
   }
 
   const ChangeLike = async (postID, event) => {
