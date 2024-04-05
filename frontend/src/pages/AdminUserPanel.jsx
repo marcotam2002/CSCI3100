@@ -14,11 +14,11 @@ import { Header, SideBarButton } from "./components";
 import React, { useEffect, useState } from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
-/*Just for testing*/
 
+/*Just for testing*/
 const testUsers = [
   {
-    userid: 1,
+    userid: "0000001",
     username: 'FirstUser',
     salt: 'e9b2fe0aa5c9f351359557eb098e6ded',
     password: 'df48327d5c1ad56b58cb630bb557fba133b89353261c3e672cb7c5e1b3ebc332c3d9033035ac5ae6cb86866015748d816872274d0bdc3a3bd0ac7fb201b92408',
@@ -29,7 +29,7 @@ const testUsers = [
     usertype: 'user'
   },
   {
-    userid: 2,
+    userid: "0000002",
     username: 'Name',
     salt: 'e9b2fe0aa5c9f351359557eb098e6ded',
     password: 'df48327d5c1ad56b58cb630bb557fba133b89353261c3e672cb7c5e1b3ebc332c3d9033035ac5ae6cb86866015748d816872274d0bdc3a3bd0ac7fb201b92408',
@@ -42,6 +42,9 @@ const testUsers = [
 ]
 
 function UserTable({ users, view }) {
+  const viewUser = (user) => {
+    window.confirm(`You shoulb be able to view ${user.username} profile.`)
+  }
   const deleteUser = (user) => {
     window.confirm(`You shoulb be able to delete ${user.username}.`)
   }
@@ -129,7 +132,8 @@ function AdminUserPanel() {
   }, []);
 
   return (
-    <div>
+    <body>
+
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeUserProfile}>
         <div onClick={e => e.stopPropagation()}>
           <UserProfile user={currUser} closePopup={closeUserProfile} />
@@ -156,7 +160,7 @@ function AdminUserPanel() {
           <UserTable users={testUsers} view={openUserProfile} />
         </div>
       </div>
-    </div>
+    </body>
   );
 }
 

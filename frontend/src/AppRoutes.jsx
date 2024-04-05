@@ -12,10 +12,12 @@ import UserHomepage from "./pages/UserHomepage";
 import SearchPage from "./pages/SearchPage";
 import Login from "./pages/LoginPage"
 import AdminUserPanel from "./pages/AdminUserPanel";
+import RegistrationForm from "./pages/RegistrationForm";
 import AdminPostPanel from "./pages/AdminPostPanel";
 import UserPageTemplate from "./pages/UserPageTemplate";
 import ForgetPasswordForm from "./pages/ForgetPassword";
 import Message from "./pages/MessagePage";
+import SinglePostPage from "./pages/SinglePost";
 
 const testUser = {username: "testUser", password: "<PASSWORD>"};
 
@@ -30,6 +32,7 @@ const AppRoutes=()=>{
             <Route path="/usertemplate" element = {<UserPageTemplate user={testUser}/>}/> 
             <Route path="/forgetpw" element= {<ForgetPasswordForm/>}/>
             <Route path="/message" element = {<Message user={testUser}/>}/>
+            <Route path="/post/:postID" element = {<SinglePostPage user={testUser}/>} />
         </Routes>
     );
 };

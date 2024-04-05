@@ -15,7 +15,7 @@ import "./format.css";
 function Header({ subTitle, currPage }) {
   return (
     <div id="headerContainer">
-      <div id="leftHeader">
+      <div>
         <h1>
           <b>SORU</b>
         </h1>
@@ -31,8 +31,8 @@ function Header({ subTitle, currPage }) {
 function SideBarButton({ image, name, color, func }) {
   return (
     <button type="button" id="sideBarButton" onClick={func}>
-      <img src={image} alt="" width="33px" height="33px"/>
-      <p style={{ color: color, marginLeft:"10px" }}>{name}</p>
+      <img src={image} alt="" width="33px" height="33px" />
+      <p style={{ color: color }}>{name}</p>
     </button>
   );
 }
