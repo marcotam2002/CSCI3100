@@ -20,6 +20,36 @@ import notificationIcon from "../assets/notification.svg";
 import profileIcon from "../assets/user.svg";
 import UserHomepage from "./UserHomepage";
 
+const testPost = [
+  {
+    postID: 1,
+    username: "Billy",
+    time: "8 hours",
+    description:
+    "The sun rose gracefully over the horizon, casting golden hues across the sky.\nBirds chirped joyfully, welcoming the new day with their melodic songs.\nA gentle breeze rustled the leaves of the trees, carrying with it the scent of fresh blooms.\nNature's symphony echoed through the tranquil morning air.",
+    liked: true,
+    likes: 50,
+    commentnum: 2,
+    comments: [
+      { username: "Alice", text: "Beautiful description!" },
+      { username: "Bob", text: "I love mornings like these." }
+    ]
+  },
+  {
+    postID: 2,
+    username: "Tim",
+    time: "17:16",
+    description:
+    "I want to post nothing here.\n Please go.",
+    liked: false,
+    likes: 1,
+    commentnum: 1,
+    comments: [
+      { username: "Admin", text: "So rude!" },
+    ]
+  },
+];
+
 function AddPost({user}) {
   return (
     <div id="addPost">
@@ -86,7 +116,7 @@ function UserPageTemplate({user}) {
           />
         </div>
         <div id="main">
-          <UserHomepage />
+          <UserHomepage posts={testPost} />
         </div>
       </div>
     </div>

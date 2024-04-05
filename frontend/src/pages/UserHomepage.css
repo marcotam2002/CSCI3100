@@ -6,3 +6,18 @@
  * Leung Ka Lun 1155157403
  * O Ching Lam 1155159131
  */
+
+ .post-header {
+    margin-top: 5%;
+    margin-left: 5%;
+    margin-bottom: 8%;
+ }
+
+ .post-time {
+    margin-left: 10px;
+ }
+
+ .post-description {
+    margin-top: 5px;
+    margin-left: 5%;
+ }

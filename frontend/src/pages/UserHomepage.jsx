@@ -9,13 +9,14 @@
 
 import { getCookie } from "./CookieHandlers";
 import React from 'react';
+import './format.css'
 import './UserHomepage.css'; 
 
 function UserHomepage({ posts }) {
   
   const renderPost = (post) => {
     return (
-      <div className="post-container" key={post.id}>
+      <div className="post-container" key={post.postID}>
         <div className="post-header">
           <span className="post-username">{post.username}</span>
           <span className="post-time">{post.time}</span>
@@ -34,7 +35,7 @@ function UserHomepage({ posts }) {
           <button className="like-button">{post.liked ? 'like' : 'unlike'}</button>
           <span className="like-count">{post.likes}</span>
           <button className="comment-button">comment</button>
-          <span className="comment-count">{post.comments}</span>
+          <span className="comment-count">{post.commentnum}</span>
         </div>
         {post.comments.length > 2 && (
           <div className="view-all-comments">
