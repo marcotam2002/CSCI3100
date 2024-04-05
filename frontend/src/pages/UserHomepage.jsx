@@ -14,7 +14,7 @@ import './format.css'
 import './UserHomepage.css'; 
 
 function UserHomepage({ posts }) {
-  
+
   const renderPost = (post) => {
     return (
       <div className="post-container " key={post.postID}>
@@ -32,7 +32,7 @@ function UserHomepage({ posts }) {
           </div>
           {post.description.split('\n').length > 3 && (
             <div className="read-more">
-              <Link to={'/usertemplate'}>Read More</Link>
+              <Link to={`/post/${post.postID}`}>Read More</Link>
             </div>
           )}
           <div className="interaction-buttons">
@@ -53,7 +53,7 @@ function UserHomepage({ posts }) {
           </div>
           {post.comments.length > 2 && (
             <div className="view-all-comments">
-              <a href="#">View all comments</a>
+              <Link to={`/post/${post.postID}`}>View all comments</Link>
             </div>
           )}
         </div>
