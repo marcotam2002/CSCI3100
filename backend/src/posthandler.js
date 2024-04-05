@@ -10,7 +10,6 @@
 // The fllowing codes are assisted by Copilot
 
 const pool = require('./database');
-const media = require('./mediahandler');
 
 class PostHandler {
     constructor(postID, authorID, content, privacy, creationTime, likes, attachmentURL) {

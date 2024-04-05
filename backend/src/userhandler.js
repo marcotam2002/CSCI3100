@@ -12,11 +12,6 @@
 const pool = require('./database');
 const { generateSalt, hashPassword } = require('./utils');
 const AccountHandler = require('./accounthandler');
-const PostHandler = require('./posthandler');
-const CommentHandler = require('./commenthandler');
-const MessageHandler = require('./messagehandler');
-const pool = require('./database');
-const pool = require('./database');
 
 class UserHandler extends AccountHandler {
   constructor(userID, username, salt, hashedPassword, userType, pendingFollowers, securityAnswer, description, isPrivate, isActive) {
@@ -204,7 +199,7 @@ class UserHandler extends AccountHandler {
         // Edit post in the database
         const client = await pool.connect();
         const queryText = 'UPDATE posts SET postContent = $1 WHERE postID = $2';
-        const values = [editContent, postID];
+        const values = [editedContent, postID];
         await client.query(queryText, values);
 
         // if removeRequest is not empty, remove the attachment
@@ -638,11 +633,11 @@ class UserHandler extends AccountHandler {
       * @param {string} message - The content of the message
     */
     try {
-      const pool = await pool.connect();
+      const client = await pool.connect();
       const queryText = 'INSERT INTO messages (senderID, receiverID, content) VALUES ($1, $2, $3)';
       const values = [this.userID, receiverID, message];
-      await pool.query(queryText, values);
-      pool.release();
+      await client.query(queryText, values);
+      client.release();
       return { success: true, message: 'Message sent successfully' };
     } catch (error) {
       console.error('Error sending message:', error);
@@ -657,12 +652,18 @@ class UserHandler extends AccountHandler {
       * @param {string} userID - The ID of the user to get messages with
     */
     try {
-      const pool = await pool.connect();
+      const client = await pool.connect();
       const queryText = 'SELECT * FROM messages WHERE (senderID = $1 AND receiverID = $2) OR (senderID = $2 AND receiverID = $1)';
       const values = [this.userID, targetUserID];
-      const result = await pool.query(queryText, values);
-      pool.release();
-      return { success: true, message: 'Messages retrieved successfully', messages: result.rows[0] };
+      const result = await client.query(queryText, values);
+
+      // When we get the messages, we assume the user read the messages
+      const updateQuery = 'UPDATE messages SET read = true WHERE senderID = $1 AND receiverID = $2';
+      const updateValues = [targetUserID, this.userID];
+      await client.query(updateQuery, updateValues);
+
+      client.release();
+      return { success: true, message: 'Messages retrieved successfully', messages: result.rows };
     } catch (error) {
       console.error('Error getting messages:', error);
       return { success: false, message: 'Failed to get messages' };
@@ -675,31 +676,34 @@ class UserHandler extends AccountHandler {
       * Retrieve notifications for the user
     */
     try {
-      const client = await this.pool.connect();
+      const client = await pool.connect();
       const queryText = 'SELECT * FROM messages WHERE receiverID = $1 AND read = false';
       const values = [this.userID];
       const result = await client.query(queryText, values);
       client.release();
 
-      // Count the number of messages for each senderID
-      const messageCounts = {};
+      // Create a map to store senderID and messageCount
+      const notificationsMap = {};
+
+      // Iterate over the result and update messageCount for each senderID
       result.rows.forEach(row => {
-          const senderID = row.senderID;
-          if (messageCounts[senderID]) {
-              messageCounts[senderID]++;
+          console.log(row)
+          const senderID = row.senderid;
+          if (notificationsMap[senderID]) {
+              notificationsMap[senderID]++;
           } else {
-              messageCounts[senderID] = 1;
+              notificationsMap[senderID] = 1;
           }
       });
 
       // Construct the set with senderID and message count
       const notifications = [];
-      for (const senderID in messageCounts) {
-          notifications.push({ senderID: parseInt(senderID), messageCount: messageCounts[senderID] });
+      for (const senderID in notificationsMap) {
+          notifications.push({ senderID: senderID, messageCount: notificationsMap[senderID] });
       }
 
       // Return the retrieved notifications
-      return { success: true, message: 'Notifications retrieved successfully', notifications: notificationsSet };
+      return { success: true, message: 'Notifications retrieved successfully', notifications: notifications };
     } catch (error) {
       console.error('Error getting notifications:', error);
       return { success: false, message: 'Failed to get notifications' };

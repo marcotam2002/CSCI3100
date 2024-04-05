@@ -19,14 +19,14 @@ async function testUserFunctions() {
     const user = {
         userID: 5,
         username: 'hehehe',
-        salt: '411c0f12c1afd75457fd0b8a5d8e8be3',
-        password: 'bce45819669f93d652fdc1f80328eec914b8d1c28b9495dadfb9a295aadba71de477dd0cf31360002d032182efb9879c019c9606685add6769344f4ccf1d8ca9',
+        salt: '8770dbbbe87f38421dad27e141f014a9',
+        password: '5e24c9d3f42594b5701a4b65a292231971fcab281f63a9c5da4cb12afa2abaaccaac5af2653258af3208f721b748c43114e6cc12bcc3ff8438e337a60f82b810',
         secureqans: '123',
         privacy: 'private',
         description: 'this is a test description',
         active: true,
         usertype: 'user'
-      };
+      }
 
     // Create a new user
     const User = new UserHandler(user.userID, user.username, user.salt, user.password, user.usertype, user.privacy, user.active);
@@ -65,12 +65,28 @@ async function testUserFunctions() {
     // console.log(following2)
 
     // Test secure question
-    const secureResult = await User.checkSecurityAnswer('123');
-    console.log(secureResult)
+    // const secureResult = await User.checkSecurityAnswer('123');
+    // console.log(secureResult)
 
     // Test reset password
-    const resetResult = await User.resetPassword('sdasdacsdasd');
-    console.log(resetResult)
+    // const resetResult = await User.resetPassword('sdasdacsdasd');
+    // console.log(resetResult)
+
+    // Test send messages
+    // const messageResult = await User.sendMessage(5, 'Hello33!');
+    // console.log(messageResult)
+
+    // Test receive messages
+    // const messageResult = await User.getMessagesWithUser(5);
+    // console.log(messageResult)
+
+    // Test noti
+    // const notiResult = await User.getNotifications();
+    // console.log(notiResult)
+
+    // Test post
+    const postResult = await User.createPost('Hello!');
+    console.log(postResult)
 
     console.log('Test ended.')
 }

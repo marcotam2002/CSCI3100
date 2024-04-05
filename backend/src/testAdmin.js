@@ -1,4 +1,3 @@
-@ -1,41 +0,0 @@
 /*
  * Group members:
  * Tam King Man 1155160072
@@ -16,8 +15,14 @@ async function testAdminFunctions() {
 
   const adminHandler = new AdminHandler();
 
-  const allUsers = await adminHandler.getAllUsers();
-  console.log('All users:', allUsers);
+  // const allUsers = await adminHandler.getAllUsers();
+  // console.log('All users:', allUsers);
+
+  // const allMessages = await adminHandler.getAllMessages();
+  // console.log('All messages:', allMessages);
+
+  const allPosts = await adminHandler.getAllPosts();
+  console.log('All posts:', allPosts);
 
 //   const userID = 1;
 //   const user = await adminHandler.getUser(userID);
