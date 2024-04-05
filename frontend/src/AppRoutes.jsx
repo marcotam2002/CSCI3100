@@ -12,7 +12,8 @@ import UserHomepage from "./pages/UserHomepage";
 import SearchPage from "./pages/SearchPage";
 import Login from "./pages/LoginPage"
 import AdminUserPanel from "./pages/AdminUserPanel";
-import RegistrationForm from "./pages/RegistrationForm";
+import ForgetPasswordForm from "./pages/ForgetPassword";
+
 
 const AppRoutes=()=>{
     return(
@@ -21,7 +22,7 @@ const AppRoutes=()=>{
             <Route path="/search" element = {<SearchPage/>}/>
             <Route path="/homepage" element = {<UserHomepage/>}/>
             <Route path="/admin/userlist" element = {<AdminUserPanel/>}/>
-            {/* <Route path="/register" element= {<RegistrationForm/>}/> */}
+            <Route path="/forgetpw" element= {<ForgetPasswordForm/>}/>
         </Routes>
     );
 };
