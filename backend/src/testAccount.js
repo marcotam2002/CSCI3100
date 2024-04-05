@@ -41,6 +41,6 @@ async function testLogin() {
   }
 
 // Call the test function
-testCreateUser();
+//testCreateUser();
 
-// testLogin();
+testLogin();
