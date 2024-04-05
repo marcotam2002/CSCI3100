@@ -90,12 +90,13 @@ class AccountHandler {
           this.userID = result.rows[0].userid;
           this.salt = result.rows[0].salt;
           this.hashedPassword = result.rows[0].password;
+          this.role = result.rows[0].usertype;
   
           // Check if the password is correct
           const account_input_hashedPassword = hashPassword(account_input_password, this.salt);
           if (account_input_hashedPassword === this.hashedPassword) {
               // Return authentication successful message along with account type
-              return { success: true, message: 'Authentication successful', userID: this.userID};
+              return { success: true, message: 'Authentication successful', userID: this.userID, usertype: this.role};
           } else {
               return { success: false, message: 'Incorrect password' };
           }
