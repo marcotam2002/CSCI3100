@@ -129,6 +129,42 @@ class AdminHandler extends AccountHandler {
     }
   }
 
+  async getAllLikes() {
+    /*
+      * get all likes from the database
+      * This function is only for testing purposes
+      * We should not expose all likes to the admin in a real application
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM likes';
+      const result = await client.query(queryText);
+      client.release();
+      return result.rows;
+    } catch (error) {
+      console.error('Error getting all likes:', error);
+      return [];
+    }
+  }
+
+  async getAllComments() {
+    /*
+      * get all comments from the database
+      * This function is only for testing purposes
+      * We should not expose all comments to the admin in a real application
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM comments';
+      const result = await client.query(queryText);
+      client.release();
+      return result.rows;
+    } catch (error) {
+      console.error('Error getting all comments:', error);
+      return [];
+    }
+  }
+
 }
 
 module.exports = AdminHandler;
