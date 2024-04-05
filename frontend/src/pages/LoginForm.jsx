@@ -11,6 +11,7 @@ import { React, useEffect, useState, useRef } from 'react';
 import './LoginForm.css'
 import RegistrationForm from './RegistrationForm';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
@@ -88,7 +89,7 @@ function LoginForm() {
                   <input id="pswInput" type="password" placeholder="Enter your password" required value={password}
                       onChange={(event) => setPassword(event.target.value)} />
                   <br></br>
-                  <button className="forgot-password">Forget Password</button>
+                  <Link to={"/forgetpw"}>Forget Password</Link>
                   <br></br>
                   <button className="submit" type="submit">Login</button>
                   <hr className="line" />
