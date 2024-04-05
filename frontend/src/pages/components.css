@@ -7,35 +7,52 @@
  * O Ching Lam 1155159131
  */
 
- #headerContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    line-height: 20%;
-    position: absolute;
-    width: 1000px;
-    height: 180px;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%);
-  }
-  
-  #headerContainer h5{
-    margin: 0%;
-  }
-  
-  #leftHeader{
-    margin-bottom: 20px;
-  }
+#headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 20%;
+  position: absolute;
+  width: 1000px;
+  height: 180px;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%);
+}
 
-  #sideBarButton {
-    border: none;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    padding-left: 0px;
-  }
+#headerContainer h5 {
+  margin: 0%;
+}
 
-#sideBarButton:hover p{
+#leftHeader {
+  margin-bottom: 20px;
+}
+
+#sideBarButton {
+  border: none;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  padding-left: 0px;
+  width: 180px;
+  margin: 20px;
+  margin-left: 0px;
+}
+
+#sideBarButton p {
+  margin: 0px;
+}
+
+#sideBarButton:hover {
+  border: 2px solid #1d67cd;
+  border-radius: 30px;
+  padding: 8px;
+}
+
+#sideBarButton:hover p {
   font-weight: bold;
+}
+
+#sideBarButton:active {
+  background-color: #caeeff;
 }
