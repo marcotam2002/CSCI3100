@@ -69,7 +69,7 @@ function LoginForm() {
 
   return (
     <div>
-      <div className={`popupBox ${state ? "show" : ""}`} onClick={closeRegForm}>
+      <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={e => e.stopPropagation()}>
           <div id='RegForm'>
             <RegistrationForm closeFunc={closeRegForm}/>

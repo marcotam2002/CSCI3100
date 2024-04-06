@@ -117,7 +117,7 @@ function Message({ user }) {
   };
   return (
     <div>
-      <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
+      <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
             <AddPostForm closeFunc={closeAddPost}/>
         </div>

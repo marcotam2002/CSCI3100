@@ -12,7 +12,7 @@ import SearchPage from "./pages/SearchPage";
 import Login from "./pages/LoginPage"
 import AdminUserPanel from "./pages/AdminUserPanel";
 import AdminPostPanel from "./pages/AdminPostPanel";
-import UserPageTemplate from "./pages/UserPageTemplate";
+import UserHomepage from "./pages/UserHomepage";
 import ForgetPasswordForm from "./pages/ForgetPassword";
 import Message from "./pages/MessagePage";
 import SinglePostPage from "./pages/SinglePost";
@@ -29,7 +29,7 @@ const AppRoutes=()=>{
             <Route path="/search" element = {<SearchPage/>}/>
             <Route path="/admin/usermanager" element = {<AdminUserPanel/>}/>
             <Route path="/admin/postmanager" element = {<AdminPostPanel/>}/>  
-            <Route path="/userhomepage" element = {<UserPageTemplate user={getCookie("username")}/>}/> 
+            <Route path="/userhomepage" element = {<UserHomepage user={getCookie("username")}/>}/> 
             <Route path="/forgetpw" element= {<ForgetPasswordForm/>}/>
             <Route path="/message" element = {<Message user={getCookie("username")}/>}/>
             <Route path="/post/:postID" element = {<SinglePostPage user={getCookie("username")}/>} />
