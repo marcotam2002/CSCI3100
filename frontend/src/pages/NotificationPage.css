@@ -1,0 +1,12 @@
+
+.readStatus {
+    height: 10px;
+    width: 10px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 20px;
+}
+.readStatus.read{
+    background-color: gray;
+}
