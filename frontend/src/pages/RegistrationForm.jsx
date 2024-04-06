@@ -9,6 +9,7 @@
 
 import React, { useState } from "react";
 import './RegistrationForm.css'
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 export default function RegistrationForm() {
     const [username, setUsername] = useState("");
@@ -40,7 +41,7 @@ export default function RegistrationForm() {
         secans: secans
       }
   
-      const response = await fetch('/register', { 
+      const response = await fetch(`${API_BASE_URL}/api/user/register`, { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

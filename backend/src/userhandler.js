@@ -706,22 +706,35 @@ class UserHandler extends AccountHandler {
   }
   
   // Method to check if security answers are correct
-  async checkSecurityAnswer(securityAnswer) {
+  //Parameter added: username, as forget password function is located outside the login process, thus this.userID will be undefined
+  async checkSecurityAnswer(username, securityAnswer) {
     /*
       * Check if the security answers are correct
       * @param {string} securityAnswer - The security answer of the account to check
     */
     try {
         // Check if the security answers are correct
+
+        /*old version
         const client = await pool.connect();
         const queryText = 'SELECT secureqAns FROM users WHERE userID = $1';
-        const values = [this.userID];
+        console.log("accessing database")
+        console.log(userID)
+        const values = [userID];
+        const result = await client.query(queryText, values);
+        client.release();
+        */
+        console.log(`accessing database for user ${username}`)
+        const client = await pool.connect();
+        const queryText = 'SELECT secureqAns FROM users WHERE username = $1';
+        const values = [username];
         const result = await client.query(queryText, values);
         client.release();
 
         // Retrieve the security answers from the result
         const retrievedSecurityAnswer = result.rows[0].secureqans;
-
+        //console.log(retrievedSecurityAnswer)
+        //console.log(securityAnswer)
         // Check if the provided security answers match the retrieved security answers
         return JSON.stringify(retrievedSecurityAnswer) === JSON.stringify(securityAnswer);
     } catch (error) {
@@ -731,7 +744,7 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to reset password
-  async resetPassword(newPassword) {
+  async resetPassword(username, newPassword) {
     /*
       * Forget password and recover the account
       * @param {string} newPassword - The new password to be updated, assume we have checked the security answers
@@ -744,8 +757,8 @@ class UserHandler extends AccountHandler {
         const client = await pool.connect();
 
         // Update the password in the database
-        const queryText2 = 'UPDATE users SET password = $1, salt = $2 WHERE userID = $3';
-        const values2 = [newHashedPassword, salt, this.userID];
+        const queryText2 = 'UPDATE users SET password = $1, salt = $2 WHERE username = $3';
+        const values2 = [newHashedPassword, salt, username];
         await client.query(queryText2, values2);
         client.release();
 
