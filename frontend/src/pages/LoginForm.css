@@ -6,72 +6,69 @@
  * Leung Ka Lun 1155157403
  * O Ching Lam 1155159131
  */
- 
+
 .form-box {
-    border: 2px solid #ccc;
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 10px; /* Adjusted */
+    border-radius: 30px;
     background-color: white;
+    padding: 20px;
 }
 
 .centered-text {
     text-align: center;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    padding: 0px;
+    margin: 0px;
+    margin-left: 80px;
+    margin-right: 80px;
 }
 
-.blue-text {
-    color: blue;
+#LoginForm {
+    display: flex;
+    flex-direction: column;
 }
 
-input[type="text"],
-input[type="password"] {
-    width: 90%; /* Make input fields span the whole width */
-    padding: 10px;
-    margin: 5px 0 10px; /* Adjusted margin */
+#LoginForm label {
+    font-family: Brandon Grotesque;
 }
 
-.forgot-password {
-    background-color: transparent;
-    border: none;
-    color: black;
-    cursor: pointer;
-    margin-bottom: 10px; /* Added */
-    transition: color 0.3s; /* Added */
+#LoginForm input {
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: Assistant Light;
+    border: 1px solid #ccc;
 }
 
-.forgot-password:hover {
-    color: blue;
+#passwordText {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-family: Brandon Grotesque;
 }
 
 .submit,
-.register-btn {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
+.register-btn,
+.btn-primary {
+    color: #1d67cd;
+    font-family: Assistant Light;
+    font-size: 16px;
+    padding: 5px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.02s ease-out, color 0.02s ease-out;
-    transition-delay: 0.01s;
+    border-radius: 20px;
+    width: 20%;
+    background-color: white;
+    border: 2px solid #1d67cd;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .submit:hover,
-.register-btn:hover {
-    background-color: #555;
+.register-btn:hover,
+.btn-primary:hover {
+    background-color: #1d67cd;
+    color: white;
+    width: 22%;
 }
-
-.line {
-    width: 100%;
-    height: 1px;
-    background-color: #ccc;
-    margin: 20px 0;
-}
-
 
 #RegForm {
     border: 2px solid #ccc;

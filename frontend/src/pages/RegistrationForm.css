@@ -7,16 +7,31 @@
  * O Ching Lam 1155159131
  */
  
- .RegistrationForm {
-    color: white;
-}
-
-.h2 {
-    margin-bottom: 0px;
-    padding-bottom: 0px;
+ .RegisterForm {
+    padding: 20px;
+ }
+ 
+.RegisterForm h2 {
+    margin: 0px;
+    padding: 0px;
     text-align: center;
 }
 
+#registrationForm div label {
+    font-family: Brandon Grotesque;
+}
+#registrationForm div{
+    display: flex;
+    flex-direction: column;
+}
+#registrationForm div input{
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: Assistant Light;
+    border: 1px solid #ccc;
+
+}
 .text-danger {
     color: red;
 }
@@ -26,38 +41,16 @@
 }
 
 .btn-primary {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
+    color: #1d67cd;
+    font-family: Assistant Light;
+    font-size: 16px;
+    padding: 5px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.02s ease-out, color 0.02s ease-out;
-    transition-delay: 0.01s;
-}
-
-.btn-primary:hover {
-    background-color: #555;
-}
-
-.addpostbutton {
-    display: flex;
-    justify-content: left;
-    align-items: flex-start;
-    margin-left: 50px;
-    margin-
-}
-
-.newpostdescription {
-    margin-left: 50px;
-}
-
-#thought {
-    width: 530px;
-}
-
-#fileUpload {
-    justify-content: right;
-    margin-left: 50px;
+    border-radius: 20px;
+    width: 20%;
+    background-color: white;
+    border: 2px solid #1d67cd;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }

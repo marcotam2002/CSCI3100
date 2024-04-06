@@ -12,22 +12,20 @@ import './LoginPage.css';
 import './format.css';
 import SoruIcon from '../assets/SoruIcon.png';
 import LoginForm from './LoginForm';
-import reactLogo from '../assets/react.svg';
+
 
 function Login() {
     return (
-        <div className="container" style={{ backgroundColor: 'lightpurple', marginTop: '20px' }}>
+        <div  className="container">
             <div className="left-side">
                 <img src={SoruIcon} alt="SORU Image" width="200" />
-                <div style={{ textAlign: 'left' }}>
-                    <h3>Soru</h3>
+                <div className="web-name">
+                    <h2><b>Soru</b></h2>
                     <p>Where Soul is Touched</p>
                 </div>
             </div>
-            <div className="right-side" style={{ marginLeft: '20px' }}>
-                <div>
-                    <LoginForm />
-                </div>
+            <div className="right-side">
+                <LoginForm />
             </div>
         </div>
     );

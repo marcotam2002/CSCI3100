@@ -80,8 +80,9 @@
 }
 .addcomments input {
    border: 0px;
-   margin: 0px !important;
-   padding: 0px !important;
+   margin: 0px;
+   padding: 0px;
+   width: 90%;
    border-bottom: 1px solid #ccc;
    height: 40px;
    font-family: Assistant Light;

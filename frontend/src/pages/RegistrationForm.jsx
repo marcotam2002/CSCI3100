@@ -71,31 +71,31 @@ export default function RegistrationForm() {
   
     return (
       <div className="RegisterForm">
-        <h2 style={{textAlign: "center"}}>Registration Form</h2>
+        <h2>Registration Form</h2>
         <p>Please set a password with a length ranging from 6 to 20 characters, with at least one character and one number.</p>
         <form onSubmit={handleSubmit} id="registrationForm">
           <div>
-            <label htmlFor="username">Username:</label>
-            <input type="text" id="username" required value={username}
+            <label htmlFor="username"><b>Username: </b></label>
+            <input type="text" required value={username}
               onChange={(event) => setUsername(event.target.value)}
             />
           </div>
           <div>
-            <label htmlFor="password">Password:</label>
-            <input type="password" id="password" required value={password}
+            <label htmlFor="password"><b>Password: </b></label>
+            <input type="password" required value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
           <p>Please input answers to the following security question:</p>
           <div>
-            <label htmlFor="secans">Who is your best friend?</label>
-            <input type="text" id="secans" required value={secans}
+            <label htmlFor="secans"><b>Who is your best friend?</b></label>
+            <input type="text" required value={secans}
               onChange={(event) => setsecans(event.target.value)}
             />
           </div>
           {errorMessage && <p className="text-danger">{errorMessage}</p>}
           {successMessage && <p className="text-success">{successMessage}</p>}
-          <button className="btn-primary" style={{margin: "5px 5px"}} type="submit">Register</button>
+          <button className="btn-primary" type="submit">Register</button>
         </form>
       </div>
     );
