@@ -18,7 +18,6 @@ import messageIcon from "../assets/message.svg";
 import notificationIcon from "../assets/notification.svg";
 import profileIcon from "../assets/user.svg";
 import logoutIcon from "../assets/log-out.svg";
-import UserHomepage from "./UserHomepage";
 import AddPostForm from './AddPostForm';
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
@@ -95,7 +94,7 @@ function UserPageTemplate({user}) {
   console.log(user);
   return (
     <div>
-      <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
+      <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
           <AddPostForm closeFunc={closeAddPost}/>
         </div>
