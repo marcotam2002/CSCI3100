@@ -171,7 +171,7 @@ function SinglePostFrame({ user, posts }) {
     // for fetch part
     const data = {
       postID: postID,
-      // may need to add userID to specify the user 
+      userID: userID,
     };
 
     const response = await fetch('/post/likepost', {
