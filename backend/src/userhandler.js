@@ -203,29 +203,33 @@ class UserHandler extends AccountHandler {
       * @param {int[]} removeRequest - request to remove the attachment
     */
     try {
-        // Edit post in the database
-        const client = await pool.connect();
-        const queryText = 'UPDATE posts SET postContent = $1 WHERE postID = $2';
-        const values = [editedContent, postID];
-        await client.query(queryText, values);
 
-        // if removeRequest is not empty, remove the attachment
-        if (removeRequest.length > 0) {
-            const queryText2 = 'SELECT attachments FROM User.posts WHERE postID = $1';
-            const values2 = [postID];
-            const result = await client.query(queryText2, values2);
-            const attachments = result.rows[0].attachments;
-            // remove the attachments with index in removeRequest
-            for (let i = removeRequest.length - 1; i >= 0; i--) {
-                attachments.splice(removeRequest[i], 1);
-            }
-            const queryText3 = 'UPDATE User.posts SET attachments = $1 WHERE postID = $2';
-            const values3 = [attachments, postID];
-            await client.query(queryText3, values3);
+        // First check if isrepost is true, then return error
+        const client = await pool.connect();
+        const queryText1 = 'SELECT isrepost FROM posts WHERE postID = $1';
+        const values1 = [postID];
+        const result1 = await client.query(queryText1, values1);
+        if (result1.rows[0].isrepost) {
+            client.release();
+            return { success: false, message: 'Cannot edit reposted post' };
         }
 
+        // Then check if there are any attachments to remove
+        const queryText2 = 'SELECT mediaURI FROM posts WHERE postID = $1';
+        const values2 = [postID];
+        const result2 = await client.query(queryText2, values2);
+        if (result2.rows[0].mediauri !== null && removeRequest.length > 0) {
+            // remove the mediaURI and update the editedContent
+            const queryText3 = 'UPDATE posts SET mediaURI = $1 AND content = $2 WHERE postID = $3';
+            const values3 = [null, editedContent, postID];
+            await client.query(queryText3, values3);
+        } else {
+            // Update the content of the post
+            const queryText4 = 'UPDATE posts SET content = $1 WHERE postID = $2';
+            const values4 = [editedContent, postID];
+            await client.query(queryText4, values4);
+        }
         client.release();
-
         return { success: true, message: 'Post edited successfully' };
     } catch (error) {
         console.error('Error editing post:', error);
@@ -350,6 +354,7 @@ class UserHandler extends AccountHandler {
       
       // Retrive the userID of the post from post database
       const client = await pool.connect();
+      // Selete authorID and postID
       const queryText = 'SELECT authorID FROM posts WHERE postID = $1';
       const values = [postID];
       const result = await client.query(queryText, values);
@@ -370,8 +375,8 @@ class UserHandler extends AccountHandler {
 
       // Repost the post
       const client2 = await pool.connect();
-      const queryText2 = 'INSERT INTO posts (authorID, content, mediaURI, privacy) VALUES ($1, $2, $3, $4)';
-      const values2 = [this.userID, `Reposted from ${result.rows[0].userID}`, result.rows[0].mediaURI, privacy];
+      const queryText2 = 'INSERT INTO posts (authorID, content, mediaURI, privacy, isrepost) VALUES ($1, $2, $3, $4, $5)';
+      const values2 = [this.userID, postID, result.rows[0].mediauri, privacy, true];
       await client2.query(queryText2, values2);
       client2.release();
 
@@ -514,29 +519,6 @@ class UserHandler extends AccountHandler {
     } catch (error) {
       console.error('Error deleting comment:', error);
       return { success: false, message: 'Failed to delete comment' };
-    }
-  }
-
-  // Method to search other users
-  async searchUser(keyword) {
-    /*
-      Search for other users by keyword in the database
-      @param {string} keyword - The keyword to search for
-    */
-    try {
-  
-        const client = await pool.connect();
-
-        // Search for username by keyword in the database
-        const queryText = 'SELECT * FROM users WHERE username ILIKE $1';
-        const values = [`%${keyword}%`];
-        const result = await client.query(queryText, values);
-        client.release();
-
-        return { success: true, message: 'Users retrieved successfully', users: result.rows };
-    } catch (error) {
-        console.error('Error searching for users:', error);
-        return { success: false, message: 'Failed to search for users' };
     }
   }
 
@@ -878,6 +860,103 @@ class UserHandler extends AccountHandler {
       return { success: false, message: 'Failed to get notifications' };
     }
   }
+
+  // Method to search other users
+  async searchUser(keyword) {
+    /*
+      Search for other users by keyword in the database
+      @param {string} keyword - The keyword to search for
+    */
+    try {
+  
+        const client = await pool.connect();
+
+        // Search for username by keyword in the database
+        const queryText = 'SELECT * FROM users WHERE username ILIKE $1';
+        const values = [`%${keyword}%`];
+        const result = await client.query(queryText, values);
+        client.release();
+
+        return { success: true, message: 'Users retrieved successfully', users: result.rows };
+    } catch (error) {
+        console.error('Error searching for users:', error);
+        return { success: false, message: 'Failed to search for users' };
+    }
+  }
+
+  // Method to search by message tags
+  async searchByMessageTags(tags) {
+    /*
+      * Search for posts by message tag in the database, note tag starts with #
+      * @param {string[]} tags - A list of tags to search for
+    */
+    try {
+      const client = await pool.connect();
+
+      const resultSet = new Map(); // Initialize a Map to store postIDs and their tag counts
+
+      // Iterate through each tag in the provided list
+      for (const tag of tags) {
+        // Search for posts with exact matching tag
+        const queryResult = await client.query('SELECT postID FROM posts WHERE content ILIKE $1', [`%${tag}%`]);
+        const matchedPostIDs = queryResult.rows;
+
+        // Loop through the query result
+        for (const post of matchedPostIDs) {
+          const matchedPostID = post.postid;
+
+          // If postID is not yet in the resultSet, add it with count 1
+          if (!resultSet.has(matchedPostID)) {
+            resultSet.set(matchedPostID, 1);
+          } else {
+            // If postID already exists, increment the count
+            const currentCount = resultSet.get(matchedPostID);
+            resultSet.set(matchedPostID, currentCount + 1);
+          }
+        }
+      }
+
+      // Sort the resultSet by tag counts in descending order
+      const sortedResult = [...resultSet.entries()].sort((a, b) => b[1] - a[1]);
+
+      // Extract postIDs from sortedResult
+      const postIDs = sortedResult.map(([postId, _]) => postId);
+
+      client.release();
+      return { success: true, message: 'Search successfully', postIDs };
+
+    } catch (error) {
+      return { success: false, message: 'Failed to search by tags'}
+    }
+  }
+
+  // Method to search posts by keywords
+  async generalSearch(searchContent) {
+    /*
+      * Search posts by similarity, and return a list of post, sorted by similarity
+    */
+    try {
+      const client = await pool.connect();
+  
+      // Enable pg_trgm extension for similarity search
+      await client.query('CREATE EXTENSION IF NOT EXISTS pg_trgm');
+  
+      // Search for posts with content similarity to searchContent
+      const queryResult = await client.query(`
+        SELECT postID 
+        FROM posts 
+        WHERE content % $1
+      `, [searchContent]);
+
+      const postIDs = queryResult.rows.map(row => row.postid);
+  
+      client.release();
+      return { success: true, message: 'Search successfully', postIDs };
+    } catch (error) {
+      return { success: false, message: 'Failed to perform general search' };
+    }
+  }
+  
 }
 
 module.exports = UserHandler;
