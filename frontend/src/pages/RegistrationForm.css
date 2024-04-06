@@ -40,3 +40,18 @@
 .btn-primary:hover {
     background-color: #555;
 }
+
+.addpostbutton {
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+    margin-left: 50px;
+}
+
+.newpostdescription {
+    margin-left: 50px;
+}
+
+#thought {
+    width: 530px;
+}

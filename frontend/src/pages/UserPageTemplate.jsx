@@ -19,6 +19,7 @@ import messageIcon from "../assets/message.svg";
 import notificationIcon from "../assets/notification.svg";
 import profileIcon from "../assets/user.svg";
 import UserHomepage from "./UserHomepage";
+import AddPostForm from './AddPostForm';
 
 const testPost = [
   {
@@ -82,7 +83,7 @@ const testPost = [
 function AddPost({user}) {
   return (
     <div id="addPost">
-        <h1>{user.username}</h1>
+        <AddPostForm />
     </div>
   );
 }

@@ -6,3 +6,17 @@
  * Leung Ka Lun 1155157403
  * O Ching Lam 1155159131
  */
+ 
+ #addPost {
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    width: 40%;
+    height: auto;
+    position: absolute;
+    top: 100px;
+    overflow-y: auto;
+    max-height: 80vh;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+ }

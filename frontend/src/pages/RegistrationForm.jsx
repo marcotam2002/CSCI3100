@@ -9,6 +9,7 @@
 
 import React, { useState } from "react";
 import './RegistrationForm.css'
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 export default function RegistrationForm() {
     const [username, setUsername] = useState("");
@@ -40,7 +41,7 @@ export default function RegistrationForm() {
         secans: secans
       }
   
-      const response = await fetch('/register', { 
+      const response = await fetch(`${API_BASE_URL}/api/user/register`, { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -85,7 +86,7 @@ export default function RegistrationForm() {
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
-          <p>Please input answers to the following 3 security questions:</p>
+          <p>Please input answers to the following security question:</p>
           <div>
             <label htmlFor="secans">Who is your best friend?</label>
             <input type="text" id="secans" required value={secans}
