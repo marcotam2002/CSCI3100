@@ -53,7 +53,7 @@ function LoginForm() {
           if (response.status === 200){
               //successful login
               const resdata = await response.json()
-              document.cookie = "username="+ name;
+              document.cookie = "username="+ username;
               document.cookie = "userID" + resdata.userID
               document.cookie = "role="+ resdata.role;
               navigate('/homepage')

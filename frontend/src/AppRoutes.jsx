@@ -8,7 +8,6 @@
  */
 
 import {Navigate, Route, Routes} from "react-router-dom";
-import UserHomepage from "./pages/UserHomepage";
 import SearchPage from "./pages/SearchPage";
 import Login from "./pages/LoginPage"
 import AdminUserPanel from "./pages/AdminUserPanel";
