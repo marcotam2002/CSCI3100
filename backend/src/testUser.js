@@ -29,16 +29,16 @@ async function testUserFunctions() {
     // }
 
     const user = {
-    userID: 6,
-    username: 'kalun',
-    salt: '5a6b2d7cab169a8207698c2607b572ef',
-    password: 'd304b6c40cceff3e587c0d333a2d037f5fe9cf2c308b0ad959d26450fbc13a3e2e7a99e6f0477b9053602520ccb1770cb6b6c9994023a5e2dfc8db414d1e8789',
-    secureqans: 'kalun',
-    privacy: 'public',
-    description: null,
-    active: true,
-    usertype: 'user'
-  }
+      userID: 3,
+      username: 'test3',
+      salt: '47bcbe97174c37b83ccdef3ead4a27d1',
+      password: 'fdf73f3f4f030663085dcd4513d4d34ac26d16845929ceeddb4a83867c0f9d9265e49ebacda4d1e90884ad0ffa1581fc9197628819de8f012b54077ec79ebef4',
+      secureqans: '123',
+      privacy: 'public',
+      description: null,
+      active: true,
+      usertype: 'user'
+    }
 
     // Create a new user
     const User = new UserHandler(user.userID, user.username, user.salt, user.password, user.usertype, user.privacy, user.active);
@@ -101,16 +101,20 @@ async function testUserFunctions() {
     // console.log(notiResult)
 
     // Test create post
-    // const postResult = await User.createPost('Hello!');
+    // const postResult = await User.createPost('Hello2! #test');
     // console.log(postResult)
+
+    // Test edit post
+    // const editPostResult = await User.editPost(1, 'Hello2!2');
+    // console.log(editPostResult)
 
     // Test get all own posts
     // const allPosts = await User.getOwnPosts();
     // console.log(allPosts)
 
     // Test get all following posts
-    const followingPosts = await User.getFollowingPosts();
-    console.log(followingPosts)
+    // const followingPosts = await User.getFollowingPosts();
+    // console.log(followingPosts)
 
     // Test delete post
     // const deletePostResult = await User.deletePost(6);
@@ -143,6 +147,14 @@ async function testUserFunctions() {
     // Test delete comment
     // const deleteCommentResult = await User.deleteComment(1);
     // console.log(deleteCommentResult)
+
+    // Test search by tags
+    // const tagsSearchResult = await User.searchByMessageTags(["#test", "#hehe"]);
+    // console.log(tagsSearchResult);
+
+    // Test general test
+    const generalSearchResult = await User.generalSearch("hehe");
+    console.log(generalSearchResult);
 
     console.log('Test ended.')
 }

@@ -21,8 +21,8 @@ async function testAdminFunctions() {
   // const allMessages = await adminHandler.getAllMessages();
   // console.log('All messages:', allMessages);
 
-  // const allPosts = await adminHandler.getAllPosts();
-  // console.log('All posts:', allPosts);
+  const allPosts = await adminHandler.getAllPosts();
+  console.log('All posts:', allPosts);
 
   // const allComments = await adminHandler.getAllComments();
   // console.log('All comments:', allComments);

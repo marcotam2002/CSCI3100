@@ -59,13 +59,13 @@ Now we need to activate our server.
 
 Navigate to the `backend` directory, start the frontend server
 
-    ```shell
-    npm run dev
-    ```
+```
+npm run dev
+```
 
 **Run the website:**
 
-Follow the steps below to run the project:
+Note that we need to use another terminal to run the project. Follow the below steps to run the project.
 
 1. Navigate to the `frontend` directory, start the frontend server
     ```shell
@@ -82,5 +82,6 @@ Follow the steps below to run the project:
 That's it! The project should now be up and running.
 
 # Updates
-25/3/2024: Start the framework of the project
-30/3/2024: Finish the basic framework of the project, start the connection to database and local server
+25/3/2024: Start the framework of the project <br>
+30/3/2024: Finish the basic framework of the project, start the connection to database and local server <br>
+07/4/2024: Finish most basic features, start working on the advanced feature <br>
