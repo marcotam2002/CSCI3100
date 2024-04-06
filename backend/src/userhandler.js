@@ -744,7 +744,7 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to reset password
-  async resetPassword(newPassword) {
+  async resetPassword(username, newPassword) {
     /*
       * Forget password and recover the account
       * @param {string} newPassword - The new password to be updated, assume we have checked the security answers
@@ -757,8 +757,8 @@ class UserHandler extends AccountHandler {
         const client = await pool.connect();
 
         // Update the password in the database
-        const queryText2 = 'UPDATE users SET password = $1, salt = $2 WHERE userID = $3';
-        const values2 = [newHashedPassword, salt, this.userID];
+        const queryText2 = 'UPDATE users SET password = $1, salt = $2 WHERE username = $3';
+        const values2 = [newHashedPassword, salt, username];
         await client.query(queryText2, values2);
         client.release();
 

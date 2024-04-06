@@ -60,7 +60,7 @@ function LoginForm() {
           }else{
               //bad login: return error message
               const resdata = await response.json()
-              console.log(response.body.message)
+              console.log(resdata);
               setPassword("");
               setUsername("");
           }

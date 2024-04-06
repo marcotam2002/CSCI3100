@@ -71,7 +71,7 @@ app.post("/api/user/forgetpw", async(req, res)=>{
 app.put("/api/user/forgetpw/changepw", async(req, res)=>{
     console.log("change password request received")
     const userHandler=new UserHandler();
-    const result = await userHandler.resetPassword(req.body.password);
+    const result = await userHandler.resetPassword(req.body.username, req.body.password);
     if(result.success){
         return res.status(200).send();
     }

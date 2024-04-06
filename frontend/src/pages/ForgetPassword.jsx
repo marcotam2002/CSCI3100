@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './ForgetPassword.css';
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 const ForgetPasswordForm = () => {
   const [username, setUsername] = useState('');
@@ -30,7 +31,7 @@ const ForgetPasswordForm = () => {
         securityAnswers: securityAnswers, 
     };
 
-    const response = await fetch('/forgetpw',{
+    const response = await fetch(`${API_BASE_URL}/api/user/forgetpw`,{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -42,7 +43,8 @@ const ForgetPasswordForm = () => {
         setStep(2);
     }else{
         // fail the security check.
-        console.log(response.body);
+        const resdata = await response.json()
+        console.log(resdata)
     }
 
     // setStep(2);
@@ -73,21 +75,25 @@ const ForgetPasswordForm = () => {
       // console.log("Congrats.");
 
       const data = {
+        username: username,
         password: password,
       }
-      const response2 = await fetch('/forgetpw/changepw',{
+
+      const response2 = await fetch(`${API_BASE_URL}/api/user/forgetpw/changepw`,{
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
       });
+
       if (response2.status === 200){
         // successful update
         alert('Password updated successfully!');
         setStep(3);
       }else{
-        console.log(response.body);
+        const resdata = await response2.json()
+        console.log(resdata)
       }  
     }
   };
