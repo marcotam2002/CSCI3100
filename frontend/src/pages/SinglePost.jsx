@@ -265,7 +265,7 @@ function SinglePostPage({ user }) {
         </div>
       </div>
 
-      <Header subTitle={user.username} currPage={"User Page"} />
+      <Header subTitle={user} currPage={"User Page"} />
       <div id="bodyContainer">
         <div id="sideBar">
           <SideBarButton

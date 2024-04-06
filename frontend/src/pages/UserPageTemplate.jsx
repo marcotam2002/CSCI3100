@@ -21,6 +21,7 @@ import profileIcon from "../assets/user.svg";
 import logoutIcon from "../assets/log-out.svg";
 import UserHomepage from "./UserHomepage";
 import AddPostForm from './AddPostForm';
+import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
 const testPost = [
@@ -109,7 +110,7 @@ function UserPageTemplate({user}) {
         </div>
       </div>
 
-      <Header subTitle={user.username} currPage={"User Page"} />
+      <Header subTitle={user} currPage={"User Page"} />
       <div id="bodyContainer">
         <div id="sideBar">
           <SideBarButton
@@ -146,7 +147,7 @@ function UserPageTemplate({user}) {
             image={profileIcon}
             name={"Profile"}
             color={"black"}
-            func = {()=>alert("This should redirect to Profile page.")}
+            func = {()=>navigate(`/profile/${getCookie("userID")}`)}
           />
           <SideBarButton 
             image={logoutIcon}
