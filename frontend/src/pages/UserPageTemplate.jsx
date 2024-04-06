@@ -18,8 +18,10 @@ import searchIcon from "../assets/search.svg";
 import messageIcon from "../assets/message.svg";
 import notificationIcon from "../assets/notification.svg";
 import profileIcon from "../assets/user.svg";
+import logoutIcon from "../assets/log-out.svg";
 import UserHomepage from "./UserHomepage";
 import AddPostForm from './AddPostForm';
+import { useNavigate } from 'react-router';
 
 const testPost = [
   {
@@ -90,6 +92,8 @@ function AddPost({user}) {
 
 function UserPageTemplate({user}) {
   const [state, setState] = useState(false);
+  const navigate = useNavigate();
+
   const openAddPost = () => {
     setState(true);
   };
@@ -112,7 +116,7 @@ function UserPageTemplate({user}) {
             image={homeIcon}
             name={"Home"}
             color={"#1D67CD"}
-            func = {()=>alert("This should redirect to Home page.")}
+            func = {()=>navigate('/userhomepage')}
           />
           <SideBarButton
             image={addPostIcon}
@@ -130,7 +134,7 @@ function UserPageTemplate({user}) {
             image={messageIcon}
             name={"Message"}
             color={"black"}
-            func = {()=>alert("This should redirect to Message page.")}
+            func = {()=>navigate('/message')}
           />
           <SideBarButton
             image={notificationIcon}
@@ -143,6 +147,12 @@ function UserPageTemplate({user}) {
             name={"Profile"}
             color={"black"}
             func = {()=>alert("This should redirect to Profile page.")}
+          />
+          <SideBarButton 
+            image={logoutIcon}
+            name={"Log out"}
+            color={"black"}
+            func = {() => navigate("/")}
           />
         </div>
         <div id="main">

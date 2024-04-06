@@ -56,10 +56,10 @@ export default function AddPostForm() {
       const fileType = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 
       // for debugging
-      console.log(fileName);
-      console.log(fileType);
+      // console.log(fileName);
+      // console.log(fileType);
       const filURL = URL.createObjectURL(file);
-      console.log(filURL);
+      // console.log(filURL);
       setFileType(fileType);
       setFileURL(filURL);
     };
