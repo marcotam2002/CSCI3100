@@ -30,8 +30,8 @@ const AppRoutes=()=>{
             <Route path="/admin/postmanager" element = {<AdminPostPanel/>}/>  
             <Route path="/userhomepage" element = {<UserPageTemplate user={getCookie("username")}/>}/> 
             <Route path="/forgetpw" element= {<ForgetPasswordForm/>}/>
-            <Route path="/message" element = {<Message user={testUser}/>}/>
-            <Route path="/post/:postID" element = {<SinglePostPage user={testUser}/>} />
+            <Route path="/message" element = {<Message user={getCookie("username")}/>}/>
+            <Route path="/post/:postID" element = {<SinglePostPage user={getCookie("username")}/>} />
         </Routes>
     );
 };
