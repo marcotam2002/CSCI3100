@@ -109,69 +109,72 @@ function SinglePostFrame({ user, posts }) {
     // for debugging.
     console.log("Submitted comment:", newcomment);
 
-    const newComment = {
-      username: user.username,
-      text: newcomment,
-    }
+    // const newComment = {
+    //   username: user.username,
+    //   text: newcomment,
+    // }
 
-    const updatedPosts = postsState.map((post) => {
-      if (post.postID === postID) {
-        return {
-          ...post,
-          commentnum: post.commentnum + 1, 
-          comments: [...post.comments, newComment],
-        };
-      }
-      return post;
-    });
-    setPostsState(updatedPosts);
+    // const updatedPosts = postsState.map((post) => {
+    //   if (post.postID === postID) {
+    //     return {
+    //       ...post,
+    //       commentnum: post.commentnum + 1, 
+    //       comments: [...post.comments, newComment],
+    //     };
+    //   }
+    //   return post;
+    // });
+    // setPostsState(updatedPosts);
 
     // for debugging.
-    console.log(updatedPosts)
+    // console.log(updatedPosts)
     setNewComment("");
 
     // for fetch part
-    // const data = {
-    //   posts: updatedPosts,
-    // };
+    const data = {
+      postID: postID,
+      // user: userID,
+      comment: newcomment,
+    };
 
-    // const response = await fetch('/post/change', { 
-    //   method: 'PUT',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify(data)
-    // });
-    // if (response.status === 200){
-    //     // successful update
-    //     console.log("successful update")
-    // }else{
-    //     // failed update
-    //     console.log("failed to update")
-    // }
+    const response = await fetch('/post/commentadd', { 
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200){
+        // successful update
+        console.log("successful update")
+    }else{
+        // failed update
+        console.log("failed to update")
+    }
   }
 
   const ChangeLike = async (postID, event) => {
     event.preventDefault();
 
-    const updatedPosts = postsState.map((post) => {
-      if (post.postID === postID) {
-        post.liked = !post.liked;
-        post.likes += post.liked ? 1 : -1;
-      }
-      return post;
-    });
-    setPostsState(updatedPosts);
+    // const updatedPosts = postsState.map((post) => {
+    //   if (post.postID === postID) {
+    //     post.liked = !post.liked;
+    //     post.likes += post.liked ? 1 : -1;
+    //   }
+    //   return post;
+    // });
+    // setPostsState(updatedPosts);
 
     // for debugging.
-    console.log(updatedPosts);
+    // console.log(updatedPosts);
 
     // for fetch part
     const data = {
-      posts: updatedPosts,
+      postID: postID,
+      // may need to add userID to specify the user 
     };
 
-    const response = await fetch('/post/change', {
+    const response = await fetch('/post/likepost', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
