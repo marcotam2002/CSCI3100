@@ -17,16 +17,16 @@ async function testUserFunctions() {
     // Assume we have logged in as a user
 
     const user = {
-        userID: 5,
-        username: 'hehehe',
-        salt: '8770dbbbe87f38421dad27e141f014a9',
-        password: '5e24c9d3f42594b5701a4b65a292231971fcab281f63a9c5da4cb12afa2abaaccaac5af2653258af3208f721b748c43114e6cc12bcc3ff8438e337a60f82b810',
-        secureqans: '123',
-        privacy: 'private',
-        description: 'this is a test description',
-        active: true,
-        usertype: 'user'
-      }
+      userID: 4,
+      username: 'Kalun',
+      salt: 'dd391c003d8b186712a9ee26c9f2bb2a',
+      password: 'ee0227a538176d65ec33d7eacf2f34c05dbffa90ee0750bf696aab3fdf5c7268bd22dc816a20aaf5bf026b1b01ecf08684058a1a76d13656d8caa7c46dbaed0b',
+      secureqans: '123',
+      privacy: 'public',
+      description: null,
+      active: true,
+      usertype: 'user'
+    }
 
     // Create a new user
     const User = new UserHandler(user.userID, user.username, user.salt, user.password, user.usertype, user.privacy, user.active);
@@ -84,9 +84,41 @@ async function testUserFunctions() {
     // const notiResult = await User.getNotifications();
     // console.log(notiResult)
 
-    // Test post
-    const postResult = await User.createPost('Hello!');
-    console.log(postResult)
+    // Test create post
+    // const postResult = await User.createPost('Hello!');
+    // console.log(postResult)
+
+    // Test delete post
+    // const deletePostResult = await User.deletePost(6);
+    // console.log(deletePostResult)
+
+    // Test like and unlike post
+    // const likePostResult = await User.unlikePost(5);
+    // console.log(likePostResult)
+
+    // Test repost
+    // const repostResult = await User.repostPost(5);
+    // console.log(repostResult)
+
+    // Test comment on a post
+    // const commentResult = await User.commentPost(5, 'hehehe');
+    // console.log(commentResult)
+
+    // Test like comment
+    // const likeCommentResult = await User.likeComment(2);
+    // console.log(likeCommentResult)
+
+    // Test unlike comment
+    // const unlikeCommentResult = await User.unlikeComment(1);
+    // console.log(unlikeCommentResult)
+
+    // Test edit comment
+    // const editCommentResult = await User.editComment(4, 'Kalun is the best!');
+    // console.log(editCommentResult)
+
+    // Test delete comment
+    const deleteCommentResult = await User.deleteComment(1);
+    console.log(deleteCommentResult)
 
     console.log('Test ended.')
 }
