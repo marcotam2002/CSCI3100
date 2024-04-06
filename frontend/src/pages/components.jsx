@@ -40,7 +40,7 @@ function SideBarButton({ image, name, color, func }) {
 
 function CrossButton({ func }) {
   return (
-    <button type="button" id="crossButton" title="Close" onClick={func}>
+    <button type="button" id="crossButton" onClick={func}>
       <img src={crossIcon} alt="" width="40px" height="40px" />
     </button>
   );
