@@ -21,7 +21,8 @@ import likeIcon from '../assets/like.svg';
 import likedIcon from '../assets/liked.svg';
 import commentIcon from '../assets/comment.svg';
 import { useParams } from 'react-router-dom';
-import './format.css'
+import AddPostForm from "./AddPostForm";
+import './format.css';
 import './Post.css';
 
 
@@ -88,7 +89,7 @@ const testPost = [
 function AddPost({ user }) {
   return (
     <div id="addPost">
-      <h1>{user.username}</h1>
+      <AddPostForm />
     </div>
   );
 }
@@ -102,7 +103,6 @@ function SinglePostFrame({ user, posts }) {
   }
 
   const [newcomment, setNewComment] = useState("");
-  const [postsState, setPostsState] = useState(posts);
 
   const addComment = async (postID, event) => {
     event.preventDefault();

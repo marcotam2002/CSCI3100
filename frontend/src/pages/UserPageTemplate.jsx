@@ -154,3 +154,4 @@ function UserPageTemplate({user}) {
 }
 
 export default UserPageTemplate;
+  

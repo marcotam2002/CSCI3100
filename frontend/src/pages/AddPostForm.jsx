@@ -56,10 +56,10 @@ export default function AddPostForm() {
       const fileType = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 
       // for debugging
-      // console.log(fileName);
-      // console.log(fileType);
+      console.log(fileName);
+      console.log(fileType);
       const filURL = URL.createObjectURL(file);
-      // console.log(filURL);
+      console.log(filURL);
       setFileType(fileType);
       setFileURL(filURL);
     };
@@ -75,12 +75,12 @@ export default function AddPostForm() {
             />
           </div>
           <div className="addpostbutton">
-                <button className="btn-primary" style={{margin: "10 px 5px"}} type="submit">Create</button>
+                <button className="btn-primary" style={{margin: "10px 5px"}} type="submit">Post!</button>
                 <label htmlFor="fileUpload" style={{marginRight: "5px"}}>
                 <input type="file" id="fileUpload" accept=".jpg,.png,.mp4" style={{display: "none"}}
                     onChange={handleFileUpload}
                 />
-                <img src={PhotoIcon} alt="Upload Photo/Video" style={{cursor: "pointer", width: "3px", height: "30px"}} />
+                <img src={PhotoIcon} alt="Upload Photo/Video" style={{cursor: "pointer", width: "50px", height: "50px", marginLeft: "20px"}} />
                 </label>
             </div>
             {errorMessage && <p className="text-danger">{errorMessage}</p>}

@@ -17,6 +17,7 @@ import UserPageTemplate from "./pages/UserPageTemplate";
 import ForgetPasswordForm from "./pages/ForgetPassword";
 import Message from "./pages/MessagePage";
 import SinglePostPage from "./pages/SinglePost";
+import { getCookie } from "./pages/CookieHandlers";
 
 const testUser = {username: "testUser", password: "<PASSWORD>"};
 
@@ -25,10 +26,9 @@ const AppRoutes=()=>{
         <Routes>
             <Route path="/" element = {<Login/>}/>
             <Route path="/search" element = {<SearchPage/>}/>
-            <Route path="/homepage" element = {<UserHomepage/>}/>
             <Route path="/admin/usermanager" element = {<AdminUserPanel/>}/>
             <Route path="/admin/postmanager" element = {<AdminPostPanel/>}/>  
-            <Route path="/usertemplate" element = {<UserPageTemplate user={testUser}/>}/> 
+            <Route path="/userhomepage" element = {<UserPageTemplate user={getCookie("username")}/>}/> 
             <Route path="/forgetpw" element= {<ForgetPasswordForm/>}/>
             <Route path="/message" element = {<Message user={testUser}/>}/>
             <Route path="/post/:postID" element = {<SinglePostPage user={testUser}/>} />

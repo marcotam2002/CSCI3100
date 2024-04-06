@@ -46,6 +46,7 @@
     justify-content: left;
     align-items: flex-start;
     margin-left: 50px;
+    margin-
 }
 
 .newpostdescription {
@@ -54,4 +55,9 @@
 
 #thought {
     width: 530px;
+}
+
+#fileUpload {
+    justify-content: right;
+    margin-left: 50px;
 }
