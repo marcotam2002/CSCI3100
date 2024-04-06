@@ -78,6 +78,25 @@ app.put("/api/user/forgetpw/changepw", async(req, res)=>{
     else return res.status(403).send({message:result.message});
 });
 
+//Code below has not been tested
+app.post("/api/post/addpost", async(req, res)=>{
+    console.log("Add Post request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.createPost(data, null);    //test without media first
+    if(result.success){
+        console.log("New Post added to database");
+        return res.status(200).send();
+    }
+    else return res.status(404).send({message: result.message});
+})
+
+/*
+app.get("/api/homepage", async(req,res)=>{
+    console.log("Fetching post from server")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getPost();    //??????? Do we have a function to get a bunch of posts to the homepage?
+})*/
+
 app.listen(5164,()=>{
     console.log("server started on localhost:5164");
 });
