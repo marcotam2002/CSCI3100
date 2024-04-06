@@ -13,6 +13,8 @@ import RegistrationForm from './RegistrationForm';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+
 function LoginForm() {
 
   const [state, setState] = useState(false);
@@ -30,39 +32,40 @@ function LoginForm() {
   const navigate = useNavigate();
   //load saved username from cookie
 
-
-  //handler for fetching of the form
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const data = {
-      username: username,
-      password: password
-    };
-
-    // use POST method to send a request to the server
-    const response = await fetch('/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      //successful login
-      const resdata = await response.json()
-      document.cookie = "username=" + username;
-      document.cookie = "userID" + resdata.userID
-      document.cookie = "role=" + resdata.role;
-      navigate('/homepage ')
-    } else {
-      //bad login: return error message
-      console.log("Error")
-      setPassword("");
-      setUsername("");
+        
+    //handler for fetching of the form
+    const handleSubmit = async (event) => {
+          event.preventDefault();
+          
+          const data = {
+              username: username,
+              password: password
+          };
+    
+          // use POST method to send a request to the server
+          const response = await fetch(`${API_BASE_URL}/api/user/login`, { 
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if (response.status === 200){
+              //successful login
+              const resdata = await response.json()
+              document.cookie = "username="+ name;
+              document.cookie = "userID" + resdata.userID
+              document.cookie = "role="+ resdata.role;
+              navigate('/homepage')
+          }else{
+              //bad login: return error message
+              const resdata = await response.json()
+              console.log(resdata);
+              setPassword("");
+              setUsername("");
+          }
+    
     }
-
-  }
 
   return (
     <div>
