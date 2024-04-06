@@ -22,24 +22,25 @@ function UserHomepage({ posts }) {
   const ChangeLike = async (postID, event) => {
     event.preventDefault();
 
-    const updatedPosts = postsState.map((post) => {
-      if (post.postID === postID) {
-        post.liked = !post.liked;
-        post.likes += post.liked ? 1 : -1;
-      }
-      return post;
-    });
-    setPostsState(updatedPosts);
+    // const updatedPosts = postsState.map((post) => {
+    //   if (post.postID === postID) {
+    //     post.liked = !post.liked;
+    //     post.likes += post.liked ? 1 : -1;
+    //   }
+    //   return post;
+    // });
+    // setPostsState(updatedPosts);
 
     // for debugging.
-    console.log(updatedPosts);
+    // console.log(updatedPosts);
 
     // for fetch part
     const data = {
-      posts: updatedPosts,
+      postID: postID,
+      userID: userID,
     };
 
-    const response = await fetch('/post/change', {
+    const response = await fetch('/post/likepost', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
