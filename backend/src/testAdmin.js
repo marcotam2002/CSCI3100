@@ -15,8 +15,8 @@ async function testAdminFunctions() {
 
   const adminHandler = new AdminHandler();
 
-  // const allUsers = await adminHandler.getAllUsers();
-  // console.log('All users:', allUsers);
+  const allUsers = await adminHandler.getAllUsers();
+  console.log('All users:', allUsers);
 
   // const allMessages = await adminHandler.getAllMessages();
   // console.log('All messages:', allMessages);
@@ -24,8 +24,8 @@ async function testAdminFunctions() {
   // const allPosts = await adminHandler.getAllPosts();
   // console.log('All posts:', allPosts);
 
-  const allComments = await adminHandler.getAllComments();
-  console.log('All comments:', allComments);
+  // const allComments = await adminHandler.getAllComments();
+  // console.log('All comments:', allComments);
 
   // const allLikes = await adminHandler.getAllLikes();
   // console.log('All likes:', allLikes);

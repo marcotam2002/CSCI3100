@@ -635,7 +635,7 @@ class UserHandler extends AccountHandler {
     }
   }
 
-  // Method to get post
+  // Method to get particular post
   async getPost(postID) {
     /*
       * Retrieve post information from the database
@@ -658,6 +658,46 @@ class UserHandler extends AccountHandler {
     } catch (error) {
         console.error('Error retrieving post:', error);
         return null;
+    }
+  }
+
+  // Method to get all own posts
+  async getOwnPosts() {
+    /*
+      * Retrieve all posts of the user from the database
+    */
+    try{
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM posts WHERE authorID = $1';
+      const values = [this.userID];
+      const result = await client.query(queryText, values);
+      client.release();
+
+      return { success: true, message: 'Own posts retrieved successfully', posts: result.rows };
+
+    } catch (error) {
+    console.error('Error retrieving own posts:', error);
+    return { success: false, message: 'Failed to retrieve own posts' };
+    }
+  }
+
+  // Method to get all following users' posts
+  async getFollowingPosts() {
+    /*
+      * Retrieve all posts of the users following from the database
+    */
+    try{
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM posts WHERE authorID IN (SELECT followingID FROM relationships WHERE followerID = $1)';
+      const values = [this.userID];
+      const result = await client.query(queryText, values);
+      client.release();
+
+      return { success: true, message: 'Following posts retrieved successfully', posts: result.rows };
+
+    } catch (error) {
+    console.error('Error retrieving following posts:', error);
+    return { success: false, message: 'Failed to retrieve following posts' };
     }
   }
 
@@ -817,37 +857,22 @@ class UserHandler extends AccountHandler {
   // Method to get notifications
   async getNotifications() {
     /*
-      * Retrieve notifications for the user
+      * Retrieve notifications (follow requests) for the user
     */
     try {
       const client = await pool.connect();
-      const queryText = 'SELECT * FROM messages WHERE receiverID = $1 AND read = false';
+      const queryText = 'SELECT * FROM followRequests WHERE followingID = $1';
       const values = [this.userID];
       const result = await client.query(queryText, values);
       client.release();
 
-      // Create a map to store senderID and messageCount
-      const notificationsMap = {};
-
-      // Iterate over the result and update messageCount for each senderID
-      result.rows.forEach(row => {
-          console.log(row)
-          const senderID = row.senderid;
-          if (notificationsMap[senderID]) {
-              notificationsMap[senderID]++;
-          } else {
-              notificationsMap[senderID] = 1;
-          }
-      });
-
-      // Construct the set with senderID and message count
-      const notifications = [];
-      for (const senderID in notificationsMap) {
-          notifications.push({ senderID: senderID, messageCount: notificationsMap[senderID] });
+      const followRequests = [];
+      for (let i = 0; i < result.rows.length; i++) {
+        const followerID = result.rows[i].followerid;
+        followRequests.push(followerID);
       }
 
-      // Return the retrieved notifications
-      return { success: true, message: 'Notifications retrieved successfully', notifications: notifications };
+      return { success: true, message: 'Follow requests retrieved successfully', notifications: followRequests };
     } catch (error) {
       console.error('Error getting notifications:', error);
       return { success: false, message: 'Failed to get notifications' };
