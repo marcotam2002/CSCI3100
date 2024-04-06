@@ -19,6 +19,7 @@ import notificationIcon from "../assets/notification.svg";
 import profileIcon from "../assets/user.svg";
 import logoutIcon from "../assets/log-out.svg";
 import AddPostForm from './AddPostForm';
+import EditProfileForm from "./EditProfileForm";
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
@@ -32,7 +33,7 @@ const testUser =
 
     }
 
-function UserProfile() {
+function UserProfile({openFunc}) {
     const { userID } = useParams();
     const currentUser = getCookie("userID");
     const [isCurrentUser, setIsCurrentUser] = useState(false);
@@ -44,6 +45,7 @@ function UserProfile() {
     
     const editProfile = () => {
         // For debugging.
+        openFunc();
         console.log("Edit Profile function placeholder");
     };
 
@@ -80,8 +82,17 @@ function UserProfile() {
 
 function Profile({user}){
   const [state, setState] = useState(false);
+  const [state2, setState2] = useState(false);
   const navigate = useNavigate();
 
+  const openEditProfileForm = () => {
+    setState2(true);
+  };
+
+  const closeEditProfileForm = () => {
+    setState2(false);
+  };
+  
   const openAddPost = () => {
     setState(true);
   };
@@ -94,6 +105,11 @@ function Profile({user}){
       <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
           <AddPostForm closeFunc={closeAddPost}/>
+        </div>
+      </div>
+      <div className={`popupBox ${state2 ? "show" : ""}`}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <EditProfileForm closeFunc={closeEditProfileForm}/>
         </div>
       </div>
 
@@ -144,7 +160,7 @@ function Profile({user}){
           />
         </div>
         <div id="main">
-          <UserProfile />
+          <UserProfile openFunc={openEditProfileForm}/>
         </div>
       </div>
     </div>
