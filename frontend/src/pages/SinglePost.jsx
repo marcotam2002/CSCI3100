@@ -86,14 +86,6 @@ const testPost = [
 ];
 
 
-function AddPost({ user }) {
-  return (
-    <div id="addPost">
-      <AddPostForm />
-    </div>
-  );
-}
-
 function SinglePostFrame({ user, posts }) {
 
   if (!posts) {
@@ -261,7 +253,7 @@ function SinglePostPage({ user }) {
     <div>
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
         <div onClick={(e) => e.stopPropagation()}>
-          <AddPost user={user} />
+          <AddPostForm closeFunc={closeAddPost}/>
         </div>
       </div>
 

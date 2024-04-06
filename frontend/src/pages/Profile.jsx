@@ -32,15 +32,6 @@ const testUser =
 
     }
 
-
-function AddPost({user}) {
-    return (
-      <div id="addPost">
-          <AddPostForm />
-      </div>
-    );
-}
-
 function UserProfile() {
     const { userID } = useParams();
     const currentUser = getCookie("userID");
@@ -102,7 +93,7 @@ function Profile({user}){
     <div>
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
         <div onClick={(e) => e.stopPropagation()}>
-          <AddPost user={user}/>
+          <AddPostForm closeFunc={closeAddPost}/>
         </div>
       </div>
 
