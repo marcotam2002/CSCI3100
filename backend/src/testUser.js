@@ -16,17 +16,29 @@ async function testUserFunctions() {
 
     // Assume we have logged in as a user
 
+    // const user = {
+    //   userID: 4,
+    //   username: 'Kalun',
+    //   salt: 'dd391c003d8b186712a9ee26c9f2bb2a',
+    //   password: 'ee0227a538176d65ec33d7eacf2f34c05dbffa90ee0750bf696aab3fdf5c7268bd22dc816a20aaf5bf026b1b01ecf08684058a1a76d13656d8caa7c46dbaed0b',
+    //   secureqans: '123',
+    //   privacy: 'public',
+    //   description: null,
+    //   active: true,
+    //   usertype: 'user'
+    // }
+
     const user = {
-      userID: 4,
-      username: 'Kalun',
-      salt: 'dd391c003d8b186712a9ee26c9f2bb2a',
-      password: 'ee0227a538176d65ec33d7eacf2f34c05dbffa90ee0750bf696aab3fdf5c7268bd22dc816a20aaf5bf026b1b01ecf08684058a1a76d13656d8caa7c46dbaed0b',
-      secureqans: '123',
-      privacy: 'public',
-      description: null,
-      active: true,
-      usertype: 'user'
-    }
+    userID: 6,
+    username: 'kalun',
+    salt: '5a6b2d7cab169a8207698c2607b572ef',
+    password: 'd304b6c40cceff3e587c0d333a2d037f5fe9cf2c308b0ad959d26450fbc13a3e2e7a99e6f0477b9053602520ccb1770cb6b6c9994023a5e2dfc8db414d1e8789',
+    secureqans: 'kalun',
+    privacy: 'public',
+    description: null,
+    active: true,
+    usertype: 'user'
+  }
 
     // Create a new user
     const User = new UserHandler(user.userID, user.username, user.salt, user.password, user.usertype, user.privacy, user.active);
@@ -38,7 +50,7 @@ async function testUserFunctions() {
     // console.log(profile)
 
     // Test update own profile - ["username", "description", "privacy"]
-    // const updatedProfile = await User.editProfile(['hehehe', 'this is a test description', 'private']);
+    // const updatedProfile = await User.editProfile(['hehehe123', 'this is a test description', 'private']);
     // console.log(updatedProfile)
 
     // Test view own profile
@@ -50,7 +62,7 @@ async function testUserFunctions() {
     // console.log(otherUser)
 
     // Test follow user
-    // const followResult = await User.followUser(7);
+    // const followResult = await User.followUser(4);
     // console.log(followResult)
 
     // Show all following
@@ -63,6 +75,10 @@ async function testUserFunctions() {
 
     // const following2 = await User.getFollowing();
     // console.log(following2)
+
+    // Test accept follow request
+    // const acceptResult = await User.acceptFollowRequest(6);
+    // console.log(acceptResult)
 
     // Test secure question
     // const secureResult = await User.checkSecurityAnswer('123');
@@ -87,6 +103,14 @@ async function testUserFunctions() {
     // Test create post
     // const postResult = await User.createPost('Hello!');
     // console.log(postResult)
+
+    // Test get all own posts
+    // const allPosts = await User.getOwnPosts();
+    // console.log(allPosts)
+
+    // Test get all following posts
+    const followingPosts = await User.getFollowingPosts();
+    console.log(followingPosts)
 
     // Test delete post
     // const deletePostResult = await User.deletePost(6);
@@ -117,8 +141,8 @@ async function testUserFunctions() {
     // console.log(editCommentResult)
 
     // Test delete comment
-    const deleteCommentResult = await User.deleteComment(1);
-    console.log(deleteCommentResult)
+    // const deleteCommentResult = await User.deleteComment(1);
+    // console.log(deleteCommentResult)
 
     console.log('Test ended.')
 }
