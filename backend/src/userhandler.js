@@ -706,22 +706,35 @@ class UserHandler extends AccountHandler {
   }
   
   // Method to check if security answers are correct
-  async checkSecurityAnswer(securityAnswer) {
+  //Parameter added: username, as forget password function is located outside the login process, thus this.userID will be undefined
+  async checkSecurityAnswer(username, securityAnswer) {
     /*
       * Check if the security answers are correct
       * @param {string} securityAnswer - The security answer of the account to check
     */
     try {
         // Check if the security answers are correct
+
+        /*old version
         const client = await pool.connect();
         const queryText = 'SELECT secureqAns FROM users WHERE userID = $1';
-        const values = [this.userID];
+        console.log("accessing database")
+        console.log(userID)
+        const values = [userID];
+        const result = await client.query(queryText, values);
+        client.release();
+        */
+        console.log(`accessing database for user ${username}`)
+        const client = await pool.connect();
+        const queryText = 'SELECT secureqAns FROM users WHERE username = $1';
+        const values = [username];
         const result = await client.query(queryText, values);
         client.release();
 
         // Retrieve the security answers from the result
         const retrievedSecurityAnswer = result.rows[0].secureqans;
-
+        //console.log(retrievedSecurityAnswer)
+        //console.log(securityAnswer)
         // Check if the provided security answers match the retrieved security answers
         return JSON.stringify(retrievedSecurityAnswer) === JSON.stringify(securityAnswer);
     } catch (error) {
