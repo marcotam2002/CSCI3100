@@ -132,11 +132,11 @@ const ForgetPasswordForm = () => {
             {step === 3 && (
             <>
                 <p style={{textAlign: "center"}}>Please return to Homepage for login.</p>
-                <Link className="Link" to={"/"}>Back to Home</Link>
             </>
             )}
             {step !==3 && <button type="submit">Submit</button>}
         </form>
+        <Link className="Link" to={"/"}>Back to Home</Link>
         </div>
     </div>
   );
