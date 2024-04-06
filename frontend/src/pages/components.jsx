@@ -10,6 +10,7 @@
 import "./components.css";
 import React from "react";
 import "./format.css";
+import crossIcon from "../assets/cross.svg";
 
 /*height: 180px, width: 1000px*/
 function Header({ subTitle, currPage }) {
@@ -30,11 +31,19 @@ function Header({ subTitle, currPage }) {
 
 function SideBarButton({ image, name, color, func }) {
   return (
-    <button type="button" id="sideBarButton" onClick={func}>
+    <button type="button" className="sideBarButton" onClick={func}>
       <img src={image} alt="" width="33px" height="33px" />
       <p style={{ color: color }}>{name}</p>
     </button>
   );
 }
 
-export { Header, SideBarButton };
+function CrossButton({ func }) {
+  return (
+    <button type="button" id="crossButton" title="Close" onClick={func}>
+      <img src={crossIcon} alt="" width="40px" height="40px" />
+    </button>
+  );
+}
+
+export { Header, SideBarButton, CrossButton };

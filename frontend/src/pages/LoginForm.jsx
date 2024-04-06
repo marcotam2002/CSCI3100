@@ -8,7 +8,7 @@
  */
 
 import { React, useState } from 'react';
-import './LoginForm.css'
+import './Form.css'
 import RegistrationForm from './RegistrationForm';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -72,7 +72,7 @@ function LoginForm() {
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeRegForm}>
         <div onClick={e => e.stopPropagation()}>
           <div id='RegForm'>
-            <RegistrationForm />
+            <RegistrationForm closeFunc={closeRegForm}/>
           </div>
         </div>
       </div>

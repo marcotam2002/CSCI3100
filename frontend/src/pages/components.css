@@ -18,6 +18,8 @@
   top: 0;
   left: 50%;
   transform: translate(-50%);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #headerContainer h5 {
@@ -28,7 +30,7 @@
   margin-bottom: 20px;
 }
 
-#sideBarButton {
+.sideBarButton {
   border: none;
   background-color: transparent;
   display: flex;
@@ -41,20 +43,30 @@
   margin-left: 0px;
 }
 
-#sideBarButton p {
+.sideBarButton p {
   margin: 0px;
 }
 
-#sideBarButton:hover {
+.sideBarButton:hover {
   border: 2px solid #1d67cd;
   border-radius: 30px;
   padding: 8px;
 }
 
-#sideBarButton:hover p {
+.sideBarButton:hover p {
   font-weight: bold;
 }
 
-#sideBarButton:active {
+.sideBarButton:active {
   background-color: #caeeff;
+}
+
+#crossButton {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  border: none;
 }

@@ -8,11 +8,12 @@
  */
 
 import React, { useState } from "react";
-import './RegistrationForm.css'
+import './Form.css'
 import PhotoIcon from '../assets/photo-upload.svg'
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+import { CrossButton } from "./components";
 
-export default function AddPostForm() {
+export default function AddPostForm({closeFunc}) {
     
     const [thought, setThought] = useState("");
     const [fileURL, setFileURL] = useState("");
@@ -65,7 +66,8 @@ export default function AddPostForm() {
     };
   
     return (
-      <div className="Add-Post-Form">
+      <div id="addPost">
+        <CrossButton func={closeFunc}/>
         <h2 style={{textAlign: "center"}}>New post</h2>
         <form onSubmit={handleSubmit} id="NewPostForm">
           <div className="newpostdescription">

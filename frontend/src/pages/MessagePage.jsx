@@ -24,15 +24,6 @@ import AddPostForm from "./AddPostForm";
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
-
-function AddPost({ user }) {
-  return (
-    <div id="addPost">
-      <AddPostForm />
-    </div>
-  );
-}
-
 /* for testing */
 const testFollowingUsers = [
   { username: "Alice", userid: 1 },
@@ -81,11 +72,10 @@ function MessageBox({ user, followingUsers }) {
             id="usernameBox"
             key={followingUser.userid}
             onClick={() => setTarget(followingUser)}
-            className={`${currTarget == followingUser ? "selected" : ""} ${
-              followingUser == followingUsers[followingUsers.length - 1]
+            className={`${currTarget == followingUser ? "selected" : ""} ${followingUser == followingUsers[followingUsers.length - 1]
                 ? "last"
                 : ""
-            }`}
+              }`}
           >
             <h6>{followingUser.username}</h6>
             <p className="p2">Here should be latest message</p>
@@ -108,7 +98,7 @@ function MessageBox({ user, followingUsers }) {
             onChange={handleInput}
             onKeyDown={handleKeyPress}
           ></input>{" "}
-          <button onClick={sendMessage} id="sendButton"><img src={sendIcon} alt = ""/></button>
+          <button onClick={sendMessage} id="sendButton"><img src={sendIcon} alt="" /></button>
         </div>
       </div>
     </div>
@@ -129,17 +119,17 @@ function Message({ user }) {
     <div>
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
         <div onClick={(e) => e.stopPropagation()}>
-          <AddPost user={user} />
+            <AddPostForm closeFunc={closeAddPost}/>
         </div>
       </div>
 
-      <Header subTitle={user} currPage={"User Page"} />
+      <Header subTitle={user} currPage={"Message Page"} />
       <div id="bodyContainer">
         <div id="sideBar">
           <SideBarButton
             image={homeIcon}
             name={"Home"}
-            color={"#1D67CD"}
+            color={"black"}
             func={() => navigate('/userhomepage')}
           />
           <SideBarButton
@@ -157,7 +147,7 @@ function Message({ user }) {
           <SideBarButton
             image={messageIcon}
             name={"Message"}
-            color={"black"}
+            color={"#1D67CD"}
             func={() => navigate('/message')}
           />
           <SideBarButton
@@ -172,11 +162,11 @@ function Message({ user }) {
             color={"black"}
             func={() => navigate(`/profile/${getCookie("userID")}`)}
           />
-          <SideBarButton 
+          <SideBarButton
             image={logoutIcon}
             name={"Log out"}
             color={"black"}
-            func = {() => navigate("/")}
+            func={() => navigate("/")}
           />
         </div>
         <div id="main">

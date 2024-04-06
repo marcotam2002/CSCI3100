@@ -8,10 +8,11 @@
  */
 
 import React, { useState } from "react";
-import './RegistrationForm.css'
+import './Form.css';
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+import { CrossButton } from "./components";
 
-export default function RegistrationForm() {
+export default function RegistrationForm({closeFunc}) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [secans, setsecans] = useState("");
@@ -71,6 +72,7 @@ export default function RegistrationForm() {
   
     return (
       <div className="RegisterForm">
+        <CrossButton func={closeFunc}/>
         <h2>Registration Form</h2>
         <p>Please set a password with a length ranging from 6 to 20 characters, with at least one character and one number.</p>
         <form onSubmit={handleSubmit} id="registrationForm">
@@ -93,8 +95,8 @@ export default function RegistrationForm() {
               onChange={(event) => setsecans(event.target.value)}
             />
           </div>
-          {errorMessage && <p className="text-danger">{errorMessage}</p>}
-          {successMessage && <p className="text-success">{successMessage}</p>}
+          {errorMessage && <p style={{color:"red"}}>{errorMessage}</p>}
+          {successMessage && <p style={{color:"#1D67CD"}}>{successMessage}</p>}
           <button className="btn-primary" type="submit">Register</button>
         </form>
       </div>

@@ -8,7 +8,6 @@
  */
 
 //todo: link "Soru" to main page
-import "./UserPageTemplate.css";
 import "./format.css";
 import { Header, SideBarButton } from "./components";
 import React, {useState} from "react";
@@ -83,14 +82,6 @@ const testPost = [
   },
 ];
 
-function AddPost({user}) {
-  return (
-    <div id="addPost">
-        <AddPostForm />
-    </div>
-  );
-}
-
 function UserPageTemplate({user}) {
   const [state, setState] = useState(false);
   const navigate = useNavigate();
@@ -106,7 +97,7 @@ function UserPageTemplate({user}) {
     <div>
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
         <div onClick={(e) => e.stopPropagation()}>
-          <AddPost user={user}/>
+          <AddPostForm closeFunc={closeAddPost}/>
         </div>
       </div>
 
