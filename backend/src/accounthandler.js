@@ -23,7 +23,7 @@ class AccountHandler {
       this.isPrivate = isPrivate;
     }
 
-    async createUser(username, password, securityAnswer = '123') {
+    async createUser(username, password, securityAnswer = '123', role = 'user') {
       try {
         const client = await pool.connect();
     
@@ -45,8 +45,8 @@ class AccountHandler {
         const hashedPassword = hashPassword(password, salt);
     
         // Insert new user into the database
-        const queryText2 = 'INSERT INTO users (username, password, salt, secureqAns, privacy) VALUES ($1, $2, $3, $4, $5)';
-        const values2 = [username, hashedPassword, salt, securityAnswer, 'public'];
+        const queryText2 = 'INSERT INTO users (username, password, salt, secureqAns, privacy, usertype) VALUES ($1, $2, $3, $4, $5, $6)';
+        const values2 = [username, hashedPassword, salt, securityAnswer, 'public', role];
         await client.query(queryText2, values2);
 
         // assign the user ID to the object
@@ -85,7 +85,7 @@ class AccountHandler {
           }
 
           // Get the userID, salt and hashed password of the user
-          const queryText = 'SELECT userid, salt, password FROM users WHERE username = $1';
+          const queryText = 'SELECT userid, salt, password, usertype FROM users WHERE username = $1';
           const values = [username];
           const result = await client.query(queryText, values);
           this.userID = result.rows[0].userid;
@@ -95,6 +95,7 @@ class AccountHandler {
   
           // Check if the password is correct
           const account_input_hashedPassword = hashPassword(account_input_password, this.salt);
+          client.release();
           if (account_input_hashedPassword === this.hashedPassword) {
               // Return authentication successful message along with account type
               return { success: true, message: 'Authentication successful', userID: this.userID, usertype: this.role};
