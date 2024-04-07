@@ -97,7 +97,7 @@ export default function RegistrationForm({closeFunc}) {
           </div>
           {errorMessage && <p style={{color:"red"}}>{errorMessage}</p>}
           {successMessage && <p style={{color:"#1D67CD"}}>{successMessage}</p>}
-          <button className="btn-primary" type="submit">Register</button>
+          <button className="register" type="submit">Register</button>
         </form>
       </div>
     );
