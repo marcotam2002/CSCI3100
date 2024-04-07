@@ -118,7 +118,7 @@ function AdminUserPanel() {
         });
         if (response.status === 200) {
           //successful get user data
-          const resdata = await response.json()
+          const resdata = await response.json();
           setUser(resdata);
         } else {
           console.log("SHIT");

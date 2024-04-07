@@ -55,6 +55,7 @@ function LoginForm() {
               //successful login
               setErrorMessage("");
               const resdata = await response.json();
+              console.log(resdata);
               document.cookie = `username=${username}`;
               document.cookie = `userID=${resdata.userID}`;
               document.cookie = `role=${resdata.role}`;
