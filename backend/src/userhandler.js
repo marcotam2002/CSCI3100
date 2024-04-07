@@ -165,7 +165,7 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to create a new post
-  async createPost(postContent, mediaURI) {
+  async createPost(userID, postContent, mediaURI) {
     /*
       * Create a new post in the database
       * @param {string} postContent - The content of the post
@@ -173,15 +173,16 @@ class UserHandler extends AccountHandler {
     */
     try {
         // Check if the user is private or public
+        //console.log("this.userID value:" + this.userID)
         const client = await pool.connect();
         const queryPrivacy = 'SELECT privacy FROM users WHERE userID = $1';
-        const valuesPri = [this.userID];
+        const valuesPri = [userID];
         const resultPri = await client.query(queryPrivacy, valuesPri);
         const userType = resultPri.rows[0].privacy;
 
         // Insert post information into the database
         const queryText = 'INSERT INTO posts (privacy, content, authorID, mediaURI) VALUES ($1, $2, $3, $4) RETURNING postID';
-        const values = [userType, postContent, this.userID, mediaURI];
+        const values = [userType, postContent, userID, mediaURI];
         const result = await client.query(queryText, values);
 
         // Get the postID of the newly created post
