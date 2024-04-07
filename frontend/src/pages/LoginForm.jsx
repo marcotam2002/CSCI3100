@@ -59,7 +59,16 @@ function LoginForm() {
               document.cookie = `username=${username}`;
               document.cookie = `userID=${resdata.userID}`;
               document.cookie = `role=${resdata.role}`;
-              navigate('/userhomepage');
+              if (resdata.role==='user') {
+                navigate('/userhomepage');
+              } else if (resdata.role === 'admin') {
+                navigate('/admin/usermanager');
+              } else {
+                setErrorMessage("Wrong user type. Please try again.");
+                setPassword("");
+                setUsername("");
+              }
+              
           }else if (response.status === 404) {
               // bad login: return error message
               const resdata = await response.json()

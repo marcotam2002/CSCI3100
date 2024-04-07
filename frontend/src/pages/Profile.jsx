@@ -24,6 +24,8 @@ import EditProfileForm from "./EditProfileForm";
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+
 const testUser =
 {
   userID: 2,
@@ -38,11 +40,42 @@ function UserProfile({ openFunc }) {
   const { userID } = useParams();
   const currentUser = getCookie("userID");
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [user, setUser] = useState("");
 
   useEffect(() => {
     setIsCurrentUser(currentUser === userID);
   }, [userID, currentUser]);
   // setIsCurrentUser(true);
+
+  useEffect(() => {
+    const getUser = async() => {
+      try{
+        const data = {
+          userID: userID,
+        };
+
+        const response = await fetch(`${API_BASE_URL}/getUser`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        if (response.status === 200) {
+          const resdata = await response.json();
+          setUser(resdata.user);
+        } else {
+            const resdata = await response.json()
+            console.log(resdata);
+            console.log("System Error");
+        }
+      } catch (error) {
+        console.log("Error in try running this function.");
+      } 
+    };
+
+    getUser();
+  }, []);
 
   const editProfile = () => {
     // For debugging.
@@ -57,11 +90,11 @@ function UserProfile({ openFunc }) {
   return (
     <div id="profileBox">
       <div id="profileHeader">
-        <h2><b>{testUser && testUser.username}</b></h2>
+        <h2><b>{user && user.username}</b></h2>
         <div id="followBox">
-          <p><b>{testUser && testUser.followersCount}</b></p>
+          <p><b>{user && user.followersCount}</b></p>
           <p> followers </p>
-          <p><b>{testUser && testUser.followingCount}</b></p>
+          <p><b>{user && user.followingCount}</b></p>
           <p> following </p>
         </div>
         <button onClick={isCurrentUser ? editProfile : followUser}>
@@ -69,7 +102,7 @@ function UserProfile({ openFunc }) {
         </button>
       </div>
       <div id="descriptionBox">
-        {testUser && testUser.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))}
+        {user && user.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))}
       </div>
 
       {/* Row 4: Posts */}
