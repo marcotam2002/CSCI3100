@@ -42,9 +42,11 @@ app.post("/api/user/login", async(req, res)=>{
     }
     else if (loginResult.message=='Failed to authenticate account') {
         console.log(loginResult.message);
+        delete accountHandler;
         return res.status(500).send({message:loginResult.message});
     } else {
         console.log(loginResult.message);
+        delete accountHandler;
         return res.status(404).send({message:loginResult.message});
     } 
 });
@@ -56,12 +58,16 @@ app.post("/api/user/register", async(req, res)=>{
     //console.log(result)
     if(result.success){
         console.log("User created successfully");
+        delete accountHandler;
         return res.status(200).send();
     }
     else if(result.message=='Username already taken'){
+        delete accountHandler;
         return res.status(403).send(result.message);
     }
-    else return res.status(500).send("System Error");
+    else {
+        delete accountHandler;
+        return res.status(500).send("System Error");}
 });
 
 app.post("/api/user/forgetpw", async(req, res)=>{
@@ -71,9 +77,13 @@ app.post("/api/user/forgetpw", async(req, res)=>{
     //console.log(result)
     if(result){
         console.log("Security Answer Correct");
+        delete userHandler;
         return res.status(200).send();
     }
-    else return res.status(404).send({message:"Error checking answer"});
+    else {
+        delete userHandler;
+        return res.status(404).send({message:"Error checking answer"});
+    }
 });
 
 app.put("/api/user/forgetpw/changepw", async(req, res)=>{
@@ -82,21 +92,27 @@ app.put("/api/user/forgetpw/changepw", async(req, res)=>{
     const result = await userHandler.resetPassword(req.body.username, req.body.password);
     if(result.success){
         console.log("password changed")
+        delete userHandler;
         return res.status(200).send();
     }
-    else return res.status(403).send({message:result.message});
+    else {
+        delete userHandler;
+        return res.status(403).send({message:result.message});}
 });
 
-//Code tested halfway
 app.post("/api/user/addpost", async(req, res)=>{
     console.log("Add Post request received")
     const userHandler=new UserHandler();
     const result = await userHandler.createPost(req.body.userID,req.body.description, req.body.fileURL);    //test without media first
     if(result.success){
         console.log("New Post added to database");
+        delete userHandler;
         return res.status(200).send();
     }
-    else return res.status(404).send({message: result.message});
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
 })
 
 app.get("/api/admin/getAllUser", async(req, res)=>{
@@ -109,6 +125,30 @@ app.get("/api/admin/getAllUser", async(req, res)=>{
     }
     else return res.status(404).send({message:"Error fetching users"});
 })
+
+//Need to test with post exist inside database, api request for comment
+app.put("/api/post/commentadd", async(req,res)=>{
+    console.log("Add Comment request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.commentPost(req.body.userID, req.body.postID, req.body.comment);    
+    if(result.success){
+        console.log("User commented to a post");
+        return res.status(200).send();
+    }
+    else return res.status(404).send({message: result.message});
+})
+
+app.put("/api/post/likepost", async(req,res)=>{
+    console.log("Like Post request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.commentPost(req.body.userID, req.body.postID);    
+    if(result.message=='User has already liked the post'){
+        console.log("User has already liked the post");
+        return res.status(200).send();
+    }
+    else return res.status(404).send({message: result.message});
+})
+
 /*
 app.get("/api/homepage", async(req,res)=>{
     console.log("Fetching post from server")
