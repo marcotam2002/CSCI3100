@@ -39,7 +39,10 @@ app.post("/api/user/login", async(req, res)=>{
         //console.log(loginResult.usertype);
         return res.status(200).send({role: loginResult.usertype, username: req.body.username, userID: loginResult.userID});
     }
-    else{
+    else if (loginResult.message=='Failed to authenticate account') {
+        console.log(loginResult.message);
+        return res.status(500).send({message:loginResult.message});
+    } else {
         console.log(loginResult.message);
         return res.status(404).send({message:loginResult.message});
     } 
