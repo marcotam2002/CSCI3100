@@ -46,11 +46,19 @@ export default function AddPostForm({ closeFunc }) {
 
     const message = await response.text();
     if (response.status === 200) {
-
+      setErrorMessage("");
     } else {
       setErrorMessage("System Error. Please try again later.");
     }
   };
+
+  const  closeBoxFunc = () => {
+    setThought(""); 
+    setFileURL("");
+    setErrorMessage("");
+    setFileType("");
+    closeFunc();
+  }
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -71,7 +79,7 @@ export default function AddPostForm({ closeFunc }) {
 
   return (
     <div id="addPost">
-      <CrossButton func={closeFunc} />
+      <CrossButton func={closeBoxFunc} />
       <h2><b>New post</b></h2>
       <form onSubmit={handleSubmit} id="NewPostForm">
         <div className="newpostdescription">
