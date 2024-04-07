@@ -40,7 +40,7 @@ app.post("/api/user/login", async(req, res)=>{
         return res.status(200).send({role: loginResult.usertype, username: req.body.username, userID: loginResult.userID});
     }
     else{
-        Console.log(loginReslt.message);
+        console.log(loginResult.message);
         return res.status(404).send({message:loginResult.message});
     } 
 });
@@ -95,6 +95,16 @@ app.post("/api/user/addpost", async(req, res)=>{
     else return res.status(404).send({message: result.message});
 })
 
+app.get("/api/admin/getAllUser", async(req, res)=>{
+    console.log("Get all user request received")
+    const adminHandler=new AccountHandler();
+    const result = await adminHandler.getAllUsers();
+    if(result){
+        console.log("All user fetched")
+        return res.status(200).send(result);
+    }
+    else return res.status(404).send({message:"Error fetching users"});
+})
 /*
 app.get("/api/homepage", async(req,res)=>{
     console.log("Fetching post from server")

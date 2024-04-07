@@ -14,7 +14,7 @@ import { Header, SideBarButton } from "./components";
 import React, { useEffect, useState } from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 /*Just for testing*/
 const testUsers = [
   {
@@ -48,6 +48,7 @@ function UserTable({ users, view }) {
   const deleteUser = (user) => {
     window.confirm(`You shoulb be able to delete ${user.username}.`)
   }
+
   return (
     <table id="userTable">
       <thead>
@@ -102,37 +103,30 @@ function AdminUserPanel() {
   };
 
   useEffect(() => {
-    // Function to fetch user list
-    const fetchUserList = async () => {
+    const getAllUser = async () => {
       try {
-        // Send a GET request to retrieve user list
-        const response = await fetch('/admin/userlist', {
+        const response = await fetch(`${API_BASE_URL}/api/admin/getAllUser`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
           },
         });
         if (response.status === 200) {
-          const userList = await response.json();
-          console.log(userList); // Output the list of users (userID, username) for debug
-
-          // save the arguments and pass them in the UserTable component
-
+          //successful get user data
+          const resdata = await response.json()
+          console.log(resdata);
         } else {
-          // If there's an error, log the error message
-          const errorMessage = await response.text();
-          console.error(errorMessage); // Log the error message
+          console.log("SHIT");
         }
       } catch (error) {
-        console.error('Error fetching user list:', error);
+        console.error("SHIT AGAIN", error);
       }
-    };
-
-    fetchUserList();
+    }
+    getAllUser();
   }, []);
 
   return (
-    <body>
+    <div>
 
       <div className={`popupBox ${state ? "show" : ""}`} onClick={closeUserProfile}>
         <div onClick={e => e.stopPropagation()}>
@@ -160,7 +154,7 @@ function AdminUserPanel() {
           <UserTable users={testUsers} view={openUserProfile} />
         </div>
       </div>
-    </body>
+    </div>
   );
 }
 
