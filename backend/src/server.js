@@ -36,6 +36,7 @@ app.post("/api/user/login", async(req, res)=>{
     //console.log(loginResult)
     if(loginResult.success){
         console.log("Backend database confirmed user existence");
+        //console.log(loginResult.usertype);
         return res.status(200).send({role: loginResult.usertype, username: req.body.username, userID: loginResult.userID});
     }
     else return res.status(404).send({message:loginResult.message});
@@ -79,11 +80,11 @@ app.put("/api/user/forgetpw/changepw", async(req, res)=>{
     else return res.status(403).send({message:result.message});
 });
 
-//Code below has not been tested
-app.post("/api/post/addpost", async(req, res)=>{
+//Code tested halfway
+app.post("/api/user/addpost", async(req, res)=>{
     console.log("Add Post request received")
     const userHandler=new UserHandler();
-    const result = await userHandler.createPost(data, null);    //test without media first
+    const result = await userHandler.createPost(req.body.userID,req.body.description, req.body.fileURL);    //test without media first
     if(result.success){
         console.log("New Post added to database");
         return res.status(200).send();

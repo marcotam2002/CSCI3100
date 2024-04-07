@@ -10,6 +10,7 @@
 import React, { useState } from "react";
 import './RegistrationForm.css'
 import PhotoIcon from '../assets/photo-upload.svg'
+import {getCookie} from "./CookieHandlers.js"
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 export default function AddPostForm() {
@@ -22,11 +23,14 @@ export default function AddPostForm() {
     const handleSubmit = async (event) => {
       event.preventDefault();
 
+      //console.log(getCookie("userID")); //cookie test
+
       // The following codes serves the function of 
       // adding the submitted username and password to the database
+
       const data = {
           fileURL: fileURL,
-          userID: userID,
+          userID: getCookie("userID"),
           fileType: fileType,
           description: thought,
       }
