@@ -15,7 +15,9 @@ import React, { useState } from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
 import attachmentIcon from "../assets/attachment.svg";
+import logoutIcon from "../assets/log-out.svg";
 import commentIcon from "../assets/comment.svg";
+import { useNavigate } from 'react-router';
 import deleteIcon from "../assets/delete.svg";
 
 /*Just for testing*/
@@ -91,6 +93,8 @@ function PostAttachment({ post }) {
 function AdminPostPanel() {
   const [state, setState] = useState(false);
   const [currPost, setCurrPost] = useState(testPost[0]);
+  const navigate = useNavigate();
+
   const openPostDetail = (post) => {
     setState(true);
     setCurrPost(post);
@@ -117,14 +121,20 @@ function AdminPostPanel() {
             image={userIcon}
             name={"User Manager"}
             color={"black"}
-            func={() => alert("This should redirect to user manager.")}
+            func={() => navigate('/admin/usermanager')}
           />
           <SideBarButton
             image={postIcon}
             name={"Post Manager"}
             color={"#1D67CD"}
-            func={() => alert("This should redirect to post manager.")}
+            func={() => navigate('/admin/postmanager')}
           />
+          <SideBarButton 
+              image={logoutIcon}
+              name={"Log out"}
+              color={"black"}
+              func = {() => navigate("/")}
+            />
         </div>
         <div id="main">
           <PostTable posts={testPost} view={openPostDetail} />

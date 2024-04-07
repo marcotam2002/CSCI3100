@@ -67,19 +67,20 @@ function UserSearch() {
         <div>
         </div>
       </form>
-      {<div>
-        {searchResults.length > 0 ? (
-          <ul>
-            {searchResults.map(result => (
-              <li key={result.id}>{result.name}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>No results found</p>
-        )}
-      </div>}
-    </div>
-  );
+
+      <div>
+          {searchResults.length > 0 ? (
+              <ul>
+                  {searchResults.map(result => (
+                      <li key={result.id}>{result.name}</li>
+                  ))}
+              </ul>
+          ) : (
+              <p>No results found</p>
+          )}
+      </div>
+  </div>
+    );
 }
 
 function SearchPage() {
