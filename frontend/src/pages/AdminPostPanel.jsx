@@ -17,38 +17,14 @@ import postIcon from "../assets/post.svg";
 import logoutIcon from "../assets/log-out.svg";
 import { useNavigate } from 'react-router';
 import deleteIcon from "../assets/delete.svg";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function PostTable({ posts, deletePost }) {
-  const [users, setUsers] = useState([]);
-
-  const getUsers = async () => {
-    const user = {};
-    for (const post of posts) {
-      const data = { userID: post.authorid }
-      const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (response.status === 200) {
-        //successful get user data
-        const resdata = await response.json();
-        user[post.authorid] = resdata.username;
-      } else {
-        user[post.authorid] = null;
-        console.log("ERROR");
-      }
-    }
-    setUsers(user);
-  };
-
-  useEffect(() => { getUsers(); }, []);
-
+function PostTable({ posts, deletePost, users}) {
   return (
     <table id="postTable">
       <thead>
-        <tr>
+        <tr key="postTableHead">
           <th>PostID</th>
           <th>Username</th>
           <th>Content</th>
@@ -58,9 +34,9 @@ function PostTable({ posts, deletePost }) {
           <th></th>
         </tr>
       </thead>
+      <tbody>
       {posts.map((post) => (
-        <tbody key={post.postID}>
-          <tr>
+          <tr key={post.postid}>
             <td>{post.postid}</td>
             <td>
               {users[post.authorid]}
@@ -79,8 +55,8 @@ function PostTable({ posts, deletePost }) {
               </div>
             </td>
           </tr>
-        </tbody>
       ))}
+      </tbody>
     </table>
   );
 }
@@ -115,9 +91,30 @@ function AdminPostPanel() {
       console.log("ERROR");
     }
   };
+  
+  const getAllUser = async () => {
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/getAllUser`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.status === 200) {
+      //successful get user data
+      const resdata = await response.json();
+      setUserList(resdata);
+    } else {
+      console.log("ERROR");
+    }
+  };
+
   const [postList, setPostList] = useState([]);
-  useEffect(() => { getAllPost(); }, []);
+  const [userList, setUserList] = useState([]);
+  const users = {};
+  useEffect(() => { getAllPost();getAllUser();}, []);
   const navigate = useNavigate();
+  for(let i = 0; i < userList.length; i++){
+    users[userList[i].userid] = userList[i].username;
+  }
 
   return (
     <div>
@@ -144,7 +141,7 @@ function AdminPostPanel() {
           />
         </div>
         <div id="main">
-          <PostTable posts={postList} deletePost={deletePost} />
+          <PostTable posts={postList} deletePost={deletePost} users={users}/>
         </div>
       </div>
     </div>
