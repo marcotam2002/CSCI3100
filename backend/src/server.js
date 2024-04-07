@@ -35,11 +35,14 @@ app.post("/api/user/login", async(req, res)=>{
     const loginResult = await accountHandler.authenticateAccount(req.body.username, req.body.password);
     //console.log(loginResult)
     if(loginResult.success){
-        console.log("Backend database confirmed user existence");
+        console.log("Backend database confirmed user existence, Login Success");
         //console.log(loginResult.usertype);
         return res.status(200).send({role: loginResult.usertype, username: req.body.username, userID: loginResult.userID});
     }
-    else return res.status(404).send({message:loginResult.message});
+    else{
+        Console.log(loginReslt.message);
+        return res.status(404).send({message:loginResult.message});
+    } 
 });
 
 app.post("/api/user/register", async(req, res)=>{
