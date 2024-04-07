@@ -18,8 +18,11 @@ import messageIcon from "../assets/message.svg";
 import notificationIcon from "../assets/notification.svg";
 import profileIcon from "../assets/user.svg";
 import likeIcon from '../assets/like.svg';
+import logoutIcon from "../assets/log-out.svg";
 import likedIcon from '../assets/liked.svg';
 import commentIcon from '../assets/comment.svg';
+import { useNavigate } from 'react-router';
+import { getCookie } from "./CookieHandlers";
 import { useParams } from 'react-router-dom';
 import AddPostForm from "./AddPostForm";
 import './format.css';
@@ -85,14 +88,6 @@ const testPost = [
   },
 ];
 
-
-function AddPost({ user }) {
-  return (
-    <div id="addPost">
-      <AddPostForm />
-    </div>
-  );
-}
 
 function SinglePostFrame({ user, posts }) {
 
@@ -246,6 +241,7 @@ function SinglePostPage({ user }) {
   const { postID } = useParams();
   const requiredpost = testPost.find((post) => post.postID === parseInt(postID));
   const post = [requiredpost];
+  const navigate = useNavigate();
 
   // for debugging.
   //   console.log(requiredpost);
@@ -259,20 +255,20 @@ function SinglePostPage({ user }) {
   };
   return (
     <div>
-      <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
+      <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
-          <AddPost user={user} />
+          <AddPostForm closeFunc={closeAddPost}/>
         </div>
       </div>
 
-      <Header subTitle={user.username} currPage={"User Page"} />
+      <Header subTitle={user} currPage={"User Page"} />
       <div id="bodyContainer">
         <div id="sideBar">
           <SideBarButton
             image={homeIcon}
             name={"Home"}
             color={"#1D67CD"}
-            func={() => alert("This should redirect to Home page.")}
+            func={() => navigate('/userhomepage')}
           />
           <SideBarButton
             image={addPostIcon}
@@ -290,7 +286,7 @@ function SinglePostPage({ user }) {
             image={messageIcon}
             name={"Message"}
             color={"black"}
-            func={() => alert("This should redirect to Message page.")}
+            func={() => navigate('/message')}
           />
           <SideBarButton
             image={notificationIcon}
@@ -302,7 +298,13 @@ function SinglePostPage({ user }) {
             image={profileIcon}
             name={"Profile"}
             color={"black"}
-            func={() => alert("This should redirect to Profile page.")}
+            func={() => navigate(`/profile/${getCookie("userID")}`)}
+          />
+          <SideBarButton 
+            image={logoutIcon}
+            name={"Log out"}
+            color={"black"}
+            func = {() => navigate("/")}
           />
         </div>
         <div id="main">

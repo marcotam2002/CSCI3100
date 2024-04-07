@@ -1,0 +1,177 @@
+/*
+ * Group members:
+ * Tam King Man 1155160072
+ * Tsang Ho Yin 1155159307
+ * Ng Yuk Fung 1155176966
+ * Leung Ka Lun 1155157403
+ * O Ching Lam 1155159131
+ */
+
+ .form-box {
+    border-radius: 30px;
+    background-color: white;
+    padding: 20px;
+}
+
+.centered-text {
+    text-align: center;
+    padding: 0px;
+    margin: 0px;
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
+#LoginForm {
+    display: flex;
+    flex-direction: column;
+}
+
+#LoginForm label {
+    font-family: Brandon Grotesque;
+}
+
+#LoginForm input {
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: Assistant Light;
+    border: 1px solid #ccc;
+}
+
+#passwordText {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-family: Brandon Grotesque;
+}
+
+.submit,
+.register-btn{
+    color: #1d67cd;
+    font-family: Assistant Light;
+    font-size: 16px;
+    padding: 5px;
+    border: none;
+    border-radius: 20px;
+    width: 20%;
+    background-color: white;
+    border: 2px solid #1d67cd;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.btn-primary {
+    color: #1d67cd;
+    font-family: Assistant Light;
+    font-size: 16px;
+    padding: 5px;
+    border: none;
+    border-radius: 20px;
+    width: 20%;
+    background-color: white;
+    border: 2px solid #1d67cd;
+    position: absolute;
+    right: 40px;
+    bottom: 0px;
+}
+
+.submit:hover,
+.register-btn:hover,
+.btn-primary:hover {
+    background-color: #1d67cd;
+    color: white;
+    width: 22%;
+}
+
+#RegForm {
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 100px;
+    overflow-y: auto;
+    max-height: 80vh;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+}
+
+.RegisterForm {
+    padding: 20px;
+}
+
+.RegisterForm h2 {
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+
+#registrationForm div label {
+    font-family: Brandon Grotesque;
+}
+
+#registrationForm div {
+    display: flex;
+    flex-direction: column;
+}
+
+#registrationForm div input {
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: Assistant Light;
+    border: 1px solid #ccc;
+
+}
+
+ 
+#addPost {
+    border-radius: 20px;
+    box-sizing: border-box;
+    width: 500px;
+    height: 500px;
+    padding: 40px;
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+ }
+
+ #addPost h2{
+    margin: 0px;
+    padding: 0px;
+ }
+
+ #addPost textarea{
+    width: 100%;
+    height: 240px;
+    box-sizing: border-box;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    font-family: Assistant Light;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    resize: none;
+ }
+
+ .addpostbutton {
+    width: 460px;
+    position: absolute;
+    bottom: 40px;
+ }
+ .addpostbutton img{
+    position: absolute;
+    bottom: -4px;
+    width: 50px;
+    height: 50px;
+
+ }
+
+ #fileUpload
+ {
+    display: none;
+ }

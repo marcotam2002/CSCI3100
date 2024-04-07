@@ -8,7 +8,7 @@
  */
 
 import { React, useState } from 'react';
-import './LoginForm.css'
+import './Form.css'
 import RegistrationForm from './RegistrationForm';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -54,7 +54,7 @@ function LoginForm() {
               //successful login
               const resdata = await response.json()
               document.cookie = "username="+ username;
-              document.cookie = "userID=" + resdata.userID
+              document.cookie = "userID==" + resdata.userID;
               document.cookie = "role="+ resdata.role;
               navigate('/userhomepage')
           }else{
@@ -69,10 +69,10 @@ function LoginForm() {
 
   return (
     <div>
-      <div className={`popupBox ${state ? "show" : ""}`} onClick={closeRegForm}>
+      <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={e => e.stopPropagation()}>
           <div id='RegForm'>
-            <RegistrationForm />
+            <RegistrationForm closeFunc={closeRegForm}/>
           </div>
         </div>
       </div>
