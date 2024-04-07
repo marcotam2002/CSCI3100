@@ -772,6 +772,7 @@ class UserHandler extends AccountHandler {
       * @param {string} newPassword - The new password to be updated, assume we have checked the security answers
     */
     try {
+        //console.log(username, newPassword);
         // Generate a new hashed password
         const salt = generateSalt();
         const newHashedPassword = hashPassword(newPassword, salt);
