@@ -29,7 +29,7 @@ function UserTable({ users, view, deleteUser }) {
           <th>Action</th>
         </tr>
       </thead>
-      {users.map((user) => (
+      {users && users.map((user) => (
         <tbody key={user.userid}>
           <tr>
             <td>{user.userid}</td>
@@ -62,23 +62,19 @@ function UserProfile({ user, closePopup }) {
 }
 
 function AdminUserPanel() {
-
-
+  
   const getAllUser = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/getAllUser`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (response.status === 200) {
-        //successful get user data
-        const resdata = await response.json();
-        setUserList(resdata);
-      } else {
-        console.log("ERROR");
-      }
-    } catch (error) {
-      console.error(error);
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/getAllUser`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.status === 200) {
+      //successful get user data
+      const resdata = await response.json();
+      setUserList(resdata);
+    } else {
+      console.log("ERROR");
     }
   };
 

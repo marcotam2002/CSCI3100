@@ -47,6 +47,7 @@ export default function EditProfileForm({closeFunc, originUserName, originDescri
         const message = await response.text();
         if (response.status === 200) {
           console.log("Edit successful.");
+          closeFunc();
         } else {
           setErrorMessage("System Error. Please try again later.");
         }

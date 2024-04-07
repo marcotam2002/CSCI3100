@@ -126,6 +126,27 @@ app.get("/api/admin/getAllUser", async(req, res)=>{
     else return res.status(404).send({message:"Error fetching users"});
 })
 
+app.post("/api/admin/getUser", async(req, res)=>{
+    console.log("Get user request received")
+    const adminHandler= new AdminHandler();
+    const result = await adminHandler.getUser(req.body.userID);
+    if(result){
+        console.log("user fetched")
+        return res.status(200).send(result);
+    }
+    else return res.status(404).send({message:"Error fetching user"});
+})
+
+app.get("/api/admin/getAllPost", async(req, res)=>{
+    console.log("Get all post request received")
+    const adminHandler= new AdminHandler();
+    const result = await adminHandler.getAllPosts();
+    if(result){
+        console.log("All post fetched")
+        return res.status(200).send(result);
+    }
+    else return res.status(404).send({message:"Error fetching posts"});
+})
 
 app.put("/api/admin/deleteUser", async(req,res)=>{
     console.log("Delete User request received")
@@ -136,6 +157,17 @@ app.put("/api/admin/deleteUser", async(req,res)=>{
         return res.status(200).send();
     }
     else return res.status(404).send({message: result.message});
+})
+
+app.put("/api/admin/deletePost", async(req,res)=>{
+    console.log("Delete Post request received")
+    const adminHandler=new AdminHandler();
+    const result = await adminHandler.deletePost(req.body.postID);
+    if(result){
+        console.log("Successfully deleted post");
+        return res.status(200).send();
+    }
+    else return res.status(404).send();
 })
 
 //Need to test with post exist inside database, api request for comment
