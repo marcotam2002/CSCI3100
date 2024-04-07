@@ -147,9 +147,9 @@ function Profile(){
         <div onClick={(e) => e.stopPropagation()}>
           <EditProfileForm 
           closeFunc={closeEditProfileForm} 
-          originUserName={testUser.username} 
-          originDescription={testUser.description}
-          originPrivacy={testUser.isPrivate} />
+          originUserName={user.username} 
+          originDescription={user.description}
+          originPrivacy={user.isPrivate} />
         </div>
       </div>
 
