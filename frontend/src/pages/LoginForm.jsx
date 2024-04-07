@@ -54,7 +54,7 @@ function LoginForm() {
               //successful login
               const resdata = await response.json()
               document.cookie = "username="+ username;
-              document.cookie = "userID==" + resdata.userID;
+              document.cookie = "userID=" + resdata.userID;
               document.cookie = "role="+ resdata.role;
               navigate('/userhomepage')
           }else{
