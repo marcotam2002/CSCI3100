@@ -89,11 +89,11 @@ export default function AddPostForm({ closeFunc }) {
           />
         </div>
         <div className="addpostbutton">
-          <button className="btn-primary" type="submit">Post!</button>
           <label htmlFor="fileUpload">
             <input type="file" id="fileUpload" accept=".jpg,.png,.mp4" onChange={handleFileUpload}/>
             <img src={uploadIcon} alt="Upload Photo/Video"/>
           </label>
+          <button className="btn-primary" type="submit">Post!</button>
         </div>
         {errorMessage && <p className="text-danger">{errorMessage}</p>}
       </form>
