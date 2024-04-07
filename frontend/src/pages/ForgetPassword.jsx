@@ -109,7 +109,7 @@ const ForgetPasswordForm = () => {
             {step === 1 && (
             <>
                 <p style={{textAlign: "center"}}>Please input the following fields.</p>
-                <label htmlFor="username">Username</label>
+                <label htmlFor="username">Username: </label>
                 <input
                 type="text"
                 id="username"
@@ -142,10 +142,12 @@ const ForgetPasswordForm = () => {
                 <p style={{textAlign: "center"}}>Please return to Homepage for login.</p>
             </>
             )}
-            {errorMessage && <p style={{color:"red"}}>{errorMessage}</p>}
             {step !==3 && <button type="submit">Submit</button>}
+            <Link className="Link" to={"/"}>Back to Home</Link>
+            {errorMessage && <p style={{color:"red"}}>{errorMessage}</p>}
+            
         </form>
-        <Link className="Link" to={"/"}>Back to Home</Link>
+        
         </div>
     </div>
   );
