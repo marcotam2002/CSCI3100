@@ -18,39 +18,8 @@ import logoutIcon from "../assets/log-out.svg";
 import { useNavigate } from 'react-router';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 /*Just for testing*/
-const testUsers = [
-  {
-    userid: "0000001",
-    username: 'FirstUser',
-    salt: 'e9b2fe0aa5c9f351359557eb098e6ded',
-    password: 'df48327d5c1ad56b58cb630bb557fba133b89353261c3e672cb7c5e1b3ebc332c3d9033035ac5ae6cb86866015748d816872274d0bdc3a3bd0ac7fb201b92408',
-    secureqans: '123',
-    privacy: 'public',
-    description: "I don't know what to write here bruh.",
-    active: true,
-    usertype: 'user'
-  },
-  {
-    userid: "0000002",
-    username: 'Name',
-    salt: 'e9b2fe0aa5c9f351359557eb098e6ded',
-    password: 'df48327d5c1ad56b58cb630bb557fba133b89353261c3e672cb7c5e1b3ebc332c3d9033035ac5ae6cb86866015748d816872274d0bdc3a3bd0ac7fb201b92408',
-    secureqans: '123',
-    privacy: 'private',
-    description: "This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.This is a description of the user. \n I want to write something here. In order to test the word wrap. \n I hope this is enough.",
-    active: true,
-    usertype: 'user'
-  }
-]
 
-function UserTable({ users, view }) {
-  const viewUser = (user) => {
-    window.confirm(`You shoulb be able to view ${user.username} profile.`)
-  }
-  const deleteUser = (user) => {
-    window.confirm(`You shoulb be able to delete ${user.username}.`)
-  }
-
+function UserTable({ users, view, deleteUser }) {
   return (
     <table id="userTable">
       <thead>
@@ -84,9 +53,9 @@ function UserProfile({ user, closePopup }) {
       <h3>{user.username}</h3>
       <h6><b>Privacy: </b>{user.privacy}</h6>
       <h6><b>Description:</b></h6>
-      <p>{user.description}</p>
-      <h6><b>Post:  </b></h6>
-      <div id="userPost"> <p>Maybe imply maybe not</p></div>{/* may do*/}
+      <div id="userDescription">
+        {user.description && user.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))}
+      </div>
       <button type="button" id="userProfileClose" onClick={closePopup}>Close</button>
     </div>
   );
@@ -94,9 +63,44 @@ function UserProfile({ user, closePopup }) {
 
 function AdminUserPanel() {
 
+
+  const getAllUser = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/getAllUser`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (response.status === 200) {
+        //successful get user data
+        const resdata = await response.json();
+        setUserList(resdata);
+      } else {
+        console.log("ERROR");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteUser = async (user) => {
+    const data = { userID: user.userid };
+    const response = await fetch(`${API_BASE_URL}/api/admin/deleteUser`, {
+      method: "PUT",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      console.log("SUCCESSFUL DELETE USER");
+      getAllUser();
+    } else {
+      console.log("ERROR");
+    }
+  };
+
+  const [userList, setUserList] = useState([]);
+  useEffect(() => { getAllUser(); }, []);
   const [state, setState] = useState(false);
-  const [currUser, setCurrUser] = useState(testUsers[0]);
-  const [user,setUser] = useState("");
+  const [currUser, setCurrUser] = useState([userList[0]]);
   const navigate = useNavigate();
 
   const openUserProfile = (user) => {
@@ -106,29 +110,6 @@ function AdminUserPanel() {
   const closeUserProfile = () => {
     setState(false);
   };
-
-  useEffect(() => {
-    const getAllUser = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/admin/getAllUser`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        });
-        if (response.status === 200) {
-          //successful get user data
-          const resdata = await response.json();
-          setUser(resdata);
-        } else {
-          console.log("SHIT");
-        }
-      } catch (error) {
-        console.error("SHIT AGAIN", error);
-      }
-    }
-    getAllUser();
-  }, []);
 
   return (
     <div>
@@ -154,15 +135,15 @@ function AdminUserPanel() {
             color={"black"}
             func={() => navigate('/admin/postmanager')}
           />
-          <SideBarButton 
-              image={logoutIcon}
-              name={"Log out"}
-              color={"black"}
-              func = {() => navigate("/")}
-            />
+          <SideBarButton
+            image={logoutIcon}
+            name={"Log out"}
+            color={"black"}
+            func={() => navigate("/")}
+          />
         </div>
         <div id="main">
-          <UserTable users={user} view={openUserProfile} />
+          <UserTable users={userList} view={openUserProfile} deleteUser={deleteUser} />
         </div>
       </div>
     </div>

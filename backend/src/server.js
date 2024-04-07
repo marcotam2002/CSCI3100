@@ -126,6 +126,18 @@ app.get("/api/admin/getAllUser", async(req, res)=>{
     else return res.status(404).send({message:"Error fetching users"});
 })
 
+
+app.put("/api/admin/deleteUser", async(req,res)=>{
+    console.log("Delete User request received")
+    const adminHandler=new AdminHandler();
+    const result = await adminHandler.deleteUser(req.body.userID);
+    if(result.success){
+        console.log("Successfully deleted user");
+        return res.status(200).send();
+    }
+    else return res.status(404).send({message: result.message});
+})
+
 //Need to test with post exist inside database, api request for comment
 app.put("/api/post/commentadd", async(req,res)=>{
     console.log("Add Comment request received")
