@@ -6,3 +6,48 @@
  * Leung Ka Lun 1155157403
  * O Ching Lam 1155159131
  */
+
+ #Search {
+    padding: 20px;
+ }
+
+ #Search form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+ }
+ #Search input {
+    width: 60%;
+    padding: 10px;
+    font-family: Assistant Light;
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    font-size: 20px;
+    box-sizing: border-box;
+ }
+
+ #Search select{
+    padding: 10px;
+    font-family: Assistant Light;
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    font-size: 20px;
+    box-sizing: border-box;
+ }
+ 
+ #Search button{
+    padding: 10px;
+    font-family: Assistant Light;
+    font-size: 20px;
+    border-radius: 50px;
+    border: 2px solid #0056b3;
+    background-color: white;
+    color: #0056b3;
+    padding-left: 30px;
+    padding-right: 30px;
+ }
+
+ #Search button:hover {
+    background-color: #0056b3;
+    color: white;
+ }
