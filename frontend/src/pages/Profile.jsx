@@ -8,9 +8,10 @@
  */
 
 import "./format.css";
+import "./Profile.css";
 import { Header, SideBarButton } from "./components";
-import React, {useState,useEffect} from "react";
-import {useParams} from "react-router-dom"
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
 import searchIcon from "../assets/search.svg";
@@ -23,61 +24,63 @@ import EditProfileForm from "./EditProfileForm";
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
-const testUser = 
-    {
-        userID: 2,
-        username: "Peter",
-        followersCount: 50,
-        followingCount: 100,
-        description: "Hi I \n am really \n happy."
+const testUser =
+{
+  userID: 2,
+  username: "Peter",
+  followersCount: 50,
+  followingCount: 100,
+  description: "What a wonderful day!\nI love to share my life with you.\nLet's enjoy the moment together.\n",
+  isPrivate: true,
+}
 
-    }
+function UserProfile({ openFunc }) {
+  const { userID } = useParams();
+  const currentUser = getCookie("userID");
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
 
-function UserProfile({openFunc}) {
-    const { userID } = useParams();
-    const currentUser = getCookie("userID");
-    const [isCurrentUser, setIsCurrentUser] = useState(false);
+  useEffect(() => {
+    setIsCurrentUser(currentUser === userID);
+  }, [userID, currentUser]);
+  // setIsCurrentUser(true);
 
-    useEffect(() =>{
-        setIsCurrentUser(currentUser === userID);
-    }, [userID, currentUser]);
-    // setIsCurrentUser(true);
-    
-    const editProfile = () => {
-        // For debugging.
-        openFunc();
-        console.log("Edit Profile function placeholder");
-    };
+  const editProfile = () => {
+    // For debugging.
+    openFunc();
+    console.log("Edit Profile function placeholder");
+  };
 
-    const followUser = () => {
-        // For debugging.
-        console.log("Follow User function placeholder");
-    };
-    return (
-        <div>
-            {/* Row 1: Username and Button */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <div>{testUser && testUser.username}</div>
-                <button onClick={isCurrentUser ? editProfile : followUser}>
-                    {isCurrentUser ? "Edit Profile" : "Follow"}
-                </button>
-            </div>
-            
-            {/* Row 2: Followers and Following */}
-            <div>{testUser && `${testUser.followersCount} followers | ${testUser.followingCount} following`}</div>
-            
-            {/* Row 3: User Description */}
-            <div>{testUser && testUser.description}</div>
-            
-            {/* Row 4: Posts */}
-            <div>Posts</div>
-            
-            {/* Row 5 and onwards: User's posts */}
-            {/* {user && user.posts.map(post => (
+  const followUser = () => {
+    // For debugging.
+    console.log("Follow User function placeholder");
+  };
+  return (
+    <div id="profileBox">
+      <div id="profileHeader">
+        <h2><b>{testUser && testUser.username}</b></h2>
+        <div id="followBox">
+          <p><b>{testUser && testUser.followersCount}</b></p>
+          <p> followers </p>
+          <p><b>{testUser && testUser.followingCount}</b></p>
+          <p> following </p>
+        </div>
+        <button onClick={isCurrentUser ? editProfile : followUser}>
+          {isCurrentUser ? "Edit Profile" : "Follow"}
+        </button>
+      </div>
+      <div id="descriptionBox">
+        {testUser && testUser.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))}
+      </div>
+
+      {/* Row 4: Posts */}
+      <div><h5>Posts</h5></div>
+
+      {/* Row 5 and onwards: User's posts */}
+      {/* {user && user.posts.map(post => (
                 <div key={post.id}>{post.content}</div>
             ))} */}
-        </div>
-    )
+    </div>
+  )
 }
 
 function Profile(){
@@ -92,7 +95,7 @@ function Profile(){
   const closeEditProfileForm = () => {
     setState2(false);
   };
-  
+
   const openAddPost = () => {
     setState(true);
   };
@@ -104,12 +107,16 @@ function Profile(){
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
-          <AddPostForm closeFunc={closeAddPost}/>
+          <AddPostForm closeFunc={closeAddPost} />
         </div>
       </div>
       <div className={`popupBox ${state2 ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
-          <EditProfileForm closeFunc={closeEditProfileForm}/>
+          <EditProfileForm 
+          closeFunc={closeEditProfileForm} 
+          originUserName={testUser.username} 
+          originDescription={testUser.description}
+          originPrivacy={testUser.isPrivate} />
         </div>
       </div>
 
@@ -119,14 +126,14 @@ function Profile(){
           <SideBarButton
             image={homeIcon}
             name={"Home"}
-            color={"#1D67CD"}
-            func = {()=>navigate('/userhomepage')}
+            color={"black"}
+            func={() => navigate('/userhomepage')}
           />
           <SideBarButton
             image={addPostIcon}
             name={"Add Post"}
             color={"black"}
-            func = {()=>openAddPost()}
+            func={() => openAddPost()}
           />
           <SideBarButton
             image={searchIcon}
@@ -138,7 +145,7 @@ function Profile(){
             image={messageIcon}
             name={"Message"}
             color={"black"}
-            func = {()=>navigate('/message')}
+            func={() => navigate('/message')}
           />
           <SideBarButton
             image={notificationIcon}
@@ -149,18 +156,18 @@ function Profile(){
           <SideBarButton
             image={profileIcon}
             name={"Profile"}
-            color={"black"}
-            func = {()=>navigate(`/profile/${getCookie("userID")}`)}
+            color={"#1D67CD"}
+            func={() => navigate(`/profile/${getCookie("userID")}`)}
           />
-          <SideBarButton 
+          <SideBarButton
             image={logoutIcon}
             name={"Log out"}
             color={"black"}
-            func = {() => navigate("/")}
+            func={() => navigate("/")}
           />
         </div>
         <div id="main">
-          <UserProfile openFunc={openEditProfileForm}/>
+          <UserProfile openFunc={openEditProfileForm} />
         </div>
       </div>
     </div>
