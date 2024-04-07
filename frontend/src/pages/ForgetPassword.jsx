@@ -16,6 +16,8 @@ const ForgetPasswordForm = () => {
   const [username, setUsername] = useState('');
   const [securityAnswers, setSecurityAnswers] = useState('');
   const [step, setStep] = useState(1);
+  const [errorMessage, setErrorMessage] = useState("");
+
 
 
   const handleSubmit = async(event) => {
@@ -40,9 +42,11 @@ const ForgetPasswordForm = () => {
     });
     if (response.status === 200){
         // pass the security check.
+        setErrorMessage("");
         setStep(2);
-    }else{
+    }else {
         // fail the security check.
+        setErrorMessage("Invalid input of username or security answer.")
         console.log(response.body);
     }
 
@@ -58,13 +62,13 @@ const ForgetPasswordForm = () => {
       console.log(checkpassword);
 
       if (password !== checkpassword){
-        alert('Password not the same!');
+        setErrorMessage('Password not the same!');
         return;
       }
 
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/;
       if (!passwordRegex.test(password)) {
-        alert(
+        setErrorMessage(
           "Password must contain at least one character and one number, and have a length between 6 and 20 characters."
         );
         return;
@@ -87,9 +91,11 @@ const ForgetPasswordForm = () => {
       if (response2.status === 200){
         // successful update
         alert('Password updated successfully!');
+        setErrorMessage("");
         setStep(3);
       }else{
-        console.log(response.body);
+        setErrorMessage("System Error. Please try again later.");
+        console.log(response2.body);
       }  
     }
   };
@@ -136,6 +142,7 @@ const ForgetPasswordForm = () => {
                 <p style={{textAlign: "center"}}>Please return to Homepage for login.</p>
             </>
             )}
+            {errorMessage && <p style={{color:"red"}}>{errorMessage}</p>}
             {step !==3 && <button type="submit">Submit</button>}
         </form>
         <Link className="Link" to={"/"}>Back to Home</Link>

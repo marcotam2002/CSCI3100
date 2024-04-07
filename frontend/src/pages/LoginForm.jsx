@@ -19,6 +19,7 @@ function LoginForm() {
 
   const [state, setState] = useState(false);
   const [username, setUsername] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [password, setPassword] = useState("");
 
   const openRegForm = () => {
@@ -52,15 +53,24 @@ function LoginForm() {
           });
           if (response.status === 200){
               //successful login
-              const resdata = await response.json()
+              setErrorMessage("");
+              const resdata = await response.json();
               document.cookie = "username="+ username;
               document.cookie = "userID=" + resdata.userID;
               document.cookie = "role="+ resdata.role;
-              navigate('/userhomepage')
-          }else{
-              //bad login: return error message
+              navigate('/userhomepage');
+          }else if (response.status === 404) {
+              // bad login: return error message
               const resdata = await response.json()
               console.log(resdata);
+              setErrorMessage("Invalid username or password. Please try again.");
+              setPassword("");
+              setUsername("");
+          } else {
+              // system error
+              const resdata = await response.json()
+              console.log(resdata);
+              setErrorMessage("System Error. Please try again.");
               setPassword("");
               setUsername("");
           }
@@ -86,6 +96,7 @@ function LoginForm() {
           <input id="pswInput" type="password" placeholder="Enter your password" required value={password}
             onChange={(event) => setPassword(event.target.value)} />
           <br></br>
+          {errorMessage && <p style={{color:"red"}}>{errorMessage}</p>}
           <button className="submit" type="submit">Login</button>
           <hr style={{width:"100%"}}/>
         </form>
