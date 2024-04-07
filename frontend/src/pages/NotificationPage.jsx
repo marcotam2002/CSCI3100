@@ -81,7 +81,7 @@ function NotificationBox({ notifcations }) {
     );
 }
 
-function NotificationPage({ user }) {
+function NotificationPage() {
     const [state, setState] = useState(false);
     const navigate = useNavigate();
 
@@ -91,7 +91,7 @@ function NotificationPage({ user }) {
     const closeAddPost = () => {
         setState(false);
     };
-    console.log(user);
+    const user = getCookie("username");
     return (
         <div>
             <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
@@ -119,7 +119,7 @@ function NotificationPage({ user }) {
                         image={searchIcon}
                         name={"Search"}
                         color={"black"}
-                        func={() => alert("This should redirect to Search page.")}
+                        func={() => navigate('/search')}
                     />
                     <SideBarButton
                         image={messageIcon}

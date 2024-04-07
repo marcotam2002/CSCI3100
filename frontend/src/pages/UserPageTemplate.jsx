@@ -119,7 +119,7 @@ function UserPageTemplate({user}) {
             image={searchIcon}
             name={"Search"}
             color={"black"}
-            func = {()=>alert("This should redirect to Search page.")}
+            func = {()=>navigate('/userhomepage')}
           />
           <SideBarButton
             image={messageIcon}
@@ -131,13 +131,13 @@ function UserPageTemplate({user}) {
             image={notificationIcon}
             name={"Notification"}
             color={"black"}
-            func = {()=>alert("This should redirect to Notification page.")}
+            func = {()=>navigate(`/profile/${getCookie("userID")}`)}
           />
           <SideBarButton
             image={profileIcon}
             name={"Profile"}
             color={"black"}
-            func = {()=>navigate(`/profile/${getCookie("userID")}`)}
+            func = {()=>navigate('/notification')}
           />
           <SideBarButton 
             image={logoutIcon}

@@ -105,7 +105,7 @@ function MessageBox({ user, followingUsers }) {
   );
 }
 
-function Message({ user }) {
+function Message() {
   const [state, setState] = useState(false);
   const navigate = useNavigate();
 
@@ -115,6 +115,7 @@ function Message({ user }) {
   const closeAddPost = () => {
     setState(false);
   };
+  const user = getCookie("username");
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
@@ -142,7 +143,7 @@ function Message({ user }) {
             image={searchIcon}
             name={"Search"}
             color={"black"}
-            func={() => alert("This should redirect to Search page.")}
+            func={() => navigate('/search')}
           />
           <SideBarButton
             image={messageIcon}
@@ -154,7 +155,7 @@ function Message({ user }) {
             image={notificationIcon}
             name={"Notification"}
             color={"black"}
-            func={() => alert("This should redirect to Notification page.")}
+            func={() => navigate('/notification')}
           />
           <SideBarButton
             image={profileIcon}

@@ -80,7 +80,7 @@ function UserProfile({openFunc}) {
     )
 }
 
-function Profile({user}){
+function Profile(){
   const [state, setState] = useState(false);
   const [state2, setState2] = useState(false);
   const navigate = useNavigate();
@@ -99,7 +99,7 @@ function Profile({user}){
   const closeAddPost = () => {
     setState(false);
   };
-  console.log(user);
+  const user = getCookie("username");
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
@@ -132,7 +132,7 @@ function Profile({user}){
             image={searchIcon}
             name={"Search"}
             color={"black"}
-            func = {()=>alert("This should redirect to Search page.")}
+            func = {()=>navigate('/search')}
           />
           <SideBarButton
             image={messageIcon}
@@ -144,7 +144,7 @@ function Profile({user}){
             image={notificationIcon}
             name={"Notification"}
             color={"black"}
-            func = {()=>alert("This should redirect to Notification page.")}
+            func = {()=>navigate('/notification')}
           />
           <SideBarButton
             image={profileIcon}

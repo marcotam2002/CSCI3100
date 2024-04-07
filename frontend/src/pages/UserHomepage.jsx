@@ -178,7 +178,7 @@ function UserHomepageComponent({ posts }) {
   );
 }
 
-function UserHomepage({user}) {
+function UserHomepage() {
   const [state, setState] = useState(false);
   const navigate = useNavigate();
 
@@ -188,7 +188,8 @@ function UserHomepage({user}) {
   const closeAddPost = () => {
     setState(false);
   };
-  console.log(user);
+  // console.log(user);
+  const user = getCookie("username");
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
@@ -216,7 +217,7 @@ function UserHomepage({user}) {
             image={searchIcon}
             name={"Search"}
             color={"black"}
-            func = {()=>alert("This should redirect to Search page.")}
+            func = {()=>navigate('/search')}
           />
           <SideBarButton
             image={messageIcon}
@@ -228,7 +229,7 @@ function UserHomepage({user}) {
             image={notificationIcon}
             name={"Notification"}
             color={"black"}
-            func = {()=>alert("This should redirect to Notification page.")}
+            func = {()=>navigate('/notification')}
           />
           <SideBarButton
             image={profileIcon}

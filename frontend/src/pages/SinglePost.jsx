@@ -236,7 +236,7 @@ function SinglePostFrame({ user, posts }) {
   );
 }
 
-function SinglePostPage({ user }) {
+function SinglePostPage() {
   const [state, setState] = useState(false);
   const { postID } = useParams();
   const requiredpost = testPost.find((post) => post.postID === parseInt(postID));
@@ -253,6 +253,7 @@ function SinglePostPage({ user }) {
   const closeAddPost = () => {
     setState(false);
   };
+  const user = getCookie("username");
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
@@ -280,7 +281,7 @@ function SinglePostPage({ user }) {
             image={searchIcon}
             name={"Search"}
             color={"black"}
-            func={() => alert("This should redirect to Search page.")}
+            func={() => navigate('/search')}
           />
           <SideBarButton
             image={messageIcon}
@@ -292,7 +293,7 @@ function SinglePostPage({ user }) {
             image={notificationIcon}
             name={"Notification"}
             color={"black"}
-            func={() => alert("This should redirect to Notification page.")}
+            func={() => navigate('/notification')}
           />
           <SideBarButton
             image={profileIcon}
