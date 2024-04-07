@@ -88,8 +88,8 @@ function LoginForm() {
           <br></br>
           <button className="submit" type="submit">Login</button>
           <hr style={{width:"100%"}}/>
-          <button className="register-btn" onClick={() => openRegForm()}>Register</button>
         </form>
+          <button className="register" onClick={openRegForm}>Register</button>
       </div>
     </div>
   );
