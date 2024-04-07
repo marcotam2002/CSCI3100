@@ -12,6 +12,7 @@
 const express = require("express");
 const cors = require("cors");
 const AccountHandler = require('./accounthandler');
+const AdminHandler = require('./adminhandler');
 const UserHandler = require('./userhandler');
 //const pool = require("./database")
 
@@ -100,7 +101,7 @@ app.post("/api/user/addpost", async(req, res)=>{
 
 app.get("/api/admin/getAllUser", async(req, res)=>{
     console.log("Get all user request received")
-    const adminHandler=new AccountHandler();
+    const adminHandler= new AdminHandler();
     const result = await adminHandler.getAllUsers();
     if(result){
         console.log("All user fetched")

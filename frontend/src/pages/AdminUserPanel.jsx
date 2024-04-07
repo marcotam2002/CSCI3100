@@ -14,6 +14,8 @@ import { Header, SideBarButton } from "./components";
 import React, { useEffect, useState } from "react";
 import userIcon from "../assets/user.svg";
 import postIcon from "../assets/post.svg";
+import logoutIcon from "../assets/log-out.svg";
+import { useNavigate } from 'react-router';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 /*Just for testing*/
 const testUsers = [
@@ -94,6 +96,9 @@ function AdminUserPanel() {
 
   const [state, setState] = useState(false);
   const [currUser, setCurrUser] = useState(testUsers[0]);
+  const [user,setUser] = useState("");
+  const navigate = useNavigate();
+
   const openUserProfile = (user) => {
     setState(true);
     setCurrUser(user);
@@ -114,7 +119,7 @@ function AdminUserPanel() {
         if (response.status === 200) {
           //successful get user data
           const resdata = await response.json()
-          console.log(resdata);
+          setUser(resdata);
         } else {
           console.log("SHIT");
         }
@@ -141,17 +146,23 @@ function AdminUserPanel() {
             image={userIcon}
             name={"User Manager"}
             color={"#1D67CD"}
-            func={() => alert("This should redirect to user manager.")}
+            func={() => navigate('/admin/usermanager')}
           />
           <SideBarButton
             image={postIcon}
             name={"Post Manager"}
             color={"black"}
-            func={() => alert("This should redirect to post manager.")}
+            func={() => navigate('/admin/postmanager')}
           />
+          <SideBarButton 
+              image={logoutIcon}
+              name={"Log out"}
+              color={"black"}
+              func = {() => navigate("/")}
+            />
         </div>
         <div id="main">
-          <UserTable users={testUsers} view={openUserProfile} />
+          <UserTable users={user} view={openUserProfile} />
         </div>
       </div>
     </div>

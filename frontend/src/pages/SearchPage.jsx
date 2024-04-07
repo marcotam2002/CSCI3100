@@ -95,7 +95,7 @@ function UserSearch() {
           </div>
       </form>
 
-      {/* <div>
+      <div>
           {searchResults.length > 0 ? (
               <ul>
                   {searchResults.map(result => (
@@ -105,7 +105,7 @@ function UserSearch() {
           ) : (
               <p>No results found</p>
           )}
-      </div> */}
+      </div>
   </div>
     );
 }
