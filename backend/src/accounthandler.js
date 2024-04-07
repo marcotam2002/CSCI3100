@@ -95,6 +95,7 @@ class AccountHandler {
   
           // Check if the password is correct
           const account_input_hashedPassword = hashPassword(account_input_password, this.salt);
+          client.release();
           if (account_input_hashedPassword === this.hashedPassword) {
               // Return authentication successful message along with account type
               return { success: true, message: 'Authentication successful', userID: this.userID, usertype: this.role};
