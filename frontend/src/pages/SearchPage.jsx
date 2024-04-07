@@ -22,11 +22,92 @@ import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
 function UserSearch() {
+    const [searchType, setSearchType] = useState("keyword");
+    const [searchText, setSearchText] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+
+    const handleSearchTypeChange = (event) => {
+      setSearchType(event.target.value);
+  };
+
+  const handleSearchTextChange = (event) => {
+      setSearchText(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+      event.preventDefault();
+      // Perform search based on searchType and searchText
+      // Update searchResults state with the search results
+      // For demonstration purposes, let's assume searchResults is updated with dummy data
+      setSearchResults([
+          { id: 1, name: "User 1" },
+          { id: 2, name: "User 2" },
+          { id: 3, name: "User 3" }
+      ]);
+  };
+
     return (
-        <div id="Search">
-            
-        </div>
-    )
+      <div id="Search">
+      <form onSubmit={handleSubmit}>
+          <div>
+              <label>
+                  <input 
+                      type="radio" 
+                      value="keyword" 
+                      checked={searchType === "keyword"} 
+                      onChange={handleSearchTypeChange} 
+                  />
+                  Search by keyword
+              </label>
+          </div>
+          <div>
+              <label>
+                  <input 
+                      type="radio" 
+                      value="username" 
+                      checked={searchType === "username"} 
+                      onChange={handleSearchTypeChange} 
+                  />
+                  Search by username
+              </label>
+          </div>
+          <div>
+              <label>
+                  <input 
+                      type="radio" 
+                      value="tag" 
+                      checked={searchType === "tag"} 
+                      onChange={handleSearchTypeChange} 
+                  />
+                  Search by tag
+              </label>
+          </div>
+          <div>
+              <input 
+                  type="text" 
+                  value={searchText} 
+                  onChange={handleSearchTextChange} 
+                  placeholder="Enter search text" 
+              />
+          </div>
+          <div>
+              <button type="submit">Search</button>
+          </div>
+      </form>
+
+      {/* <div>
+          {searchResults.length > 0 ? (
+              <ul>
+                  {searchResults.map(result => (
+                      <li key={result.id}>{result.name}</li>
+                  ))}
+              </ul>
+          ) : (
+              <p>No results found</p>
+          )}
+      </div> */}
+  </div>
+    );
 }
 
 function SearchPage() {
