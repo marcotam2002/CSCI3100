@@ -55,9 +55,9 @@ function LoginForm() {
               //successful login
               setErrorMessage("");
               const resdata = await response.json();
-              document.cookie = "username="+ username;
-              document.cookie = "userID=" + resdata.userID;
-              document.cookie = "role="+ resdata.role;
+              document.cookie = `username=${username}`;
+              document.cookie = `userID=${resdata.userID}`;
+              document.cookie = `role=${resdata.role}`;
               navigate('/userhomepage');
           }else if (response.status === 404) {
               // bad login: return error message
@@ -74,7 +74,6 @@ function LoginForm() {
               setPassword("");
               setUsername("");
           }
-    
     }
 
   return (

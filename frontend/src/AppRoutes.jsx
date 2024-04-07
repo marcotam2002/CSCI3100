@@ -16,7 +16,6 @@ import UserHomepage from "./pages/UserHomepage";
 import ForgetPasswordForm from "./pages/ForgetPassword";
 import Message from "./pages/MessagePage";
 import SinglePostPage from "./pages/SinglePost";
-import { getCookie } from "./pages/CookieHandlers";
 import Profile from "./pages/Profile";
 import NotificationPage from "./pages/NotificationPage";
 
@@ -27,14 +26,15 @@ const AppRoutes=()=>{
         <Routes>
             <Route path="/" element = {<Login/>}/>
             <Route path="/search" element = {<SearchPage/>}/>
-            <Route path="/admin/usermanager" element = {<AdminUserPanel/>}/>
-            <Route path="/admin/postmanager" element = {<AdminPostPanel/>}/>  
-            <Route path="/userhomepage" element = {<UserHomepage user={getCookie("username")}/>}/> 
-            <Route path="/forgetpw" element= {<ForgetPasswordForm/>}/>
-            <Route path="/message" element = {<Message user={getCookie("username")}/>}/>
-            <Route path="/post/:postID" element = {<SinglePostPage user={getCookie("username")}/>} />
-            <Route path="/profile/:userID" element = {<Profile user={getCookie("username")}/> } />
+            <Route path="/admin/usermanager" element = {<AdminUserPanel />}/>
+            <Route path="/admin/postmanager" element = {<AdminPostPanel />}/>  
+            <Route path="/userhomepage" element = {<UserHomepage />}/> 
+            <Route path="/forgetpw" element= {<ForgetPasswordForm />}/>
+            <Route path="/message" element = {<Message />}/>
+            <Route path="/post/:postID" element = {<SinglePostPage />} />
+            <Route path="/profile/:userID" element = {<Profile /> } />
             <Route path="/notification" element = {<NotificationPage />} />
+            <Route path="/search" element = {<SearchPage />} />
         </Routes>
     );
 };
