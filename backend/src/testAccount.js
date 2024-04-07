@@ -14,16 +14,16 @@ const AccountHandler = require('./accounthandler');
 // Function to test the createUser method
 async function testCreateUser() {
     // Define test user data
-    const username = 'test3';
-    const password = 'testpassword';
-    const userType = 'user'; // You can adjust this based on your requirements
+    const username = 'admin12345';
+    const password = 'admin1234';
+    const userType = 'admin'; // You can adjust this based on your requirements
 
     // Create an instance of AccountHandler
     const accountHandler = new AccountHandler();
 
     try {
         // Call the createUser method to create a new user
-        const createUserResult = await accountHandler.createUser(username, password);
+        const createUserResult = await accountHandler.createUser(username, password, securityAnswer = '123', role = userType);
 
         // Check if user creation was successful
         if (createUserResult.success) {
@@ -41,8 +41,8 @@ async function testLogin() {
     // Create an instance of AccountHandler
     const accountHandler = new AccountHandler();
 
-    const username = 'hehehe';
-    const password = 'testpassword';
+    const username = 'admin12345';
+    const password = 'admin1234';
   
     const loginResult = await accountHandler.authenticateAccount(username, password);
   
@@ -50,6 +50,6 @@ async function testLogin() {
   }
 
 // Call the test function
-testCreateUser();
+// testCreateUser();
 
-// testLogin();
+testLogin();
