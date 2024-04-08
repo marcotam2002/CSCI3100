@@ -36,7 +36,7 @@ class UserHandler extends AccountHandler {
       const values = [userID];
       const result = await client.query(queryText, values);
       client.release();
-      return result.rows[0].username;
+      return {success: true, username: result.rows[0].username};
     } catch (error) {
       console.error('Error getting username:', error);
       return null;
