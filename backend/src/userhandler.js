@@ -118,12 +118,14 @@ class UserHandler extends AccountHandler {
 
         // Check if target user exists
         if (result.rows.length === 0) {
+            client.release();
             return { success: false, message: 'Target user not found' };
         }
 
         // Check if target user is public
         const targetUser = result.rows[0];
         if (targetUser.privacy === 'public') {
+            client.release();
             return { success: true, message: 'Target user profile retrieved successfully', targetUser };
         }
 
@@ -365,6 +367,7 @@ class UserHandler extends AccountHandler {
 
       // Check if the user is private, unless they repost their own posts
       if ((await this.isprivate(authorID)) && result.rows[0].userID !== this.userID) {
+          client.release();
           return { success: false, message: 'User is private' };
       }
 
