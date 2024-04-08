@@ -102,7 +102,7 @@ function UserHomepageComponent({ posts }) {
             userID: userID
           };
 
-          const response = await fetch(`${API_BASE_URL}/getUser`, {
+          const response = await fetch(`${API_BASE_URL}/getUsername`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
