@@ -288,6 +288,17 @@ app.put("/api/admin/deleteUser", async(req,res)=>{
     else return res.status(404).send({message: result.message});
 })
 
+app.put("/api/admin/deletePost", async(req,res)=>{
+    console.log("Delete Post request received")
+    const adminHandler=new AdminHandler();
+    const result = await adminHandler.deletePost(req.body.postID);
+    if(result){
+        console.log("Successfully deleted post");
+        return res.status(200).send();
+    }
+    else return res.status(404).send();
+})
+
 //Need to test with post exist inside database, api request for comment
 app.put("/api/post/commentadd", async(req,res)=>{
     console.log("Add Comment request received")
