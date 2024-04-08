@@ -24,6 +24,25 @@ class UserHandler extends AccountHandler {
     this.isActive = isActive;
   }
 
+  // Method to get username by userID
+  async getUsername(userID) {
+    /*
+      * Retrieve username from the database
+      * @param {string} userID - The ID of the user to retrieve username
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT username FROM users WHERE userID = $1';
+      const values = [userID];
+      const result = await client.query(queryText, values);
+      client.release();
+      return result.rows[0].username;
+    } catch (error) {
+      console.error('Error getting username:', error);
+      return null;
+    }
+  }
+
   // Method to edit user own profile
   async editProfile(content) {
     /*
