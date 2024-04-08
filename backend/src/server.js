@@ -205,7 +205,8 @@ app.post("/api/search", async(req,res)=>{
 app.post("/getUsername", async(req,res)=>{
     console.log("getUser request received");
     const userHandler = new UserHandler();
-    const result = userHandler.getUsername(req.body.userID);
+    const result = await userHandler.getUsername(req.body.userID);
+    console.log(result);
     if(result.success){
         console.log("Return User INFO");
         return res.status(200).send(result.username);

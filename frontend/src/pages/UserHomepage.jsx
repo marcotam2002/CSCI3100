@@ -129,7 +129,7 @@ function UserHomepageComponent({ posts }) {
     return (
       <div className="post-container " key={post.postID}>
         <div className="post-header">
-          <span className="post-username">{post.authorid}</span>
+          <span className="post-username">{username}</span>
           <span className="post-time">{post.time}</span>
         </div>
         <div className="post-description">
@@ -234,9 +234,9 @@ function UserHomepage() {
 
   
 
-  useEffect(() => {
-    console.log(post);
-  }, [post]); // for debugging.
+  // useEffect(() => {
+  //   console.log(post);
+  // }, [post]); // for debugging.
   
   const [notificationState, setNotificationState] = useState(false);
   const updateNotificationState = async () => {
