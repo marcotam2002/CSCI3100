@@ -70,7 +70,7 @@ function UserProfile({ openFunc }) {
             console.log("System Error");
         }
       } catch (error) {
-        console.log("Error in try running this function.");
+        console.log("Error in getting user profile.");
       } 
     };
 

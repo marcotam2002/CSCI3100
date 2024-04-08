@@ -22,6 +22,9 @@ import AddPostForm from './AddPostForm';
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+
+
 function UserSearch() {
   const [searchType, setSearchType] = useState("keyword");
   const [searchText, setSearchText] = useState("");
@@ -35,16 +38,34 @@ function UserSearch() {
     setSearchText(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Perform search based on searchType and searchText
-    // Update searchResults state with the search results
-    // For demonstration purposes, let's assume searchResults is updated with dummy data
-    setSearchResults([
-      { id: 1, name: "User 1" },
-      { id: 2, name: "User 2" },
-      { id: 3, name: "User 3" }
-    ]);
+    
+    const data = {
+      searchType: searchType,
+      searchText: searchText
+    }
+
+    const response = await fetch(`${API_BASE_URL}/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200){
+      const resdata = await response.json();
+      setSearchResults(resdata.result); 
+    } else {
+      // system error
+      const resdata = await response.json()
+      console.log(resdata);
+    }
+    // setSearchResults([
+    //   { id: 1, name: "User 1" },
+    //   { id: 2, name: "User 2" },
+    //   { id: 3, name: "User 3" }
+    // ]);
   };
 
   return (

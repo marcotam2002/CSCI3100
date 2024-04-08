@@ -47,6 +47,7 @@ export default function AddPostForm({ closeFunc }) {
     const message = await response.text();
     if (response.status === 200) {
       setErrorMessage("");
+      closeBoxFunc();
     } else {
       setErrorMessage("System Error. Please try again later.");
     }

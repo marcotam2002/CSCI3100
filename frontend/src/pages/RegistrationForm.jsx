@@ -17,18 +17,22 @@ export default function RegistrationForm({closeFunc}) {
     const [password, setPassword] = useState("");
     const [secans, setsecans] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
   
     const handleSubmit = async (event) => {
       event.preventDefault();
   
+      if (username.length > 20) {
+        setErrorMessage(
+          "Username cannot exceed 20 characters."
+        );
+        return;
+      }
       // Password validation
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/;
       if (!passwordRegex.test(password)) {
         setErrorMessage(
           "Password must contain at least one character and one number, and have a length between 6 and 20 characters."
         );
-        setSuccessMessage("");
         return;
       }
   
@@ -53,15 +57,14 @@ export default function RegistrationForm({closeFunc}) {
       const message = await response.text();
       if (response.status === 403) {
         setErrorMessage("This username has been registered. Please use another one.")
-        setSuccessMessage("");
       }
       else if (response.status === 200) {
-        setSuccessMessage("Registration is successful. You can login with the created username and password now.");
+        alert("Registration is successful. You can login with the created username and password now.");
         setErrorMessage("");
+        closeFunc();
       }
       else if (response.status === 500) {
         setErrorMessage("System Error. Please try again later.");
-        setSuccessMessage("");
       }
   
       // Reset the form fields
@@ -74,6 +77,7 @@ export default function RegistrationForm({closeFunc}) {
       <div className="RegisterForm">
         <CrossButton func={closeFunc}/>
         <h2>Registration Form</h2>
+        <p>Please create your username with no more than 20 characters.</p>
         <p>Please set a password with a length ranging from 6 to 20 characters, with at least one character and one number.</p>
         <form onSubmit={handleSubmit} id="registrationForm">
           <div>
@@ -96,7 +100,6 @@ export default function RegistrationForm({closeFunc}) {
             />
           </div>
           {errorMessage && <p style={{color:"red"}}>{errorMessage}</p>}
-          {successMessage && <p style={{color:"#1D67CD"}}>{successMessage}</p>}
           <button className="register" type="submit">Register</button>
         </form>
       </div>

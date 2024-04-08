@@ -10,7 +10,7 @@
 
 import { Header, SideBarButton } from "./components";
 import "./format.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
 import searchIcon from "../assets/search.svg";
@@ -27,6 +27,8 @@ import { useParams } from 'react-router-dom';
 import AddPostForm from "./AddPostForm";
 import './format.css';
 import './Post.css';
+
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 
 const testPost = [
@@ -98,41 +100,45 @@ function SinglePostFrame({ user, posts }) {
   }
 
   const [newcomment, setNewComment] = useState("");
+  const [singlePost, setSinglePost] = useState(posts);
+  const userID = getCookie("userID");
+
+  const getSinglePost = async() => {
+    const data = {
+      postID: postID,
+    };
+
+    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      setSinglePost(resdata.post);
+    } else {
+      const resdata = await response.json();
+      console.log(resdata);
+      console.log("System Error in getting Single Post");
+    }
+  };
 
   const addComment = async (postID, event) => {
     event.preventDefault();
     // for debugging.
-    console.log("Submitted comment:", newcomment);
-
-    // const newComment = {
-    //   username: user.username,
-    //   text: newcomment,
-    // }
-
-    // const updatedPosts = postsState.map((post) => {
-    //   if (post.postID === postID) {
-    //     return {
-    //       ...post,
-    //       commentnum: post.commentnum + 1, 
-    //       comments: [...post.comments, newComment],
-    //     };
-    //   }
-    //   return post;
-    // });
-    // setPostsState(updatedPosts);
-
-    // for debugging.
-    // console.log(updatedPosts)
+    // console.log("Submitted comment:", newcomment);
     setNewComment("");
 
     // for fetch part
     const data = {
       postID: postID,
-      // user: userID,
+      userID: userID,
       comment: newcomment,
     };
 
-    const response = await fetch('/post/commentadd', { 
+    const response = await fetch(`${API_BASE_URL}/post/commentadd`, { 
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -141,6 +147,7 @@ function SinglePostFrame({ user, posts }) {
     });
     if (response.status === 200){
         // successful update
+        getSinglePost();
         console.log("successful update")
     }else{
         // failed update
@@ -151,17 +158,6 @@ function SinglePostFrame({ user, posts }) {
   const ChangeLike = async (postID, event) => {
     event.preventDefault();
 
-    // const updatedPosts = postsState.map((post) => {
-    //   if (post.postID === postID) {
-    //     post.liked = !post.liked;
-    //     post.likes += post.liked ? 1 : -1;
-    //   }
-    //   return post;
-    // });
-    // setPostsState(updatedPosts);
-
-    // for debugging.
-    // console.log(updatedPosts);
 
     // for fetch part
     const data = {
@@ -169,7 +165,7 @@ function SinglePostFrame({ user, posts }) {
       userID: userID,
     };
 
-    const response = await fetch('/post/likepost', {
+    const response = await fetch(`${API_BASE_URL}/post/likepost`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -178,6 +174,7 @@ function SinglePostFrame({ user, posts }) {
     });
     if (response.status === 200) {
       // successful update
+      getSinglePost();
       console.log("successful update")
     } else {
       // failed update
@@ -231,7 +228,7 @@ function SinglePostFrame({ user, posts }) {
 
   return (
     <div className="single-homepage">
-      {posts.map((post) => renderPost(post))}
+      {singlePost.map((post) => renderPost(post))}
     </div>
   );
 }
@@ -239,8 +236,40 @@ function SinglePostFrame({ user, posts }) {
 function SinglePostPage() {
   const [state, setState] = useState(false);
   const { postID } = useParams();
-  const requiredpost = testPost.find((post) => post.postID === parseInt(postID));
-  const post = [requiredpost];
+  const [post, setPost] = useState("");
+
+  const user = getCookie("username");
+
+  useEffect(() => {
+    const getSinglePost = async() => {
+      try{
+        const data = {
+          postID: postID,
+        };
+
+        const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        if (response.status === 200) {
+          const resdata = await response.json();
+          setPost(resdata.post);
+        } else {
+            const resdata = await response.json()
+            console.log(resdata);
+            console.log("System Error");
+        }
+      } catch (error) {
+        console.log("Error in getting Single Post.");
+      } 
+    };
+
+    getSinglePost();
+  }, []);
+
   const navigate = useNavigate();
 
   // for debugging.
@@ -253,7 +282,6 @@ function SinglePostPage() {
   const closeAddPost = () => {
     setState(false);
   };
-  const user = getCookie("username");
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>

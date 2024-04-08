@@ -7,7 +7,7 @@
  * O Ching Lam 1155159131
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import likeIcon from '../assets/like.svg';
 import likedIcon from '../assets/liked.svg';
@@ -25,6 +25,9 @@ import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 import './format.css'
 import './Post.css';
+
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+
 
 const testPost = [
   {
@@ -88,23 +91,33 @@ const testPost = [
 function UserHomepageComponent({ posts }) {
 
   const [postsState, setPostsState] = useState(posts);
+  const [singlePost, setSinglePost] = useState("");
+
+  const getSinglePost = async() => {
+    const data = {
+      postID: postID,
+    };
+
+    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      setSinglePost(resdata.post);
+    } else {
+      const resdata = await response.json();
+      console.log(resdata);
+      console.log("System Error in getting Single Post");
+    }
+  };
 
   const ChangeLike = async (postID, event) => {
     event.preventDefault();
 
-    // const updatedPosts = postsState.map((post) => {
-    //   if (post.postID === postID) {
-    //     post.liked = !post.liked;
-    //     post.likes += post.liked ? 1 : -1;
-    //   }
-    //   return post;
-    // });
-    // setPostsState(updatedPosts);
-
-    // for debugging.
-    // console.log(updatedPosts);
-
-    // for fetch part
     const data = {
       postID: postID,
       userID: userID,
@@ -120,6 +133,13 @@ function UserHomepageComponent({ posts }) {
     if (response.status === 200) {
       // successful update
       console.log("successful update")
+      getSinglePost();
+      const index = postsState.findIndex(item => item.postID === singlePost.postID);
+      if (index !== -1) {
+        postsState[index] = singlePost;
+      } else {
+        console.log("Post with postID", singlePost.postID, "not found in posts in Homepage.")
+      }
     } else {
       // failed update
       console.log("failed to update")
@@ -173,7 +193,7 @@ function UserHomepageComponent({ posts }) {
 
   return (
     <div className="user-homepage">
-      {posts.map((post) => renderPost(post))}
+      {postsState.map((post) => renderPost(post))}
     </div>
   );
 }
@@ -181,6 +201,7 @@ function UserHomepageComponent({ posts }) {
 function UserHomepage() {
   const [state, setState] = useState(false);
   const navigate = useNavigate();
+  const [post, setPost] = useState("");
 
   const openAddPost = () => {
     setState(true);
@@ -190,6 +211,39 @@ function UserHomepage() {
   };
   // console.log(user);
   const user = getCookie("username");
+  const userID = getCookie("userID");
+
+  useEffect(() => {
+    const getHomepagePost = async() => {
+      try{
+        const data = {
+          userID: userID,
+        };
+
+        const response = await fetch(`${API_BASE_URL}/getHomepagePost`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+          });
+          if (response.status === 200) {
+            const resdata = await response.json();
+            setPost(resdata.post);
+          } else {
+            const resdata = await response.json()
+            console.log(resdata);
+            console.log("System Error");
+          }
+        } catch (error) {
+          console.log("Error in getting user homepage post. ");
+        }
+      };
+
+    getHomepagePost();  
+  }, []);
+
+
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
