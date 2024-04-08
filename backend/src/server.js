@@ -322,6 +322,36 @@ app.put("/api/post/likepost", async(req,res)=>{
     else return res.status(404).send({message: result.message});
 })
 
+app.post("/getHomepagePost", async(req, res)=>{
+    console.log("Get User Own Post request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.getOwnPosts();    //test without media first
+    if(result.success){
+        console.log("User own Post retrieved");
+        delete userHandler;
+        return res.status(200).send({result:result.posts});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.post("/getSinglePost", async(req, res)=>{
+    console.log("Access single post request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getPost(req.body.postID);    //test without media first
+    if(result){
+        console.log("Post retrieved");
+        delete userHandler;
+        return res.status(200).send({result});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: "error retrieving post"});
+    }
+})
+
 /*
 app.get("/api/homepage", async(req,res)=>{
     console.log("Fetching post from server")
