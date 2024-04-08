@@ -635,6 +635,26 @@ class UserHandler extends AccountHandler {
     }
   }
 
+  // Method to reject follow request
+  async rejectFollowRequest(rejectFollowerID) {
+    /*
+      * Reject follow request in the database
+      * @param {string} rejectFollowerID - The ID of the user who want to follow the own user
+    */
+    try {
+        const client = await pool.connect();
+        const queryText = 'DELETE FROM followRequests WHERE followerID = $1 AND followingID = $2';
+        const values = [rejectFollowerID, this.userID];
+        await client.query(queryText, values);
+        client.release();
+
+        return { success: true, message: 'Follow request rejected successfully' };
+    } catch (error) {
+        console.error('Error rejecting follow request:', error);
+        return { success: false, message: 'Failed to reject follow request' };
+    }
+  }
+
   // Method to unfollow other users
   async unfollowUser(targetUserID) {
     /*
