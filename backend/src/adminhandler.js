@@ -84,7 +84,7 @@ class AdminHandler extends AccountHandler {
   async deletePost(postID) {
     try {
       const client = await pool.connect();
-      const queryText = 'DELETE FROM posts WHERE post_id = $1';
+      const queryText = 'DELETE FROM posts WHERE postid = $1';
       const values = [postID];
       await client.query(queryText, values);
       client.release();
