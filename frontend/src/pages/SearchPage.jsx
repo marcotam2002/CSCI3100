@@ -9,8 +9,8 @@
 
 import "./format.css";
 import "./SearchPage.css";
-import { Header, SideBarButton } from "./components";
-import React, { useState } from "react";
+import { Header, SideBarButton, CheckNotification } from "./components";
+import React, { useState, useEffect } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
 import searchIcon from "../assets/search.svg";
@@ -115,6 +115,20 @@ function SearchPage() {
     setState(false);
   };
   const user = getCookie("username");
+
+  const [notificationState, setNotificationState] = useState(false);
+  const updateNotificationState = async () => {
+    const result = await CheckNotification();
+    setNotificationState(result);
+  };
+  useEffect(() => {
+    updateNotificationState();
+    const interval = setInterval(() => {
+      updateNotificationState();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
@@ -153,14 +167,14 @@ function SearchPage() {
           <SideBarButton
             image={notificationIcon}
             name={"Notification"}
-            color={"black"}
-            func={() => navigate(`/profile/${getCookie("userID")}`)}
+            color={notificationState ? "red" : "black"}
+            func={() => navigate('/notification')}
           />
           <SideBarButton
             image={profileIcon}
             name={"Profile"}
             color={"black"}
-            func={() => navigate('/notification')}
+            func={() => navigate(`/profile/${getCookie("userID")}`)}
           />
           <SideBarButton
             image={logoutIcon}

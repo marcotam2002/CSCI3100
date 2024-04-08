@@ -418,14 +418,14 @@ app.put("/chat/add", async(req,res)=>{
 
 //new
 //get notifcation of follower request
-app.post("/notification", async(req,res)=>{
+app.post("/api/user/getNotification", async(req,res)=>{
     console.log("fetching notication request received")
     const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getNotifications();   
     if(result.success){
-        console.log(userHandler.message);
+        console.log(result.message);
         delete userHandler;
-        return res.status(200).send({notication: result.notifications});
+        return res.status(200).send(result.notifications);
     }
     else {
         delete userHandler;

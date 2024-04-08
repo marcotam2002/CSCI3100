@@ -9,7 +9,7 @@
 
 import "./format.css";
 import "./Profile.css";
-import { Header, SideBarButton } from "./components";
+import { Header, SideBarButton, CheckNotification } from "./components";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"
 import homeIcon from "../assets/home.svg";
@@ -136,6 +136,20 @@ function Profile(){
     setState(false);
   };
   const user = getCookie("username");
+
+  const [notificationState, setNotificationState] = useState(false);
+  const updateNotificationState = async () => {
+    const result = await CheckNotification();
+    setNotificationState(result);
+  };
+  useEffect(() => {
+    updateNotificationState();
+    const interval = setInterval(() => {
+      updateNotificationState();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
@@ -183,7 +197,7 @@ function Profile(){
           <SideBarButton
             image={notificationIcon}
             name={"Notification"}
-            color={"black"}
+            color={notificationState ? "red" : "black"}
             func = {()=>navigate('/notification')}
           />
           <SideBarButton
