@@ -388,6 +388,27 @@ class UserHandler extends AccountHandler {
         return { success: false, message: 'Failed to repost post' };
     }
   }
+
+  // Method to get comment for a particular postID
+  async getComment(postID) {
+    /*
+      * Retrieve comments of a post from the database
+      * @param {string} postID - The ID of the post to retrieve comments
+    */
+    try {
+        // Retrieve comments of the post from the database
+        const client = await pool.connect();
+        const queryText = 'SELECT * FROM comments WHERE postID = $1';
+        const values = [postID];
+        const result = await client.query(queryText, values);
+        client.release();
+
+        return { success: true, message: 'Comments retrieved successfully', comments: result.rows };
+    } catch (error) {
+        console.error('Error retrieving comments:', error);
+        return { success: false, message: 'Failed to retrieve comments' };
+    }
+  }
   
   // Method to comment on a post
   async commentPost(postID, comment) {
@@ -520,6 +541,25 @@ class UserHandler extends AccountHandler {
     } catch (error) {
       console.error('Error deleting comment:', error);
       return { success: false, message: 'Failed to delete comment' };
+    }
+  }
+
+  // Method to get followings
+  async getFollowing() {
+    /*
+      * Retrieve the list of users that the user is following
+    */
+    try {
+        const client = await pool.connect();
+        const queryText = 'SELECT followingID FROM relationships WHERE followerID = $1';
+        const values = [this.userID];
+        const result = await client.query(queryText, values);
+        client.release();
+
+        return { success: true, message: 'Following retrieved successfully', following: result.rows };
+    } catch (error) {
+        console.error('Error retrieving following:', error);
+        return { success: false, message: 'Failed to retrieve following' };
     }
   }
 

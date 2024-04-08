@@ -129,8 +129,12 @@ async function testUserFunctions() {
     // console.log(repostResult)
 
     // Test comment on a post
-    // const commentResult = await User.commentPost(5, 'hehehe');
-    // console.log(commentResult)
+    const commentResult = await User.commentPost(5, 'hehehe');
+    console.log(commentResult)
+
+    // Test get all comments
+    const allComments = await User.getComment(5);
+    console.log(allComments)
 
     // Test like comment
     // const likeCommentResult = await User.likeComment(2);
