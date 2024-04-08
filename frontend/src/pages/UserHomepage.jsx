@@ -35,7 +35,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 function UserHomepageComponent({ posts }) {
 
   const [postsState, setPostsState] = useState(posts);
-  const [singlePost, setSinglePost] = useState("");
+  const [singlePost, setSinglePost] = useState("HI your mother");
+  const [loading, setLoading] = useState(true);
   const userID = getCookie("userID");
 
   const getSinglePost = async () => {
@@ -95,43 +96,12 @@ function UserHomepageComponent({ posts }) {
   const renderPost = (post) => {
     const [username, setUsername] = useState("");
 
-    useEffect(() => {
-      const getUsername = async (userID) => {
-        try {
-          const data = {
-            userID: userID
-          };
-
-          const response = await fetch(`${API_BASE_URL}/getUsername`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          });
-          if (response.status === 200) {
-            const resdata = await response.json();
-            setUsername(resdata.username);
-          } else {
-            const resdata = await response.json();
-            console.log(resdata);
-            console.log("System Error in getting user profile");
-          }
-        } catch (error) {
-          console.log("Error in getting user Profile.")
-        }
-      };
-
-
-      getUsername(post.authorid);
-    }, [post.authorid]);
-
     return (
       <div className="post-container " key={post.postID}>
         <div className="post-header">
-          <span className="post-username">{post.authorid}</span>
+          <span className="post-username">{post.username}</span>
           <span className="post-time">{post.time}</span>
-        </div>
+      </div>
         <div className="post-description">
           {post.content.split('\n').map((line, index) => (
             (index < 3 || post.description.split('\n').length <= 3) && (
@@ -189,7 +159,8 @@ function UserHomepageComponent({ posts }) {
 function UserHomepage() {
   const [state, setState] = useState(false);
   const navigate = useNavigate();
-  const [post, setPost] = useState(null);
+  const [post, setPost] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   const openAddPost = () => {
     setState(true);
@@ -215,10 +186,34 @@ function UserHomepage() {
           },
           body: JSON.stringify(data)
         });
+        // console.log(response);
         if (response.status === 200) {
           const resdata = await response.json();
-          // console.log(resdata);
-          setPost(resdata.result);
+          console.log(resdata);
+
+          const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
+            const data2= {
+              userID: post.authorid,
+            };
+
+            const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+              method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data2)
+            });
+            if (response2.status === 200) {
+              const userData = await response2.text();
+              return {...post, username: userData};
+            } else {
+              console.log("System Error in getting username.");
+              return post;
+            }
+          }))
+          console.log("updated Posts are" + updatedPosts);
+          setPost(updatedPosts);
+          setLoading(false);
         } else {
           const resdata = await response.json()
           console.log(resdata);
@@ -232,11 +227,6 @@ function UserHomepage() {
     getHomepagePost();
   }, []);
 
-  
-
-  useEffect(() => {
-    console.log(post);
-  }, [post]); // for debugging.
   
   const [notificationState, setNotificationState] = useState(false);
   const updateNotificationState = async () => {
@@ -306,7 +296,11 @@ function UserHomepage() {
           />
         </div>
         <div id="main">
-          {post !== null && <UserHomepageComponent posts={post} />}
+          {loading ? (
+              <div>Loading...</div>
+            ) : (
+              <UserHomepageComponent posts={post} />
+            )}
         </div>
       </div>
     </div>
