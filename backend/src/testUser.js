@@ -45,6 +45,10 @@ async function testUserFunctions() {
 
     console.log('now start testing!');
 
+    // Test get username
+    const username = await User.getUsername(1);
+    console.log(username);
+
     // Test view own profile
     // const profile = await User.viewOwnProfile();
     // console.log(profile)
@@ -129,12 +133,12 @@ async function testUserFunctions() {
     // console.log(repostResult)
 
     // Test comment on a post
-    const commentResult = await User.commentPost(5, 'hehehe');
-    console.log(commentResult)
+    // const commentResult = await User.commentPost(5, 'hehehe');
+    // console.log(commentResult)
 
     // Test get all comments
-    const allComments = await User.getComment(5);
-    console.log(allComments)
+    // const allComments = await User.getComment(5);
+    // console.log(allComments)
 
     // Test like comment
     // const likeCommentResult = await User.likeComment(2);
@@ -157,8 +161,8 @@ async function testUserFunctions() {
     // console.log(tagsSearchResult);
 
     // Test general test
-    const generalSearchResult = await User.generalSearch("hehe");
-    console.log(generalSearchResult);
+    // const generalSearchResult = await User.generalSearch("hehe");
+    // console.log(generalSearchResult);
 
     console.log('Test ended.')
 }
