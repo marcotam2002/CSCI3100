@@ -77,6 +77,10 @@ function UserProfile({ openFunc }) {
     getUser();
   }, []);
 
+  useEffect(() => {
+    console.log(user);
+  }, [user]); // for debugging.
+
   const editProfile = () => {
     // For debugging.
     openFunc();
