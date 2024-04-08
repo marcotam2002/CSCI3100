@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import likeIcon from '../assets/like.svg';
 import likedIcon from '../assets/liked.svg';
 import commentIcon from '../assets/comment.svg';
-import { Header, SideBarButton } from "./components";
+import { Header, SideBarButton, CheckNotification } from "./components";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
 import searchIcon from "../assets/search.svg";
@@ -23,10 +23,11 @@ import logoutIcon from "../assets/log-out.svg";
 import AddPostForm from './AddPostForm';
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
+
 import './format.css'
 import './Post.css';
 
-const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
@@ -37,7 +38,7 @@ function UserHomepageComponent({ posts }) {
   const [singlePost, setSinglePost] = useState("");
   const userID = getCookie("userID");
 
-  const getSinglePost = async() => {
+  const getSinglePost = async () => {
     const data = {
       postID: postID,
     };
@@ -107,23 +108,23 @@ function UserHomepageComponent({ posts }) {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-            });
-            if (response.status === 200) {
-              const resdata = await response.json();
-              setUsername(resdata.username);
-            } else {
-              const resdata = await response.json();
-              console.log(resdata);
-              console.log("System Error in getting user profile");
-            }
+          });
+          if (response.status === 200) {
+            const resdata = await response.json();
+            setUsername(resdata.username);
+          } else {
+            const resdata = await response.json();
+            console.log(resdata);
+            console.log("System Error in getting user profile");
+          }
         } catch (error) {
           console.log("Error in getting user Profile.")
         }
       };
-    
 
-    getUsername(post.authorid);
-  }, [post.authorid]);
+
+      getUsername(post.authorid);
+    }, [post.authorid]);
 
     return (
       <div className="post-container " key={post.postID}>
@@ -139,15 +140,15 @@ function UserHomepageComponent({ posts }) {
           ))}
         </div>
         <div className="post-media">
-        {post.mediauri !=="" && post.mediauri.endsWith('.mp4') ? (
-          <video controls>
-            <source src={post.mediauri} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <img src={post.mediauri} />
-        )}
-      </div>
+          {post.mediauri !== "" && post.mediauri.endsWith('.mp4') ? (
+            <video controls>
+              <source src={post.mediauri} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img src={post.mediauri} />
+          )}
+        </div>
         {post.content.split('\n').length > 3 && (
           <div className="read-more">
             <Link to={`/post/${post.postid}`}>Read More</Link>
@@ -189,7 +190,7 @@ function UserHomepage() {
   const [state, setState] = useState(false);
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
-
+  
   const openAddPost = () => {
     setState(true);
   };
@@ -201,8 +202,8 @@ function UserHomepage() {
   const userID = getCookie("userID");
 
   useEffect(() => {
-    const getHomepagePost = async() => {
-      try{
+    const getHomepagePost = async () => {
+      try {
         const data = {
           userID: userID,
         };
@@ -213,34 +214,48 @@ function UserHomepage() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(data)
-          });
-          if (response.status === 200) {
-            const resdata = await response.json();
-            // console.log(resdata);
-            setPost(resdata.result);
-          } else {
-            const resdata = await response.json()
-            console.log(resdata);
-            console.log("System Error");
-          }
-        } catch (error) {
-          console.log("Error in getting user homepage post. ");
+        });
+        if (response.status === 200) {
+          const resdata = await response.json();
+          // console.log(resdata);
+          setPost(resdata.result);
+        } else {
+          const resdata = await response.json()
+          console.log(resdata);
+          console.log("System Error");
         }
-      };
+      } catch (error) {
+        console.log("Error in getting user homepage post. ");
+      }
+    };
 
-    getHomepagePost();  
+    getHomepagePost();
   }, []);
+
+  
 
   useEffect(() => {
     console.log(post);
   }, [post]); // for debugging.
-
+  
+  const [notificationState, setNotificationState] = useState(false);
+  const updateNotificationState = async () => {
+    const result = await CheckNotification();
+    setNotificationState(result);
+  };
+  useEffect(() => {
+    updateNotificationState();
+    const interval = setInterval(() => {
+      updateNotificationState();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
-          <AddPostForm closeFunc={closeAddPost}/>
+          <AddPostForm closeFunc={closeAddPost} />
         </div>
       </div>
 
@@ -251,43 +266,43 @@ function UserHomepage() {
             image={homeIcon}
             name={"Home"}
             color={"#1D67CD"}
-            func = {()=>navigate('/userhomepage')}
+            func={() => navigate('/userhomepage')}
           />
           <SideBarButton
             image={addPostIcon}
             name={"Add Post"}
             color={"black"}
-            func = {()=>openAddPost()}
+            func={() => openAddPost()}
           />
           <SideBarButton
             image={searchIcon}
             name={"Search"}
             color={"black"}
-            func = {()=>navigate('/search')}
+            func={() => navigate('/search')}
           />
           <SideBarButton
             image={messageIcon}
             name={"Message"}
             color={"black"}
-            func = {()=>navigate('/message')}
+            func={() => navigate('/message')}
           />
           <SideBarButton
             image={notificationIcon}
             name={"Notification"}
-            color={"black"}
-            func = {()=>navigate('/notification')}
+            color={notificationState ? "red" : "black"}
+            func={() => navigate('/notification')}
           />
           <SideBarButton
             image={profileIcon}
             name={"Profile"}
             color={"black"}
-            func = {()=>navigate(`/profile/${getCookie("userID")}`)}
+            func={() => navigate(`/profile/${getCookie("userID")}`)}
           />
-          <SideBarButton 
+          <SideBarButton
             image={logoutIcon}
             name={"Log out"}
             color={"black"}
-            func = {() => navigate("/")}
+            func={() => navigate("/")}
           />
         </div>
         <div id="main">

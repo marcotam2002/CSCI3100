@@ -10,7 +10,7 @@
 import "./format.css";
 import "./NotificationPage.css";
 import { Header, SideBarButton } from "./components";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
 import searchIcon from "../assets/search.svg";
@@ -21,62 +21,30 @@ import logoutIcon from "../assets/log-out.svg";
 import AddPostForm from './AddPostForm';
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
-
-const testNotification = [
-    { username: "Alice", type: "like", read: false, notifcationsID: 1 },
-    { username: "Bob", type: "comment", read: false, notifcationsID: 2 },
-    { username: "Charlie", type: "follow", read: false, notifcationsID: 3 },
-    { username: "David", type: "like", read: true, notifcationsID: 4 },
-]
-
-function NotifcationContent({ username, type }) {
-    if (type === "like") {
-        return (
-            <p>{username} liked your post.</p>
-        );
-    } else if (type === "comment") {
-        return (
-            <p>{username} commented on your post.</p>
-        );
-    } else if (type === "follow") {
-        return (
-            <p>{username} followed you.</p>
-        );
-    }
-}
-
-function FollowButton({ username, type }) {
-    if (type === "follow") {
-        return (
-            <div>
-                <button>Follow</button>
-                <button>Unfollow</button>
-            </div>
-        );
-    }
-}
+const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 function NotificationBox({ notifcations }) {
+    console.log(notifcations);
     return (
         <div>
             <table id="notificationTable">
                 <tbody>
-                    {notifcations.map((notice) => (
-                        <tr>
-                            <td>
-                                <span class={`readStatus ${notice.read ? "read" : ""}`}> </span>
+                    {Object.keys(notifcations).map((key) => (
+                        <tr key={key}>
+                            <td className="notificationName">
+                                <p><b>{notifcations[key]}</b></p>
                             </td>
-                            <td>
-                                <NotifcationContent username={notice.username} type={notice.type} />
+                            <td className="notificationContent">
+                                <p>request to follow you!</p>
                             </td>
-                            <td>
-                                <FollowButton username={notice.username} type={notice.type} />
+                            <td className="notificationButton">
+                                <button> Accept   </button>
+                                <button> Reject </button>
                             </td>
                         </tr>
-
-                    ))}
+                    ))} 
                 </tbody>
-            </table>
+                </table>
         </div>
     );
 }
@@ -91,7 +59,40 @@ function NotificationPage() {
     const closeAddPost = () => {
         setState(false);
     };
+    const userID = getCookie("userID");
     const user = getCookie("username");
+    const [notifications, setNotifications] = useState({});
+
+    const getNotification = async () => {
+        const notification = {};
+        const userID = getCookie("userID");
+        let data = [];
+        const response = await fetch(`${API_BASE_URL}/api/user/getNotification`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ userID: userID })
+        });
+        if (response.status === 200) {
+            data = await response.json();
+        }
+        for (let i = 0; i < data.length; i++) {
+            const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ userID: data[i] })
+            });
+            if (response.status === 200) {
+                const user = await response.json();
+                notification[data[i]] = user.username;
+            }
+            else {
+                console.log("Error in getting user data");
+            }
+        }
+        setNotifications(notification);
+    }
+
+    useEffect(() => { getNotification();}, []); 
     return (
         <div>
             <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
@@ -147,7 +148,7 @@ function NotificationPage() {
                     />
                 </div>
                 <div id="main">
-                    <NotificationBox notifcations={testNotification} />
+                    <NotificationBox notifcations={notifications} />
                 </div>
             </div>
         </div>

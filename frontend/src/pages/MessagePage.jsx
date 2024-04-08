@@ -10,8 +10,8 @@
 //todo: link "Soru" to main page
 import "./format.css";
 import "./MessagePage.css";
-import { Header, SideBarButton } from "./components";
-import React, { useState } from "react";
+import { Header, SideBarButton, CheckNotification } from "./components";
+import React, { useState,useEffect } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
 import searchIcon from "../assets/search.svg";
@@ -116,6 +116,20 @@ function Message() {
     setState(false);
   };
   const user = getCookie("username");
+
+  const [notificationState, setNotificationState] = useState(false);
+  const updateNotificationState = async () => {
+    const result = await CheckNotification();
+    setNotificationState(result);
+  };
+  useEffect(() => {
+    updateNotificationState();
+    const interval = setInterval(() => {
+      updateNotificationState();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
@@ -154,7 +168,7 @@ function Message() {
           <SideBarButton
             image={notificationIcon}
             name={"Notification"}
-            color={"black"}
+            color={notificationState ? "red" : "black"}
             func={() => navigate('/notification')}
           />
           <SideBarButton

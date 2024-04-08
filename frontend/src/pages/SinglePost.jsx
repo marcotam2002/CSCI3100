@@ -8,7 +8,7 @@
  */
 
 
-import { Header, SideBarButton } from "./components";
+import { Header, SideBarButton, CheckNotification } from "./components";
 import "./format.css";
 import React, { useEffect, useState } from "react";
 import homeIcon from "../assets/home.svg";
@@ -282,6 +282,20 @@ function SinglePostPage() {
   const closeAddPost = () => {
     setState(false);
   };
+
+  const [notificationState, setNotificationState] = useState(false);
+  const updateNotificationState = async () => {
+    const result = await CheckNotification();
+    setNotificationState(result);
+  };
+  useEffect(() => {
+    updateNotificationState();
+    const interval = setInterval(() => {
+      updateNotificationState();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
@@ -320,7 +334,7 @@ function SinglePostPage() {
           <SideBarButton
             image={notificationIcon}
             name={"Notification"}
-            color={"black"}
+            color={notificationState ? "red" : "black"}
             func={() => navigate('/notification')}
           />
           <SideBarButton
