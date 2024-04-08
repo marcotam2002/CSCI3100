@@ -14,8 +14,8 @@ const AccountHandler = require('./accounthandler');
 // Function to test the createUser method
 async function testCreateUser() {
     // Define test user data
-    const username = 'admin12345';
-    const password = 'admin1234';
+    const username = 'admin';
+    const password = 'admin';
     const userType = 'admin'; // You can adjust this based on your requirements
 
     // Create an instance of AccountHandler
@@ -50,6 +50,6 @@ async function testLogin() {
   }
 
 // Call the test function
-// testCreateUser();
+testCreateUser();
 
-testLogin();
+// testLogin();
