@@ -26,7 +26,7 @@ const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 
 function UserSearch() {
-  const [searchType, setSearchType] = useState("keyword");
+  const [searchType, setSearchType] = useState("general");
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
@@ -46,26 +46,27 @@ function UserSearch() {
       searchText: searchText
     }
 
-    const response = await fetch(`${API_BASE_URL}/search`, {
+    console.log(data);
+
+    const response = await fetch(`${API_BASE_URL}/api/search`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     });
+
+    // console.log('Response:', response);
+
     if (response.status === 200){
       const resdata = await response.json();
-      setSearchResults(resdata.result); 
+      setSearchResults(resdata); 
+      console.log(resdata);
     } else {
       // system error
       const resdata = await response.json()
-      console.log(resdata);
+      console.log('Error:', resdata.message);
     }
-    // setSearchResults([
-    //   { id: 1, name: "User 1" },
-    //   { id: 2, name: "User 2" },
-    //   { id: 3, name: "User 3" }
-    // ]);
   };
 
   return (
@@ -79,9 +80,9 @@ function UserSearch() {
           />
           <label>
             <select value={searchType} onChange={handleSearchTypeChange}>
-              <option value="keyword">Keyword</option>
-              <option value="username">Username</option>
-              <option value="tag">Tag</option>
+              <option value="general">general</option>
+              <option value="username">username</option>
+              <option value="tag">tag</option>
             </select>
           </label>
           <button type="submit">Search!</button>
@@ -90,15 +91,27 @@ function UserSearch() {
       </form>
 
       <div>
-          {searchResults.length > 0 ? (
-              <ul>
-                  {searchResults.map(result => (
-                      <li key={result.id}>{result.name}</li>
-                  ))}
-              </ul>
-          ) : (
+        {searchResults.length > 0 ? (
+          <ul>
+            {searchType === 'general' ? (
+              searchResults.map(result => (
+                <li key={result.postid}>{result.postid}</li>
+              ))
+            ) : searchType === 'username' ? (
+              searchResults.map(result => (
+                <li key={result.userid}>{result.userid}</li>
+              ))
+            ) : searchType === 'tag' ? (
+              searchResults.map(result => (
+                <li key={result}>{result}</li>
+              ))
+            ) : (
               <p>No results found</p>
-          )}
+            )}
+          </ul>
+        ) : (
+          <p>No results found</p>
+        )}
       </div>
   </div>
     );

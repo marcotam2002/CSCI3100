@@ -131,7 +131,7 @@ app.put("/api/post/commentadd", async(req,res)=>{
 
 
 app.put("/api/post/likepost", async(req,res)=>{
-    console.log("Like Post request received")
+    console.log("Like Post request received");
     const userHandler=new UserHandler();
     const result = await userHandler.commentPost(req.body.userID, req.body.postID);    
     if(result.message=='User has already liked the post'){
@@ -142,28 +142,32 @@ app.put("/api/post/likepost", async(req,res)=>{
 })
 
 app.post("/api/search", async(req,res)=>{
-    console.log("Search request received")
-    const userHandler = new UserHandler()
-    if(req.body.searchType == "user"){
-        const result = await userHandler.searchUser(req.body.keyword);
+    const userHandler = new UserHandler();
+    if(req.body.searchType == "username"){
+        console.log("Search username request received");
+        const result = await userHandler.searchUser(req.body.searchText);
+        console.log(result);
         if(result.success){
             console.log("Returning User Search Result");
             if(result.users.length==0){
                 return res.status(200).send("No User Found")
             }
             else{
-                var userlist=[];
-                for(const userID of result.users){
-                    const response = await userHandler.viewProfile(userID)
-                    userlist.push({username: response[0], description: response[1]})
-                }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
-                return res.status(200).send(userlist);
+                // var userlist=[];
+                // for(const userID of result.users){
+                //     const response = await userHandler.viewProfile(userID);
+                //     console.log(response);
+                //     userlist.push(response);
+                // }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
+                console.log("return users");
+                return res.status(200).send(result.users);
             }
         }
         else return res.status(404).send({message: result.message});
     }
     if(req.body.searchType == "tag"){
-        const result = await userHandler.searchByMessageTags(req.body.keyword);
+        console.log("Search tag request received");
+        const result = await userHandler.searchByMessageTags(req.body.searchText);
         if(result.success){
             
             console.log("Returning MessageTags search Result");
@@ -171,18 +175,20 @@ app.post("/api/search", async(req,res)=>{
                 return res.status(200).send("No Post Found")
             }
             else{
-                var postlist=[];
-                for(const postID of result.postIDs){
-                    const response = await userHandler.getPost(postID)
-                    postlist.push([response])
-                }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
-                return res.status(200).send(postlist);
+                // var postlist=[];
+                // for(const postID of result.postIDs){
+                //     const response = await userHandler.getPost(postID)
+                //     postlist.push([response])
+                // }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
+                console.log(result.postIDs);
+                return res.status(200).send(result.postIDs);
             }
         }
         else return res.status(404).send({message: result.message});
     }
     if(req.body.searchType == "general"){
-        const result = await userHandler.generalSearch(req.body.keyword);
+        console.log("Search general request received");
+        const result = await userHandler.generalSearch(req.body.searchText);
         if(result.success){
             console.log("Returning general search Result");
             if(result.postIDs.length==0){
@@ -191,8 +197,8 @@ app.post("/api/search", async(req,res)=>{
             else{
                 var postlist=[];
                 for(const postID of result.postIDs){
-                    const response = await userHandler.getPost(postID)
-                    postlist.push([response])
+                    const response = await userHandler.getPost(postID);
+                    postlist.push(response);
                 }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
                 return res.status(200).send(postlist);
             }
