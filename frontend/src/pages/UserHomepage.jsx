@@ -29,64 +29,7 @@ import './Post.css';
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 
-const testPost = [
-  {
-    postID: 1,
-    username: "Billy",
-    time: "8 hours",
-    description:
-    "The sun rose gracefully over the horizon, casting golden hues across the sky.\nBirds chirped joyfully, welcoming the new day with their melodic songs.\nA gentle breeze rustled the leaves of the trees, carrying with it the scent of fresh blooms.\nNature's symphony echoed through the tranquil morning air.",
-    liked: true,
-    likes: 50,
-    commentnum: 2,
-    comments: [
-      { username: "Alice", text: "Beautiful description!" },
-      { username: "Bob", text: "I love mornings like these." }
-    ]
-  },
-  {
-    postID: 2,
-    username: "Tim",
-    time: "17:16",
-    description:
-    "I want to post nothing here.\n Please go.",
-    liked: false,
-    likes: 1,
-    commentnum: 3,
-    comments: [
-      { username: "Admin", text: "So rude!" },
-      { username: "Hei", text: "Aiiii......"},
-      { username: "Abdon", text: "Read."},
-    ]
-  },
-  {
-    postID: 3,
-    username: "Billy",
-    time: "8 hours",
-    description:
-    "The sun rose gracefully over the horizon, casting golden hues across the sky.\nBirds chirped joyfully, welcoming the new day with their melodic songs.\nA gentle breeze rustled the leaves of the trees, carrying with it the scent of fresh blooms.\nNature's symphony echoed through the tranquil morning air.",
-    liked: true,
-    likes: 50,
-    commentnum: 2,
-    comments: [
-      { username: "Alice", text: "Beautiful description!" },
-      { username: "Bob", text: "I love mornings like these." }
-    ]
-  },
-  {
-    postID: 4,
-    username: "Tim",
-    time: "17:16",
-    description:
-    "I want to post nothing here.\n Please go.",
-    liked: false,
-    likes: 1,
-    commentnum: 1,
-    comments: [
-      { username: "Admin", text: "So rude!" },
-    ]
-  },
-];
+
 
 function UserHomepageComponent({ posts }) {
 
@@ -148,45 +91,78 @@ function UserHomepageComponent({ posts }) {
 
 
   const renderPost = (post) => {
+    const [username, setUsername] = useState("");
+
+    useEffect(() => {
+      const getUsername = async (userID) => {
+        try {
+          const data = {
+            userID: userID
+          };
+
+          const response = await fetch(`${API_BASE_URL}/getUser`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+            });
+            if (response.status === 200) {
+              const resdata = await response.json();
+              setUsername(resdata.username);
+            } else {
+              const resdata = await response.json();
+              console.log(resdata);
+              console.log("System Error in getting user profile");
+            }
+        } catch (error) {
+          console.log("Error in getting user Profile.")
+        }
+      };
+    
+
+    getUsername(post.authorid);
+  }, [post.authorid]);
+
     return (
       <div className="post-container " key={post.postID}>
         <div className="post-header">
-          <span className="post-username">{post.username}</span>
+          <span className="post-username">{post.authorid}</span>
           <span className="post-time">{post.time}</span>
         </div>
         <div className="post-description">
-          {post.description.split('\n').map((line, index) => (
+          {post.content.split('\n').map((line, index) => (
             (index < 3 || post.description.split('\n').length <= 3) && (
               <p key={index}>{line}</p>
             )
           ))}
         </div>
-        {post.description.split('\n').length > 3 && (
+        {post.content.split('\n').length > 3 && (
           <div className="read-more">
-            <Link to={`/post/${post.postID}`}>Read More</Link>
+            <Link to={`/post/${post.postid}`}>Read More</Link>
           </div>
         )}
         <div className="interaction-buttons">
-          <button className="like-button" onClick={(event) => ChangeLike(post.postID, event)}>
+          <button className="like-button" onClick={(event) => ChangeLike(post.postid, event)}>
             {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
           </button>
           <p>{post.likes}</p>
-          <Link to={`/post/${post.postID}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
+          <Link to={`/post/${post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
           <p>{post.commentnum}</p>
         </div>
-        <div className="comments">
+        {/* <div className="comments">
           {post.comments.slice(0, 2).map((comment, index) => (
             <div className="comment" key={index}>
               <span className="comment-username"><b>{comment.username}</b></span>
               <span className="comment-text">{comment.text}</span>
             </div>
           ))}
-        </div>
-        {post.comments.length > 2 && (
+        </div> */}
+        {/* {post.comments.length > 2 && (
           <div className="view-all-comments">
             <Link to={`/post/${post.postID}`}>View all comments</Link>
           </div>
-        )}
+        )} */}
       </div>
     );
   };
@@ -201,7 +177,7 @@ function UserHomepageComponent({ posts }) {
 function UserHomepage() {
   const [state, setState] = useState(false);
   const navigate = useNavigate();
-  const [post, setPost] = useState("");
+  const [post, setPost] = useState(null);
 
   const openAddPost = () => {
     setState(true);
@@ -229,7 +205,8 @@ function UserHomepage() {
           });
           if (response.status === 200) {
             const resdata = await response.json();
-            setPost(resdata.post);
+            // console.log(resdata);
+            setPost(resdata.result);
           } else {
             const resdata = await response.json()
             console.log(resdata);
@@ -242,6 +219,10 @@ function UserHomepage() {
 
     getHomepagePost();  
   }, []);
+
+  useEffect(() => {
+    console.log(post);
+  }, [post]); // for debugging.
 
 
   return (
@@ -299,7 +280,7 @@ function UserHomepage() {
           />
         </div>
         <div id="main">
-          <UserHomepageComponent posts={testPost} />
+          {post !== null && <UserHomepageComponent posts={post} />}
         </div>
       </div>
     </div>
