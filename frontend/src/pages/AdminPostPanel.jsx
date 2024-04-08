@@ -86,6 +86,7 @@ function AdminPostPanel() {
     });
     if (response.status === 200) {
       console.log("SUCCESSFUL DELETE POST");
+      alert("Post deleted successfully");
       getAllPost();
     } else {
       console.log("ERROR");

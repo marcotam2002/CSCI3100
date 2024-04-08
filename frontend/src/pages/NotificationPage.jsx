@@ -129,7 +129,15 @@ function NotificationPage() {
         }
         getNotification();
     }
-    useEffect(() => { getNotification();}, []);
+
+    useEffect(() => {
+        getNotification();
+        const interval = setInterval(() => {
+            getNotification();
+        }, 5000);
+        return () => clearInterval(interval);
+      }, []);
+      
     return (
         <div>
             <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
