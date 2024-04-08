@@ -22,6 +22,7 @@ const UserHandler = require('./userhandler');
     api_secret: process.env.CLOUDINARY_API_SECRET,
   });
 */
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -115,6 +116,134 @@ app.post("/api/user/addpost", async(req, res)=>{
     }
 })
 
+//Code below except admin Not yet tested
+//Need to test with post exist inside database, api request for comment
+app.put("/api/post/commentadd", async(req,res)=>{
+    console.log("Add Comment request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.commentPost(req.body.userID, req.body.postID, req.body.comment);    
+    if(result.success){
+        console.log("User commented to a post");
+        return res.status(200).send();
+    }
+    else return res.status(404).send({message: result.message});
+})
+
+
+app.put("/api/post/likepost", async(req,res)=>{
+    console.log("Like Post request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.commentPost(req.body.userID, req.body.postID);    
+    if(result.message=='User has already liked the post'){
+        console.log("User has already liked the post");
+        return res.status(200).send();
+    }
+    else return res.status(404).send({message: result.message});
+})
+
+app.post("/api/search", async(req,res)=>{
+    console.log("Search request received")
+    const userHandler = new UserHandler()
+    if(req.body.searchType == "user"){
+        const result = await userHandler.searchUser(req.body.keyword);
+        if(result.success){
+            console.log("Returning User Search Result");
+            if(result.users.length==0){
+                return res.status(200).send("No User Found")
+            }
+            else{
+                var userlist=[];
+                for(const userID of result.users){
+                    const response = await userHandler.viewProfile(userID)
+                    userlist.push({username: response[0], description: response[1]})
+                }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
+                return res.status(200).send(userlist);
+            }
+        }
+        else return res.status(404).send({message: result.message});
+    }
+    if(req.body.searchType == "tag"){
+        const result = await userHandler.searchByMessageTags(req.body.keyword);
+        if(result.success){
+            
+            console.log("Returning MessageTags search Result");
+            if(result.postIDs.length==0){
+                return res.status(200).send("No Post Found")
+            }
+            else{
+                var postlist=[];
+                for(const postID of result.postIDs){
+                    const response = await userHandler.getPost(postID)
+                    postlist.push([response])
+                }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
+                return res.status(200).send(postlist);
+            }
+        }
+        else return res.status(404).send({message: result.message});
+    }
+    if(req.body.searchType == "general"){
+        const result = await userHandler.generalSearch(req.body.keyword);
+        if(result.success){
+            console.log("Returning general search Result");
+            if(result.postIDs.length==0){
+                return res.status(200).send("No Post Found")
+            }
+            else{
+                var postlist=[];
+                for(const postID of result.postIDs){
+                    const response = await userHandler.getPost(postID)
+                    postlist.push([response])
+                }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
+                return res.status(200).send(postlist);
+            }
+        }
+        else return res.status(404).send({message: result.message});
+    }
+}) //attention!!!!!! Consider whether we will fetch the search result id in the backend first and return to the frontend, or frontend do one more api request to fetch the content
+
+//Get user in Profile page
+app.post("getUser", async(req,res)=>{
+    console.log("getUser request received");
+    const userHandler = new UserHandler();
+    const result = userHandler.viewProfile(req.body.userID);
+    if(result.success){
+        console.log("Return User INFO");
+        return res.status(200).send(result.user);
+    }
+    else return res.status(404).send({message: result.message});
+
+})
+
+
+
+//Edit Profile page
+app.put("/profile/edit", async(req,res)=>{
+    console.log("Profile Edit request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.editProfile(req.body.username, req.body.description, req.body.isPrivate);    //test without media first
+    if(result.success){
+        console.log(result.message);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+/*
+To do: 
+1. like or unlike post (halfway) 1
+2. Homepage posts fetching
+3. Follow Other Users 2
+4. Like Comment(on marking?)
+5. View Chat room past mesage
+6. Sent message
+7. Accept follow 3
+*/
+
+
 app.get("/api/admin/getAllUser", async(req, res)=>{
     console.log("Get all user request received")
     const adminHandler= new AdminHandler();
@@ -157,17 +286,6 @@ app.put("/api/admin/deleteUser", async(req,res)=>{
         return res.status(200).send();
     }
     else return res.status(404).send({message: result.message});
-})
-
-app.put("/api/admin/deletePost", async(req,res)=>{
-    console.log("Delete Post request received")
-    const adminHandler=new AdminHandler();
-    const result = await adminHandler.deletePost(req.body.postID);
-    if(result){
-        console.log("Successfully deleted post");
-        return res.status(200).send();
-    }
-    else return res.status(404).send();
 })
 
 //Need to test with post exist inside database, api request for comment

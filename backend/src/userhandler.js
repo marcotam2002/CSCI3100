@@ -925,7 +925,7 @@ class UserHandler extends AccountHandler {
       const postIDs = sortedResult.map(([postId, _]) => postId);
 
       client.release();
-      return { success: true, message: 'Search successfully', postIDs };
+      return { success: true, message: 'Search successfully', postIDs: postIDs };
 
     } catch (error) {
       return { success: false, message: 'Failed to search by tags'}
@@ -953,7 +953,7 @@ class UserHandler extends AccountHandler {
       const postIDs = queryResult.rows.map(row => row.postid);
   
       client.release();
-      return { success: true, message: 'Search successfully', postIDs };
+      return { success: true, message: 'Search successfully', postIDs: postIDs };
     } catch (error) {
       return { success: false, message: 'Failed to perform general search' };
     }
