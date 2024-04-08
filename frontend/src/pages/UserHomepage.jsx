@@ -35,6 +35,7 @@ function UserHomepageComponent({ posts }) {
 
   const [postsState, setPostsState] = useState(posts);
   const [singlePost, setSinglePost] = useState("");
+  const userID = getCookie("userID");
 
   const getSinglePost = async() => {
     const data = {
@@ -137,6 +138,16 @@ function UserHomepageComponent({ posts }) {
             )
           ))}
         </div>
+        <div className="post-media">
+        {post.mediauri !=="" && post.mediauri.endsWith('.mp4') ? (
+          <video controls>
+            <source src={post.mediauri} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <img src={post.mediauri} />
+        )}
+      </div>
         {post.content.split('\n').length > 3 && (
           <div className="read-more">
             <Link to={`/post/${post.postid}`}>Read More</Link>
