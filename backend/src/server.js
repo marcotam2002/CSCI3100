@@ -236,7 +236,6 @@ app.put("/profile/edit", async(req,res)=>{
 To do: 
 1. like or unlike post (halfway) 1
 2. Homepage posts fetching
-3. Follow Other Users 2
 4. Like Comment(on marking?)
 5. View Chat room past mesage
 6. Sent message
@@ -352,6 +351,39 @@ app.post("/getSinglePost", async(req, res)=>{
     }
 })
 
+//new
+//follow user
+//Question here: how can we obtain the userID of the user we want to follow?
+app.post("/user/followuser", async(req, res)=>{
+    console.log("follow user request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.followUser(req.body.targetuserID);   
+    if(result.success){
+        console.log("Follow Success");
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.post("/user/unfollowuser", async(req, res)=>{
+    console.log("unfollow user request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.unfollowUser(req.body.targetuserID);   
+    if(result.success){
+        console.log("unFollow Success");
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+//end
 /*
 app.get("/api/homepage", async(req,res)=>{
     console.log("Fetching post from server")
