@@ -237,9 +237,7 @@ To do:
 1. like or unlike post (halfway) 1
 2. Homepage posts fetching
 4. Like Comment(on marking?)
-5. View Chat room past mesage
-6. Sent message
-7. Accept follow 3
+7. Accept follow 3 do we need a call fetch this kind of request?
 */
 
 
@@ -351,7 +349,6 @@ app.post("/getSinglePost", async(req, res)=>{
     }
 })
 
-//new
 //follow user
 //Question here: how can we obtain the userID of the user we want to follow?
 app.post("/user/followuser", async(req, res)=>{
@@ -383,6 +380,40 @@ app.post("/user/unfollowuser", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
+
+//new
+//required input: userID, targetuserID
+app.post("/chat", async(req,res)=>{
+    console.log("View Chat request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.unfollowUser(req.body.targetuserID);   
+    if(result.success){
+        console.log("Get Chat History Success");
+        delete userHandler;
+        return res.status(200).send({message:result.messages});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.put("/chat/add", async(req,res)=>{
+    console.log("Send Message request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.sendMessage(req.body.receiverID, req.body.message);   
+    if(result.success){
+        console.log(result.message);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+
 //end
 /*
 app.get("/api/homepage", async(req,res)=>{
