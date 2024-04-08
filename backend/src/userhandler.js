@@ -24,6 +24,25 @@ class UserHandler extends AccountHandler {
     this.isActive = isActive;
   }
 
+  // Method to get username by userID
+  async getUsername(userID) {
+    /*
+      * Retrieve username from the database
+      * @param {string} userID - The ID of the user to retrieve username
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT username FROM users WHERE userID = $1';
+      const values = [userID];
+      const result = await client.query(queryText, values);
+      client.release();
+      return {success: true, username: result.rows[0].username};
+    } catch (error) {
+      console.error('Error getting username:', error);
+      return null;
+    }
+  }
+
   // Method to edit user own profile
   async editProfile(content) {
     /*
@@ -635,6 +654,26 @@ class UserHandler extends AccountHandler {
     }
   }
 
+  // Method to reject follow request
+  async rejectFollowRequest(rejectFollowerID) {
+    /*
+      * Reject follow request in the database
+      * @param {string} rejectFollowerID - The ID of the user who want to follow the own user
+    */
+    try {
+        const client = await pool.connect();
+        const queryText = 'DELETE FROM followRequests WHERE followerID = $1 AND followingID = $2';
+        const values = [rejectFollowerID, this.userID];
+        await client.query(queryText, values);
+        client.release();
+
+        return { success: true, message: 'Follow request rejected successfully' };
+    } catch (error) {
+        console.error('Error rejecting follow request:', error);
+        return { success: false, message: 'Failed to reject follow request' };
+    }
+  }
+
   // Method to unfollow other users
   async unfollowUser(targetUserID) {
     /*
@@ -704,26 +743,6 @@ class UserHandler extends AccountHandler {
     } catch (error) {
     console.error('Error retrieving own posts:', error);
     return { success: false, message: 'Failed to retrieve own posts' };
-    }
-  }
-
-  // Method to get all following users' posts
-  async getFollowingPosts() {
-    /*
-      * Retrieve all posts of the users following from the database
-    */
-    try{
-      const client = await pool.connect();
-      const queryText = 'SELECT * FROM posts WHERE authorID IN (SELECT followingID FROM relationships WHERE followerID = $1)';
-      const values = [this.userID];
-      const result = await client.query(queryText, values);
-      client.release();
-
-      return { success: true, message: 'Following posts retrieved successfully', posts: result.rows };
-
-    } catch (error) {
-    console.error('Error retrieving following posts:', error);
-    return { success: false, message: 'Failed to retrieve following posts' };
     }
   }
 

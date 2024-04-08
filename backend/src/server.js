@@ -202,13 +202,13 @@ app.post("/api/search", async(req,res)=>{
 }) //attention!!!!!! Consider whether we will fetch the search result id in the backend first and return to the frontend, or frontend do one more api request to fetch the content
 
 //Get user in Profile page
-app.post("/getUser", async(req,res)=>{
+app.post("/getUsername", async(req,res)=>{
     console.log("getUser request received");
     const userHandler = new UserHandler();
-    const result = userHandler.viewProfile(req.body.userID);
+    const result = userHandler.getUsername(req.body.userID);
     if(result.success){
         console.log("Return User INFO");
-        return res.status(200).send(result.user);
+        return res.status(200).send(result.username);
     }
     else return res.status(404).send({message: result.message});
 
