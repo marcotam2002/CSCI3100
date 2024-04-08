@@ -237,7 +237,10 @@ To do:
 1. like or unlike post (halfway) 1
 2. Homepage posts fetching
 4. Like Comment(on marking?)
-7. Accept follow 3 do we need a call fetch this kind of request?
+
+Things may need:
+1. view own profile request, and view other user request
+2. Check if user has like certain post before
 */
 
 
@@ -381,12 +384,12 @@ app.post("/user/unfollowuser", async(req, res)=>{
     }
 })
 
-//new
+
 //required input: userID, targetuserID
 app.post("/chat", async(req,res)=>{
     console.log("View Chat request received")
     const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.unfollowUser(req.body.targetuserID);   
+    const result = await userHandler.getMessagesWithUser(req.body.targetuserID);   
     if(result.success){
         console.log("Get Chat History Success");
         delete userHandler;
@@ -413,6 +416,37 @@ app.put("/chat/add", async(req,res)=>{
     }
 })
 
+//new
+//get notifcation of follower request
+app.post("/notification", async(req,res)=>{
+    console.log("fetching notication request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.getNotifications();   
+    if(result.success){
+        console.log(userHandler.message);
+        delete userHandler;
+        return res.status(200).send({notication: result.notifications});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+//Accept follower request
+app.post("/acceptfollowrequest", async(req,res)=>{
+    console.log("accept follower request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.acceptFollowRequest(req.body.awaitAcceptFollowerID);   
+    if(result.success){
+        console.log(result.message);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
 
 //end
 /*
