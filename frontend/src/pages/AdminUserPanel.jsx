@@ -87,6 +87,7 @@ function AdminUserPanel() {
     });
     if (response.status === 200) {
       console.log("SUCCESSFUL DELETE USER");
+      alert("User deleted successfully");
       getAllUser();
     } else {
       console.log("ERROR");
