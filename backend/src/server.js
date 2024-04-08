@@ -448,6 +448,65 @@ app.post("/acceptfollowrequest", async(req,res)=>{
     }
 })
 
+app.get("/api/user/getRecommendedUsers", async(req, res)=>{
+    console.log("User recommendation request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getRecommendedUsers();
+    if(result.success){
+        console.log(result);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.get("api/user/getRecentPopularPosts", async(req, res)=>{
+    console.log("Recent Popular Post request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getRecentPopularPosts();
+    if(result.success){
+        console.log(result);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.get("/api/user/getRecommendedPosts", async(req, res)=>{
+    console.log("Post recommendation request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getRecommendedPosts();
+    if(result.success){
+        console.log(result);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.get("api/user/getFollowingPosts", async(req, res)=>{
+    console.log("Following posts request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getFollowingPosts();
+    if(result.success){
+        console.log(result);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
 //end
 /*
 app.get("/api/homepage", async(req,res)=>{
