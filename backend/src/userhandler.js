@@ -118,12 +118,14 @@ class UserHandler extends AccountHandler {
 
         // Check if target user exists
         if (result.rows.length === 0) {
+            client.release();
             return { success: false, message: 'Target user not found' };
         }
 
         // Check if target user is public
         const targetUser = result.rows[0];
         if (targetUser.privacy === 'public') {
+            client.release();
             return { success: true, message: 'Target user profile retrieved successfully', targetUser };
         }
 
@@ -365,6 +367,7 @@ class UserHandler extends AccountHandler {
 
       // Check if the user is private, unless they repost their own posts
       if ((await this.isprivate(authorID)) && result.rows[0].userID !== this.userID) {
+          client.release();
           return { success: false, message: 'User is private' };
       }
 
@@ -958,6 +961,136 @@ class UserHandler extends AccountHandler {
       return { success: false, message: 'Failed to perform general search' };
     }
   }
+
+    // Method to get recommended users to follow based on the following of the user with most common relationship (nearest neighbor recommendation)
+    async getRecommendedUsers() {
+      /*
+        * Get recommended users to follow based on the following of the most user with most common relationship
+      */
+      try {
+        const client = await pool.connect();
+    
+        // Get the user with the most overlap of following to the current user
+        const queryResult = await client.query(`
+          SELECT followerID, COUNT(*) AS count
+          FROM relationships
+          WHERE followerID != $1 AND followingID IN (SELECT followingID FROM relationships WHERE followerID = $1)
+          GROUP BY followerID
+          ORDER BY count DESC
+          LIMIT 1
+        `, [this.userID]);
+        
+        const nearestUserID = queryResult.rows[0].followerid;
+    
+        // Get the users that the most followed user is following and the current user is not following
+        const queryResult2 = await client.query(`
+          SELECT followingID
+          FROM relationships
+          WHERE followerID = $1 AND followingID != $1
+          EXCEPT
+          SELECT followingID
+          FROM relationships
+          WHERE followerID = $2
+        `, [nearestUserID, this.userID]);
+  
+        const recommendedUserIDs = queryResult2.rows.map(row => row.followingid);
+        
+    
+        client.release();
+        return { success: true, message: 'Recommended users retrieved successfully', recommendedUserIDs };
+      } catch (error) {
+        return { success: false, message: 'Failed to get recommended users' };
+      }
+    }  
+  
+    // Method to get recent popular posts
+    async getRecentPopularPosts() {
+      /*
+        * Get recent popular posts from the database
+      */
+      try {
+        const client = await pool.connect();
+    
+        // Retrieve the most recent posts
+        const queryResult = await client.query(`
+          SELECT contentID, COUNT(*) AS count
+          FROM likes
+          WHERE contentType = 'post' AND time > NOW() - INTERVAL '1 day'
+          GROUP BY contentID
+          ORDER BY count DESC
+          LIMIT 10
+        `);
+  
+        const postIDs = queryResult.rows.map(row => row.postid);
+    
+        client.release();
+        return { success: true, message: 'Recent popular posts retrieved successfully', postIDs };
+      } catch (error) {
+        return { success: false, message: 'Failed to get recent popular posts' };
+      }
+    }
+  
+    // Method to get recommended posts (nearby public posts)
+    async getRecommendedPosts() {
+      /*
+        * Get recommended posts from the database
+      */
+      try {
+        const client = await pool.connect();
+    
+        // Get the user's followers
+        const queryResult = await client.query(`
+          SELECT followerID
+          FROM relationships
+          WHERE followingID = $1
+        `, [this.userID]);
+  
+        const followerIDs = queryResult.rows.map(row => row.followerid);
+    
+        // Get the public posts posted by related users
+        const queryResult2 = await client.query(`
+          SELECT postID
+          FROM posts
+          WHERE authorID NOT IN (SELECT followingID FROM relationships WHERE followerID = $1) AND privacy = 'public'
+          AND authorID IN (SELECT followingID FROM relationships WHERE followerID = ANY($2))
+          ORDER BY date DESC
+          LIMIT 10
+        `, [this.userID, followerIDs]);
+        
+        const postIDs = queryResult2.rows.map(row => row.postid);
+    
+        client.release();
+        return { success: true, message: 'Recommended posts retrieved successfully', postIDs };
+      } catch (error) {
+        return { success: false, message: 'Failed to get recommended posts' };
+      }
+    }
+    
+    // Method to get posts that are posted by the user's following
+    async getFollowingPosts() {
+      /*
+        * Get posts that are posted by the user's following
+      */
+      try {
+        const client = await pool.connect();
+    
+        // Get the posts that are posted by the user's following
+        const queryResult = await client.query(`
+          SELECT postID
+          FROM posts
+          WHERE authorID IN (SELECT followingID FROM relationships WHERE followerID = $1)
+          ORDER BY date DESC
+          LIMIT 10
+        `, [this.userID]);
+  
+        const postIDs = queryResult.rows.map(row => row.postid);
+    
+        client.release();
+        return { success: true, message: 'Following posts retrieved successfully', postIDs };
+      } catch (error) {
+        return { success: false, message: 'Failed to get following posts' };
+      }
+    }
   
 }
 

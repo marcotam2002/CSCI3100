@@ -237,9 +237,10 @@ To do:
 1. like or unlike post (halfway) 1
 2. Homepage posts fetching
 4. Like Comment(on marking?)
-5. View Chat room past mesage
-6. Sent message
-7. Accept follow 3
+
+Things may need:
+1. view own profile request, and view other user request
+2. Check if user has like certain post before
 */
 
 
@@ -351,7 +352,6 @@ app.post("/getSinglePost", async(req, res)=>{
     }
 })
 
-//new
 //follow user
 //Question here: how can we obtain the userID of the user we want to follow?
 app.post("/user/followuser", async(req, res)=>{
@@ -375,6 +375,130 @@ app.post("/user/unfollowuser", async(req, res)=>{
     const result = await userHandler.unfollowUser(req.body.targetuserID);   
     if(result.success){
         console.log("unFollow Success");
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+
+//required input: userID, targetuserID
+app.post("/chat", async(req,res)=>{
+    console.log("View Chat request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.getMessagesWithUser(req.body.targetuserID);   
+    if(result.success){
+        console.log("Get Chat History Success");
+        delete userHandler;
+        return res.status(200).send({message:result.messages});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.put("/chat/add", async(req,res)=>{
+    console.log("Send Message request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.sendMessage(req.body.receiverID, req.body.message);   
+    if(result.success){
+        console.log(result.message);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+//new
+//get notifcation of follower request
+app.post("/notification", async(req,res)=>{
+    console.log("fetching notication request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.getNotifications();   
+    if(result.success){
+        console.log(userHandler.message);
+        delete userHandler;
+        return res.status(200).send({notication: result.notifications});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+//Accept follower request
+app.post("/acceptfollowrequest", async(req,res)=>{
+    console.log("accept follower request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.acceptFollowRequest(req.body.awaitAcceptFollowerID);   
+    if(result.success){
+        console.log(result.message);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.get("/api/user/getRecommendedUsers", async(req, res)=>{
+    console.log("User recommendation request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getRecommendedUsers();
+    if(result.success){
+        console.log(result);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.get("api/user/getRecentPopularPosts", async(req, res)=>{
+    console.log("Recent Popular Post request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getRecentPopularPosts();
+    if(result.success){
+        console.log(result);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.get("/api/user/getRecommendedPosts", async(req, res)=>{
+    console.log("Post recommendation request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getRecommendedPosts();
+    if(result.success){
+        console.log(result);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.get("api/user/getFollowingPosts", async(req, res)=>{
+    console.log("Following posts request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getFollowingPosts();
+    if(result.success){
+        console.log(result);
         delete userHandler;
         return res.status(200).send();
     }
