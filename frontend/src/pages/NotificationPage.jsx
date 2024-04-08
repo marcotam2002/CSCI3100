@@ -23,8 +23,7 @@ import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
-function NotificationBox({ notifcations }) {
-    console.log(notifcations);
+function NotificationBox({ notifcations , action}) {
     return (
         <div>
             <table id="notificationTable">
@@ -38,8 +37,8 @@ function NotificationBox({ notifcations }) {
                                 <p>request to follow you!</p>
                             </td>
                             <td className="notificationButton">
-                                <button> Accept   </button>
-                                <button> Reject </button>
+                                <button className="acceptFollow" onClick={() => action(true, key)}> Accept </button>
+                                <button className="rejectFollow"> Reject </button>
                             </td>
                         </tr>
                     ))} 
@@ -59,13 +58,12 @@ function NotificationPage() {
     const closeAddPost = () => {
         setState(false);
     };
-    const userID = getCookie("userID");
     const user = getCookie("username");
     const [notifications, setNotifications] = useState({});
+    const userID = getCookie("userID");
 
     const getNotification = async () => {
         const notification = {};
-        const userID = getCookie("userID");
         let data = [];
         const response = await fetch(`${API_BASE_URL}/api/user/getNotification`, {
             method: 'POST',
@@ -74,6 +72,9 @@ function NotificationPage() {
         });
         if (response.status === 200) {
             data = await response.json();
+        }
+        else{
+            console.log("Error in getting notification data");
         }
         for (let i = 0; i < data.length; i++) {
             const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
@@ -92,7 +93,43 @@ function NotificationPage() {
         setNotifications(notification);
     }
 
-    useEffect(() => { getNotification();}, []); 
+    
+    const notificationAction = async (action, targetUserID) => {
+        if(action) //accept
+        {
+            const response = await fetch(`${API_BASE_URL}/api/user/acceptFollowRequest`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ userID:userID, targetUserID:targetUserID })
+            });
+            if (response.status === 200) {
+                console.log("Successfully accepted follow request");
+                alert("Successfully accepted follow request!");
+            }
+            else {
+                console.log("Error in accepting follow request");
+                alert("Error in accepting follow request!");
+            }
+        }
+        else
+        {
+            const response = await fetch(`${API_BASE_URL}/api/user/rejectFollowRequest`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ userID:targetUserID })
+            });
+            if (response.status === 200) {
+                console.log("Successfully rejected follow request");
+                alert("Successfully rejected follow request!");
+            }
+            else {
+                console.log("Error in rejecting follow request");
+                alert("Error in rejecting follow request!");
+            }
+        }
+        getNotification();
+    }
+    useEffect(() => { getNotification();}, []);
     return (
         <div>
             <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
@@ -148,7 +185,7 @@ function NotificationPage() {
                     />
                 </div>
                 <div id="main">
-                    <NotificationBox notifcations={notifications} />
+                    <NotificationBox notifcations={notifications} action={notificationAction}/>
                 </div>
             </div>
         </div>

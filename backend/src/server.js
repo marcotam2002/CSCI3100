@@ -433,8 +433,23 @@ app.post("/api/user/getNotification", async(req,res)=>{
     }
 })
 //Accept follower request
-app.post("/acceptfollowrequest", async(req,res)=>{
+app.post("/api/user/acceptFollowRequest", async(req,res)=>{
     console.log("accept follower request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.acceptFollowRequest(req.body.targetUserID); 
+    if(result.success){
+        console.log(result.message);
+        delete userHandler;
+        return res.status(200).send();
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
+app.post("/api/user/rejectFollowRequest", async(req,res)=>{
+    console.log("reject follower request received")
     const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.acceptFollowRequest(req.body.awaitAcceptFollowerID);   
     if(result.success){
