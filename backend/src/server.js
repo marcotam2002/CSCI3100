@@ -451,7 +451,7 @@ app.post("/api/user/acceptFollowRequest", async(req,res)=>{
 app.post("/api/user/rejectFollowRequest", async(req,res)=>{
     console.log("reject follower request received")
     const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.acceptFollowRequest(req.body.awaitAcceptFollowerID);   
+    const result = await userHandler.rejectFollowRequest(req.body.targetUserID);   
     if(result.success){
         console.log(result.message);
         delete userHandler;

@@ -38,7 +38,7 @@ function NotificationBox({ notifcations , action}) {
                             </td>
                             <td className="notificationButton">
                                 <button className="acceptFollow" onClick={() => action(true, key)}> Accept </button>
-                                <button className="rejectFollow"> Reject </button>
+                                <button className="rejectFollow" onClick={() => action(false, key)}> Reject </button>
                             </td>
                         </tr>
                     ))} 
@@ -116,7 +116,7 @@ function NotificationPage() {
             const response = await fetch(`${API_BASE_URL}/api/user/rejectFollowRequest`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ userID:targetUserID })
+                body: JSON.stringify({ userID:userID, targetUserID:targetUserID })
             });
             if (response.status === 200) {
                 console.log("Successfully rejected follow request");
