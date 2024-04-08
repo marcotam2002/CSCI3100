@@ -707,26 +707,6 @@ class UserHandler extends AccountHandler {
     }
   }
 
-  // Method to get all following users' posts
-  async getFollowingPosts() {
-    /*
-      * Retrieve all posts of the users following from the database
-    */
-    try{
-      const client = await pool.connect();
-      const queryText = 'SELECT * FROM posts WHERE authorID IN (SELECT followingID FROM relationships WHERE followerID = $1)';
-      const values = [this.userID];
-      const result = await client.query(queryText, values);
-      client.release();
-
-      return { success: true, message: 'Following posts retrieved successfully', posts: result.rows };
-
-    } catch (error) {
-    console.error('Error retrieving following posts:', error);
-    return { success: false, message: 'Failed to retrieve following posts' };
-    }
-  }
-
   // Method to check if the user following the target user
   async isFollowing(userID, targetUserID) {
     /*
