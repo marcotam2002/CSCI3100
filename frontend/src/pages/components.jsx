@@ -23,7 +23,7 @@ const CheckNotification = async () => {
     });
     if (response.status === 200) {
         const data = await response.json();
-        console.log("Notification:",data, data.length > 0);
+        //console.log("Notification:",data, data.length > 0);
         return (data.length > 0);
     }
     else {
@@ -31,6 +31,21 @@ const CheckNotification = async () => {
     }
 }
 
+const CheckUnreadMessages = async () => {
+  const userID = getCookie("userID");
+  const response = await fetch(`${API_BASE_URL}/api/user/checkUnreadMessages`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ userID: userID })
+  });
+  if (response.status === 200) {
+      const data = await response.json();
+      return (data);
+  }
+  else {
+      console.log("ERROR");
+  }
+}
 /*height: 180px, width: 1000px*/
 function Header({ subTitle, currPage }) {
   return (
@@ -65,4 +80,4 @@ function CrossButton({ func }) {
   );
 }
 
-export { Header, SideBarButton, CrossButton, CheckNotification };
+export { Header, SideBarButton, CrossButton, CheckNotification, CheckUnreadMessages };

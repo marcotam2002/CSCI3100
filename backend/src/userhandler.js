@@ -940,6 +940,24 @@ class UserHandler extends AccountHandler {
     }
   }
 
+  async GetUnreadMessages() {
+    /*
+      * Retrieve unread messages sender id for the user
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT DISTINCT senderID FROM messages WHERE receiverID = $1 AND read = false';
+      const values = [this.userID];
+      const result = await client.query(queryText, values);
+      client.release();
+
+      return { success: true, message: 'Unread messages retrieved successfully', unreadMessages: result.rows };
+
+    } catch (error) {
+      console.error('Error retrieving unread messages:', error);
+      return { success: false, message: 'Failed to retrieve unread messages senderID' };
+    }
+  }
   // Method to send a message
   async sendMessage(receiverID, message) {
     /*
@@ -969,10 +987,10 @@ class UserHandler extends AccountHandler {
     */
     try {
       const client = await pool.connect();
-      const queryText = 'SELECT * FROM messages WHERE (senderID = $1 AND receiverID = $2) OR (senderID = $2 AND receiverID = $1)';
+      const queryText = 'SELECT * FROM messages WHERE (senderID = $1 AND receiverID = $2) OR (senderID = $2 AND receiverID = $1) ORDER BY time DESC';
       const values = [this.userID, targetUserID];
       const result = await client.query(queryText, values);
-
+      
       // When we get the messages, we assume the user read the messages
       const updateQuery = 'UPDATE messages SET read = true WHERE senderID = $1 AND receiverID = $2';
       const updateValues = [targetUserID, this.userID];

@@ -247,9 +247,10 @@ Things may need:
 */
 
 app.post("/api/user/getFollowingUser", async(req, res)=>{
-    console.log("Get following user request received")
+    console.log("Get following user request received");
     const userHandler = new UserHandler(req.body.userID);
     const result = await userHandler.getFollowing();
+    delete userHandler;
     if(result){
         console.log("following user fetched")
         return res.status(200).send(result.following);
@@ -257,10 +258,47 @@ app.post("/api/user/getFollowingUser", async(req, res)=>{
     else return res.status(404).send({message:"Error fetching user"});
 })
 
+app.post("/api/user/getMutualFollowing", async(req, res)=>{
+    console.log("Get mutual following request received");
+    const userHandler = new UserHandler(req.body.userID);
+    const result = await userHandler.getMutualFollowing();
+    delete userHandler;
+    if(result){
+        console.log("mutual following user fetched");
+        return res.status(200).send(result.mutualFollowing);
+    }
+    else return res.status(404).send({message:"Error fetching mutual user"});
+})
+
+app.post("/api/user/getUnreadMessages", async(req, res)=>{
+    console.log("get unread messages request received")
+    const userHandler = new UserHandler(req.body.userID);
+    const result = await userHandler.GetUnreadMessages();
+    delete userHandler;
+    if(result){
+        console.log("unread messages fetched")
+        return res.status(200).send(result.unreadMessages);
+    }
+    else return res.status(404).send({message:"Error fetching unread messages"});
+})
+
+app.post("/api/user/checkUnreadMessages", async(req, res)=>{
+    console.log("check unread messages request received")
+    const userHandler = new UserHandler(req.body.userID);
+    const result = await userHandler.CheckUnreadMessages();
+    delete userHandler;
+    if(result){
+        console.log("unread messages situation fetched")
+        return res.status(200).send(result.unread);
+    }
+    else return res.status(404).send({message:"Error fetching unread messages situation"});
+})
+
 app.get("/api/admin/getAllUser", async(req, res)=>{
-    console.log("Get all user request received")
+    console.log("Get all user request received");
     const adminHandler= new AdminHandler();
     const result = await adminHandler.getAllUsers();
+    delete adminHandler;
     if(result){
         console.log("All user fetched")
         return res.status(200).send(result);
@@ -271,6 +309,7 @@ app.get("/api/admin/getAllUser", async(req, res)=>{
 app.post("/api/admin/getUser", async(req, res)=>{
     console.log("Get user request received")
     const adminHandler= new AdminHandler();
+    delete adminHandler;
     const result = await adminHandler.getUser(req.body.userID);
     if(result){
         console.log("user fetched")
@@ -283,6 +322,7 @@ app.get("/api/admin/getAllPost", async(req, res)=>{
     console.log("Get all post request received")
     const adminHandler= new AdminHandler();
     const result = await adminHandler.getAllPosts();
+    delete adminHandler;
     if(result){
         console.log("All post fetched")
         return res.status(200).send(result);
@@ -294,6 +334,7 @@ app.put("/api/admin/deleteUser", async(req,res)=>{
     console.log("Delete User request received")
     const adminHandler=new AdminHandler();
     const result = await adminHandler.deleteUser(req.body.userID);
+    delete adminHandler;
     if(result.success){
         console.log("Successfully deleted user");
         return res.status(200).send();
@@ -306,6 +347,7 @@ app.put("/api/user/sendMessage", async(req,res)=>{
     console.log("send message request received")
     const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.sendMessage(req.body.targetUserID, req.body.message);
+    delete userHandler;
     if(result.success){
         console.log("Successfully send message");
         return res.status(200).send();
@@ -317,6 +359,7 @@ app.put("/api/admin/deletePost", async(req,res)=>{
     console.log("Delete Post request received")
     const adminHandler=new AdminHandler();
     const result = await adminHandler.deletePost(req.body.postID);
+    delete adminHandler;
     if(result){
         console.log("Successfully deleted post");
         return res.status(200).send();
@@ -405,29 +448,14 @@ app.post("/user/unfollowuser", async(req, res)=>{
 
 
 //required input: userID, targetuserID
-app.post("/chat", async(req,res)=>{
-    console.log("View Chat request received")
+app.post("/api/user/getMessage", async(req,res)=>{
+    console.log("Get message request received")
     const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.getMessagesWithUser(req.body.targetuserID);   
+    const result = await userHandler.getMessagesWithUser(req.body.targetUserID);   
     if(result.success){
-        console.log("Get Chat History Success");
+        console.log("Get message Success");
         delete userHandler;
-        return res.status(200).send({message:result.messages});
-    }
-    else {
-        delete userHandler;
-        return res.status(404).send({message: result.message});
-    }
-})
-
-app.put("/chat/add", async(req,res)=>{
-    console.log("Send Message request received")
-    const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.sendMessage(req.body.receiverID, req.body.message);   
-    if(result.success){
-        console.log(result.message);
-        delete userHandler;
-        return res.status(200).send();
+        return res.status(200).send(result.messages);
     }
     else {
         delete userHandler;
