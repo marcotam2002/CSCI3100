@@ -856,6 +856,64 @@ class UserHandler extends AccountHandler {
     }
   }
 
+  // Method to return folloing user who also follow back
+  async getMutualFollowing() {
+    /*
+      * Retrieve the list of users that the user is following and also follow back
+    */
+    try {
+        const client = await pool.connect();
+        const queryText = 'SELECT followingID FROM relationships WHERE followerID = $1';
+        const values = [this.userID];
+        const result = await client.query(queryText, values);
+
+        const following = result.rows;
+        const mutualFollowing = [];
+
+        // Check if the users in the following list also follow back
+        for (const user of following) {
+            const queryText2 = 'SELECT * FROM relationships WHERE followerID = $1 AND followingID = $2';
+            const values2 = [user.followingid, this.userID];
+            const result2 = await client.query(queryText2, values2);
+
+            if (result2.rows.length > 0) {
+                mutualFollowing.push(user.followingid);
+            }
+        }
+
+        client.release();
+
+        return { success: true, message: 'Mutual following retrieved successfully', mutualFollowing };
+    } catch (error) {
+        console.error('Error retrieving mutual following:', error);
+        return { success: false, message: 'Failed to retrieve mutual following' };
+    }
+  }
+
+  // Method to get unread message
+  async CheckUnreadMessages() {
+    /*
+      * Retrieve unread messages for the user
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT * FROM messages WHERE receiverID = $1 AND read = false';
+      const values = [this.userID];
+      const result = await client.query(queryText, values);
+      client.release();
+
+      if(result.rows.length === 0){
+        return { success: true, message: 'No unread messages', unread : false};
+      } else {
+        return { success: true, message: 'Unread messages exist', unread : true };
+      }
+
+    } catch (error) {
+      console.error('Error retrieving unread messages:', error);
+      return { success: false, message: 'Failed to retrieve unread messages' };
+    }
+  }
+  
   // Method to send a message
   async sendMessage(receiverID, message) {
     /*
