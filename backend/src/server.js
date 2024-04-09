@@ -131,12 +131,17 @@ app.put("/api/post/commentadd", async(req,res)=>{
 
 
 app.put("/api/post/changelikepost", async(req,res)=>{
-    console.log("Like Post request received")
-    const userHandler=new UserHandler();
-    const result = await userHandler.commentPost(req.body.userID, req.body.postID);    
-    if(result.message=='User has already liked the post'){
-        console.log("User has already liked the post");
-        return res.status(200).send();
+    console.log("Like/Unlike Post request received")
+    const userHandler=new UserHandler(req.body.id);
+    if(req.body.type=="like"){
+        const result = await userHandler.likePost(req.body.postID);
+    }
+    else{
+        const result = await userHandler.unlikePost(req.body.postID);
+    }    
+    if(result.success){
+        console.log(result.message);
+        return res.status(200).send({message: result.message});
     }
     else return res.status(404).send({message: result.message});
 })
@@ -333,10 +338,11 @@ app.put("/api/post/commentadd", async(req,res)=>{
 })
 
 
-app.post("/getHomepagePost", async(req, res)=>{
+app.post("/getOwnPost", async(req, res)=>{
     console.log("Get User Own Post request received")
     const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.getOwnPosts();    //test without media first
+    const result = await userHandler.getOwnPosts();
+
     if(result.success){
         console.log("User own Post retrieved");
         delete userHandler;
@@ -350,12 +356,14 @@ app.post("/getHomepagePost", async(req, res)=>{
 
 app.post("/getSinglePost", async(req, res)=>{
     console.log("Access single post request received")
-    const userHandler=new UserHandler();
-    const result = await userHandler.getPost(req.body.postID);    //test without media first
-    if(result){
+    const userHandler=new UserHandler(req.body.userID);
+    const post = await userHandler.getPost(req.body.postID);
+    const comment = await userHandler.getComment(req.body.postID);
+    const liked= await userHandler.hasLikedPost(req.body.postID);    //test without media first
+    if(post.success){
         console.log("Post retrieved");
         delete userHandler;
-        return res.status(200).send({result});
+        return res.status(200).send({post:post, comment: comment.comments, liked:liked.liked});
     }
     else {
         delete userHandler;
@@ -476,7 +484,7 @@ app.post("/api/user/rejectFollowRequest", async(req,res)=>{
 
 app.get("/api/user/getRecommendedUsers", async(req, res)=>{
     console.log("User recommendation request received")
-    const userHandler=new UserHandler();
+    const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getRecommendedUsers();
     if(result.success){
         console.log(result);
@@ -491,7 +499,7 @@ app.get("/api/user/getRecommendedUsers", async(req, res)=>{
 
 app.get("api/user/getRecentPopularPosts", async(req, res)=>{
     console.log("Recent Popular Post request received")
-    const userHandler=new UserHandler();
+    const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getRecentPopularPosts();
     if(result.success){
         console.log(result);
@@ -506,7 +514,7 @@ app.get("api/user/getRecentPopularPosts", async(req, res)=>{
 
 app.get("/api/user/getRecommendedPosts", async(req, res)=>{
     console.log("Post recommendation request received")
-    const userHandler=new UserHandler();
+    const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getRecommendedPosts();
     if(result.success){
         console.log(result);
@@ -521,7 +529,7 @@ app.get("/api/user/getRecommendedPosts", async(req, res)=>{
 
 app.get("api/user/getFollowingPosts", async(req, res)=>{
     console.log("Following posts request received")
-    const userHandler=new UserHandler();
+    const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getFollowingPosts();
     if(result.success){
         console.log(result);
@@ -533,6 +541,22 @@ app.get("api/user/getFollowingPosts", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
+
+app.post("api/user/getUser", async(req,res)=>{
+    console.log("Get User request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const targetuserProfile = await viewProfile(req.body.targetuserID);
+    if(targetuserProfile.success){
+        console.log(result);
+        delete userHandler;
+        return res.status(200).send({user:targetuserProfile.user});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
 //end
 /*
 app.get("/api/homepage", async(req,res)=>{

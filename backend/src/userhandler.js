@@ -287,7 +287,7 @@ class UserHandler extends AccountHandler {
 }
 
   //Method to check if a particular user has liked a particualr post
-  async hasLikedPost(userID, postID) {
+  async hasLikedPost(postID) {
     /*
       * Check if a user has liked a post
       * @param {string} userID - The ID of the user
@@ -296,7 +296,7 @@ class UserHandler extends AccountHandler {
     try {
         const client = await pool.connect();
         const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
-        const values = ['post', postID, userID];
+        const values = ['post', postID, this.userID];
         const result = await client.query(queryText, values);
         client.release();
 
