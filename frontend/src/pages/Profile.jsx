@@ -26,60 +26,74 @@ import { useNavigate } from 'react-router';
 
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
-const testUser =
-{
-  userID: 2,
-  username: "Peter",
-  followersCount: 50,
-  followingCount: 100,
-  description: "What a wonderful day!\nI love to share my life with you.\nLet's enjoy the moment together.\n",
-  isPrivate: true,
+
+function ProfilePostComponent({ posts, changeLike }) {
+
+
+  const renderPost = (post) => {
+
+    return (
+      <div className="post-container " key={post.postid}>
+        <div className="post-header">
+          <span className="post-username">{post.username}</span>
+          <span className="post-time">{post.time}</span>
+      </div>
+        <div className="post-description">
+          {post.content.split('\n').map((line, index) => (
+            (index < 3 || post.description.split('\n').length <= 3) && (
+              <p key={index}>{line}</p>
+            )
+          ))}
+        </div>
+        <div className="post-media">
+          {post.mediauri !== "" && post.mediauri.endsWith('.mp4') ? (
+            <video controls>
+              <source src={post.mediauri} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img src={post.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
+          )}
+        </div>
+        {post.content.split('\n').length > 3 && (
+          <div className="read-more">
+            <Link to={`/post/${post.postid}`}>Read More</Link>
+          </div>
+        )}
+        <div className="interaction-buttons">
+          <button className="like-button" onClick={(event) => changeLike(post.liked, post.postid, event)}>
+            {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
+          </button>
+          <p>{post.likes}</p>
+          <Link to={`/post/${post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
+          <p>{post.commentnum}</p>
+        </div>
+        {/* <div className="comments">
+          {post.comments.slice(0, 2).map((comment, index) => (
+            <div className="comment" key={index}>
+              <span className="comment-username"><b>{comment.username}</b></span>
+              <span className="comment-text">{comment.text}</span>
+            </div>
+          ))}
+        </div> */}
+        {/* {post.comments.length > 2 && (
+          <div className="view-all-comments">
+            <Link to={`/post/${post.postID}`}>View all comments</Link>
+          </div>
+        )} */}
+      </div>
+    );
+  };
+
+  return (
+    <div className="user-homepage">
+      {posts.map((post) => renderPost(post))}
+    </div>
+  );
 }
 
-function UserProfile({ openFunc }) {
-  const { userID } = useParams();
-  const currentUser = getCookie("userID");
-  const [isCurrentUser, setIsCurrentUser] = useState(false);
-  const [user, setUser] = useState("");
+function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike }) {
 
-  useEffect(() => {
-    setIsCurrentUser(currentUser === userID);
-  }, [userID, currentUser]);
-  // setIsCurrentUser(true);
-
-  useEffect(() => {
-    const getUser = async() => {
-      try{
-        const data = {
-          userID: userID,
-        };
-
-        const response = await fetch(`${API_BASE_URL}/getUser`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-        if (response.status === 200) {
-          const resdata = await response.json();
-          setUser(resdata.user);
-        } else {
-            const resdata = await response.json()
-            console.log(resdata);
-            console.log("System Error");
-        }
-      } catch (error) {
-        console.log("Error in getting user profile.");
-      } 
-    };
-
-    getUser();
-  }, []);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]); // for debugging.
 
   const editProfile = () => {
     // For debugging.
@@ -111,11 +125,11 @@ function UserProfile({ openFunc }) {
 
       {/* Row 4: Posts */}
       <div><h5>Posts</h5></div>
-
-      {/* Row 5 and onwards: User's posts */}
-      {/* {user && user.posts.map(post => (
-                <div key={post.id}>{post.content}</div>
-            ))} */}
+      {access ? (
+              <div>You do not have the access to view this user's posts. Please follow this user to see more.</div>
+            ) : (
+              <ProfilePostComponent posts={post} changeLike={changeLike} />
+            )}
     </div>
   )
 }
@@ -123,7 +137,14 @@ function UserProfile({ openFunc }) {
 function Profile(){
   const [state, setState] = useState(false);
   const [state2, setState2] = useState(false);
+  const [post, setPost] = useState([]);
+  const [access, setAccess] = useState(false);
   const navigate = useNavigate();
+  const currentUser = getCookie("userID");
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [profileUser, setProfileUser] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loading2, setLoading2] = useState(false);
 
   const openEditProfileForm = () => {
     setState2(true);
@@ -140,6 +161,110 @@ function Profile(){
     setState(false);
   };
   const user = getCookie("username");
+  const { userID } = useParams();
+
+  useEffect(() => {
+    setIsCurrentUser(currentUser === userID);
+  }, [userID, currentUser]);
+
+  const getProfilePost = async () => {
+      const data = {
+        userID: currentUser,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/getProfilePost`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 200) {
+        const resdata = await response.json();
+
+        const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
+          const data2= {
+            userID: post.authorid,
+          };
+
+          const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data2)
+          });
+          if (response2.status === 200) {
+            const userData = await response2.text();
+            return {...post, username: userData};
+          } else {
+            console.log("System Error in getting username.");
+            return post;
+          }
+        }))
+        // console.log("updated Posts are" , updatedPosts);
+        const reversedPosts = updatedPosts.reverse();
+        setPost(reversedPosts);
+      } else {
+        const resdata = await response.json()
+        console.log(resdata);
+        console.log("System Error");
+      }
+  };
+
+  const getUser = async(userID) => {
+    const data = {
+      userID: userID,
+    };
+    const response = await fetch(`${API_BASE_URL}/api/getUser`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      setProfileUser(resdata.user);
+      if (userID === currentUser) {
+        setAccess(true);
+      } else {
+        const data2 = {
+          targetuserID: userID,
+          currentuserID: currentUser
+        };
+        const response2 = await fetch(`${API_BASE_URL}/api/checkfollowing`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data2)
+        });
+        if (response2.status === 200) {
+          const resdata2 = await response2.text();
+          if (resdata2 == "true") {
+            setAccess(true);
+          }
+        } else {
+          const resdata2 = await response2.text();
+          console.log(resdata2);
+          console.log("System Error in checking is following.");
+        }
+      }
+      
+      if (access) {
+        getProfilePost();
+      }
+      setLoading(false);
+    } else {
+        const resdata = await response.json()
+        console.log(resdata);
+        console.log("System Error in getting User Profile.");
+    }
+  }
+  useEffect(() => {
+    getUser(userID);
+  }, []);
 
   const [notificationState, setNotificationState] = useState(false);
   const updateNotificationState = async () => {
@@ -153,6 +278,99 @@ function Profile(){
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const getSinglePost = async(postID) => {
+    const data = {
+      postID: postID,
+      userID: userID,
+    };
+    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      const singlePost = resdata.result;
+
+      const data2 ={
+        userID: singlePost.authorid,
+      };
+
+      const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data2)
+        });
+
+        if (response2.status === 200) {
+          const userData = await response2.text();
+          const updatedPost = {...singlePost, username: userData};
+          setSinglePost(updatedPost);
+          setLoading2(false);
+        } else {
+          console.log("System Error in getting username.");
+          setLoading2(false);
+          return singlePost;
+        }
+  } else {
+    console.log("System Error in getting Single Post.");
+    setLoading2(false);
+  }
+};
+
+  const replacePost = (posts, singlePost) => {
+    if (!posts || !singlePost) return posts;
+
+    const updatedPosts = posts.map(post => {
+      if (post.postID === singlePost.postID) {
+        return singlePost;
+      } else {
+        return post;
+      }
+    });
+
+    return updatedPosts;
+  };
+
+  const changeLike = async (liked, postID, event) => {
+    event.preventDefault();
+    const [type,setType] = useState("");
+    if (liked){
+      setType("unlike");
+    } else {
+      setType("like");
+    }
+
+    // for fetch part
+    const data = {
+      postID: postID,
+      userID: userID,
+      type: type
+    };
+
+    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      // successful update
+      setLoading2(true);
+      getSinglePost(postID);
+      replacePost(post, singlePost);
+      console.log("successful update")
+    } else {
+      // failed update
+      console.log("failed to update")
+    }
+  };
 
   return (
     <div>
@@ -218,7 +436,11 @@ function Profile(){
           />
         </div>
         <div id="main">
-          <UserProfile openFunc={openEditProfileForm} />
+        {loading ? (
+              <div>Loading...</div>
+            ) : (
+              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post}  changeLike={changeLike}/>
+            )}
         </div>
       </div>
     </div>

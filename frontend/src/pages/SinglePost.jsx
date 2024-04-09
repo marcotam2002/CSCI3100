@@ -95,7 +95,7 @@ function SinglePostFrame({ user, posts, ChangeLike }) {
               Your browser does not support the video tag.
             </video>
           ) : (
-            <img src={singlePost.mediauri} />
+            <img src={singlePost.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
           )}
         </div>
         <div className="interaction-buttons">
@@ -149,6 +149,7 @@ function SinglePostPage() {
   const getSinglePost = async(postID) => {
     const data = {
       postID: postID,
+      userID: userID,
     };
     const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
       method: 'POST',
@@ -176,7 +177,6 @@ function SinglePostPage() {
         if (response2.status === 200) {
           const userData = await response2.text();
           const updatedPost = {...singlePost, username: userData};
-          console.log(updatedPost);
           setPost(updatedPost);
           setFound(true);
           setLoading(false);
@@ -191,7 +191,7 @@ function SinglePostPage() {
     setFound(false);
     setLoading(false);
   }
-}
+};
   useEffect(() => {
     getSinglePost(postID);
   }, []);

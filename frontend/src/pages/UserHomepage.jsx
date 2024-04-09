@@ -32,65 +32,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
-function UserHomepageComponent({ posts }) {
-
-  const [postsState, setPostsState] = useState(posts);
-  const [singlePost, setSinglePost] = useState("HI your mother");
-  const [loading, setLoading] = useState(true);
-  const userID = getCookie("userID");
-
-  const getSinglePost = async () => {
-    const data = {
-      postID: postID,
-    };
-
-    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      const resdata = await response.json();
-      setSinglePost(resdata.post);
-    } else {
-      const resdata = await response.json();
-      console.log(resdata);
-      console.log("System Error in getting Single Post");
-    }
-  };
-
-  const ChangeLike = async (postID, event) => {
-    event.preventDefault();
-
-    const data = {
-      postID: postID,
-      userID: userID,
-    };
-
-    const response = await fetch('/post/likepost', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      // successful update
-      console.log("successful update")
-      getSinglePost();
-      const index = postsState.findIndex(item => item.postID === singlePost.postID);
-      if (index !== -1) {
-        postsState[index] = singlePost;
-      } else {
-        console.log("Post with postID", singlePost.postID, "not found in posts in Homepage.")
-      }
-    } else {
-      // failed update
-      console.log("failed to update")
-    }
-  };
+function UserHomepageComponent({ posts, changeLike }) {  
 
 
   const renderPost = (post) => {
@@ -115,7 +57,7 @@ function UserHomepageComponent({ posts }) {
               Your browser does not support the video tag.
             </video>
           ) : (
-            <img src={post.mediauri} />
+            <img src={post.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
           )}
         </div>
         {post.content.split('\n').length > 3 && (
@@ -124,7 +66,7 @@ function UserHomepageComponent({ posts }) {
           </div>
         )}
         <div className="interaction-buttons">
-          <button className="like-button" onClick={(event) => ChangeLike(post.postid, event)}>
+          <button className="like-button" onClick={(event) => changeLike(post.liked, post.postid, event)}>
             {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
           </button>
           <p>{post.likes}</p>
@@ -150,7 +92,7 @@ function UserHomepageComponent({ posts }) {
 
   return (
     <div className="user-homepage">
-      {postsState.map((post) => renderPost(post))}
+      {posts.map((post) => renderPost(post))}
     </div>
   );
 }
@@ -160,6 +102,9 @@ function UserHomepage() {
   const navigate = useNavigate();
   const [post, setPost] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [singlePost, setSinglePost] = useState([]);
+  const [loading2, setLoading2] = useState(false);
+
   
   const openAddPost = () => {
     setState(true);
@@ -210,7 +155,8 @@ function UserHomepage() {
             }
           }))
           // console.log("updated Posts are" , updatedPosts);
-          setPost(updatedPosts);
+          const reversedPosts = updatedPosts.reverse();
+          setPost(reversedPosts);
           setLoading(false);
         } else {
           const resdata = await response.json()
@@ -238,6 +184,99 @@ function UserHomepage() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const getSinglePost = async(postID) => {
+    const data = {
+      postID: postID,
+      userID: userID,
+    };
+    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      const singlePost = resdata.result;
+
+      const data2 ={
+        userID: singlePost.authorid,
+      };
+
+      const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data2)
+        });
+
+        if (response2.status === 200) {
+          const userData = await response2.text();
+          const updatedPost = {...singlePost, username: userData};
+          setSinglePost(updatedPost);
+          setLoading2(false);
+        } else {
+          console.log("System Error in getting username.");
+          setLoading2(false);
+          return singlePost;
+        }
+  } else {
+    console.log("System Error in getting Single Post.");
+    setLoading2(false);
+  }
+};
+
+  const replacePost = (posts, singlePost) => {
+    if (!posts || !singlePost) return posts;
+
+    const updatedPosts = posts.map(post => {
+      if (post.postID === singlePost.postID) {
+        return singlePost;
+      } else {
+        return post;
+      }
+    });
+
+    return updatedPosts;
+  };
+
+  const changeLike = async (liked, postID, event) => {
+    event.preventDefault();
+    const [type,setType] = useState("");
+    if (liked){
+      setType("unlike");
+    } else {
+      setType("like");
+    }
+
+    // for fetch part
+    const data = {
+      postID: postID,
+      userID: userID,
+      type: type
+    };
+
+    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      // successful update
+      setLoading2(true);
+      getSinglePost(postID);
+      replacePost(post, singlePost);
+      console.log("successful update")
+    } else {
+      // failed update
+      console.log("failed to update")
+    }
+  };
 
   return (
     <div>
@@ -297,7 +336,7 @@ function UserHomepage() {
           {loading ? (
               <div>Loading...</div>
             ) : (
-              <UserHomepageComponent posts={post} />
+              <UserHomepageComponent posts={post} changeLike={changeLike} />
             )}
         </div>
       </div>
