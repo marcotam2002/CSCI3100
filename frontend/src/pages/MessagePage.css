@@ -74,8 +74,36 @@
       display: flex;
       height: 100%;
       flex-direction: column-reverse;
+      overflow: auto;
   }
   
+  #message div {
+    max-width: 250px;
+    min-width: 50px;
+    padding: 5px;
+    margin: 5px;
+  }
+
+  .send{
+      align-self: flex-end;
+      border: 2px solid #1D67CD;
+      border-radius: 15px;
+  }
+
+  .receive{
+    align-self: flex-start;
+    border: 2px solid #1D67CD;
+    color: white;
+    background-color: #1D67CD;
+    border-radius: 15px;
+}
+  #message p{
+      margin: 0px;
+      border-radius: 20px;
+      word-wrap: break-word;
+      text-align: center;
+  }
+
   #sendMessageBox {
     height: 60px;
     border-top: 1px solid #bfbfbf;

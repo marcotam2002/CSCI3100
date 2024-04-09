@@ -25,74 +25,88 @@ import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-/* for testing */
-const testFollowingUsers = [
-  { username: "Alice", userid: 1 },
-  { username: "Bob", userid: 2 },
-  { username: "Charlie", userid: 3 },
-  { username: "David", userid: 4 },
-  { username: "Eve", userid: 5 },
-  { username: "Frank", userid: 6 },
-  { username: "Grace", userid: 7 },
-  { username: "Helen", userid: 8 },
-  { username: "Ivy", userid: 9 },
-  { username: "Jack", userid: 10 },
-  { username: "Kelly", userid: 11 },
-  { username: "Lily", userid: 12 },
-  { username: "Mary", userid: 13 },
-  { username: "Nancy", userid: 14 },
-  { username: "Oscar", userid: 15 },
-];
-
 function MessageBox({ userID, followingUsers }) {
   const [currTarget, setCurrTarget] = useState(null);
   const [message, setMessage] = useState("");
-  const time = new Date().toLocaleTimeString();
+  const [messageList, setMessageList] = useState([]);
+
   const setTarget = (user) => {
     setCurrTarget(user);
   };
   const handleInput = (event) => {
     setMessage(event.target.value);
   };
+
   const sendMessage = async () => {
     if (message && currTarget) {
-        const data = { userID: userID, targetUserID: currTarget.userID, message: message};
-        const response = await fetch(`${API_BASE_URL}/api/user/sendMessage`, {
-          method: "PUT",
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        if (response.status === 200) {
-          console.log("message sent");
-        } else {
-          console.log("ERROR");
-        }
+      const data = { userID: userID, targetUserID: currTarget.userID, message: message };
+      const response = await fetch(`${API_BASE_URL}/api/user/sendMessage`, {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 200) {
+        console.log("message sent");
+      } else {
+        console.log("ERROR");
+      }
       setMessage("");
     }
+
   };
-  const receiveMessage = async () => {
-  
-  }
+
   const handleKeyPress = (event) => {
     if (event.key == "Enter") {
       sendMessage();
     }
   };
+
+  const getMessage = async (targetUser) => {
+    if (targetUser != null) {
+      const data = { userID: userID, targetUserID: targetUser.userID };
+      const response = await fetch(`${API_BASE_URL}/api/user/getMessage`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 200) {
+        const fetchedMessages = await response.json();
+        setMessageList(fetchedMessages);
+      }
+
+    } else {
+      console.log("ERROR");
+    }
+  };
+
+  useEffect(() => {
+    if(currTarget){
+      getMessage(currTarget);
+    }
+  }, [currTarget, message]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if(currTarget){
+        getMessage(currTarget);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [currTarget]);
   return (
     <div id="messageInterface">
       <div id="userSideBar">
         {followingUsers.map((followingUser) => (
           <div
             id="usernameBox"
-            key={followingUser.userid}
+            key={followingUser.userID}
             onClick={() => setTarget(followingUser)}
-            className={`${currTarget == followingUser ? "selected" : ""} ${followingUser == followingUsers[followingUsers.length - 1] && followingUsers.length > 6
+            className={`${currTarget == followingUser ? "selected" : ""} ${followingUser == followingUsers[followingUsers.length - 1] && followingUsers.length > 7
               ? "last"
               : ""
               }`}
           >
             <h6>{followingUser.username}</h6>
-            <p className="p2">Here should be latest message</p>
           </div>
         ))}
       </div>
@@ -101,7 +115,11 @@ function MessageBox({ userID, followingUsers }) {
           <h5>{currTarget ? currTarget.username : "Please select a user"}</h5>
         </div>
         <div id="message">
-          <h5></h5>
+          {messageList.map((message) => (
+            <div key={message.messageid} className={message.senderid == userID ? "send" : "receive"}>
+            <p>{message.content}</p>
+            </div>
+          ))}
         </div>
         <div id="sendMessageBox">
           <input
@@ -122,6 +140,11 @@ function MessageBox({ userID, followingUsers }) {
 function Message() {
   const [state, setState] = useState(false);
   const navigate = useNavigate();
+  const [userList, setUserList] = useState([]);
+  const [notificationState, setNotificationState] = useState(false);
+
+  const user = getCookie("username");
+  const userID = getCookie("userID");
 
   const openAddPost = () => {
     setState(true);
@@ -129,19 +152,16 @@ function Message() {
   const closeAddPost = () => {
     setState(false);
   };
-  const user = getCookie("username");
-  const userID = getCookie("userID");
-  const [userList, setUserList] = useState([]);
-  const getFollowingUsers = async () => {
+
+  const getMutualFollowing = async () => {
     const followingUsers = [];
-    const response = await fetch(`${API_BASE_URL}/api/user/getFollowingUser`, {
+    const response = await fetch(`${API_BASE_URL}/api/user/getMutualFollowing`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userID: userID })
     });
     if (response.status === 200) {
-      const data = await response.json();
-      const followingUsersID = data.map(user => user.followingid);
+      const followingUsersID = await response.json();
       for (let i = 0; i < followingUsersID.length; i++) {
         const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
           method: 'POST',
@@ -157,21 +177,27 @@ function Message() {
         }
       }
     }
+    else {
+      console.log("Error in getting mutual following");
+
+    }
     setUserList(followingUsers);
   }
-  const [notificationState, setNotificationState] = useState(false);
+
   const updateNotificationState = async () => {
     const result = await CheckNotification();
     setNotificationState(result);
   };
+
   useEffect(() => {
-    updateNotificationState();
-    getFollowingUsers();
+    //updateNotificationState();
+    getMutualFollowing();
     const interval = setInterval(() => {
-      updateNotificationState();
+      //updateNotificationState();
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>

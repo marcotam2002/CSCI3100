@@ -943,10 +943,10 @@ class UserHandler extends AccountHandler {
     */
     try {
       const client = await pool.connect();
-      const queryText = 'SELECT * FROM messages WHERE (senderID = $1 AND receiverID = $2) OR (senderID = $2 AND receiverID = $1)';
+      const queryText = 'SELECT * FROM messages WHERE (senderID = $1 AND receiverID = $2) OR (senderID = $2 AND receiverID = $1) ORDER BY time DESC';
       const values = [this.userID, targetUserID];
       const result = await client.query(queryText, values);
-
+      
       // When we get the messages, we assume the user read the messages
       const updateQuery = 'UPDATE messages SET read = true WHERE senderID = $1 AND receiverID = $2';
       const updateValues = [targetUserID, this.userID];
