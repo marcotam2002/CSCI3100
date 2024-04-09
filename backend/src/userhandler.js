@@ -286,6 +286,32 @@ class UserHandler extends AccountHandler {
     }
 }
 
+  //Method to check if a particular user has liked a particualr post
+  async hasLikedPost(userID, postID) {
+    /*
+      * Check if a user has liked a post
+      * @param {string} userID - The ID of the user
+      * @param {string} postID - The ID of the post
+    */
+    try {
+        const client = await pool.connect();
+        const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
+        const values = ['post', postID, userID];
+        const result = await client.query(queryText, values);
+        client.release();
+
+        if (result.rows.length === 0) {
+            return { success: true, message: 'User has not liked the post', liked: false};
+        } else {
+            return { success: true, message: 'User has liked the post', liked: true};
+        }
+        
+    } catch (error) {
+        console.error('Error checking if user has liked post:', error);
+        return false;
+    }
+  }
+
   // Method to like a post
   async likePost(postID) {
     /*
@@ -913,7 +939,7 @@ class UserHandler extends AccountHandler {
       return { success: false, message: 'Failed to retrieve unread messages' };
     }
   }
-  
+
   // Method to send a message
   async sendMessage(receiverID, message) {
     /*
