@@ -1,3 +1,9 @@
+![react](https://img.shields.io/npm/v/react?logo=react&label=react)
+![postgre](https://img.shields.io/npm/v/pg?logo=pg&label=postgre)
+![express](https://img.shields.io/npm/v/express?logo=express&label=express)
+![vite](https://img.shields.io/npm/v/vite?logo=vite&label=vite)
+![cors](https://img.shields.io/npm/v/cors?logo=cors&label=cors)
+
 # Soru Overview
 This is the project of 2023-24 2nd semester CSCI3100 Group G4.
 
@@ -50,7 +56,7 @@ By following these instructions and restoring the 'default.sql' file, you will s
 Please first check if you have the necessary dependencies.
 
 ```
-npm install pg vite express
+npm install pg pg-pool vite express react dotenv body-parser cors
 ```
 
 **Activate server:** 

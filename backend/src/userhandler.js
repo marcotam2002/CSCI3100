@@ -593,15 +593,34 @@ class UserHandler extends AccountHandler {
     }
   }
 
+  // Method to get followers
+  async getFollowers(userID) {
+    /*
+      * Retrieve the list of users that are following the user
+    */
+    try {
+        const client = await pool.connect();
+        const queryText = 'SELECT followerID FROM relationships WHERE followingID = $1';
+        const values = [userID];
+        const result = await client.query(queryText, values);
+        client.release();
+
+        return { success: true, message: 'Followers retrieved successfully', followers: result.rows };
+    } catch (error) {
+        console.error('Error retrieving followers:', error);
+        return { success: false, message: 'Failed to retrieve followers' };
+    }
+  }
+
   // Method to get followings
-  async getFollowing() {
+  async getFollowing(userID) {
     /*
       * Retrieve the list of users that the user is following
     */
     try {
         const client = await pool.connect();
         const queryText = 'SELECT followingID FROM relationships WHERE followerID = $1';
-        const values = [this.userID];
+        const values = [userID];
         const result = await client.query(queryText, values);
         client.release();
 

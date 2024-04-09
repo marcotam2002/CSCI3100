@@ -400,12 +400,12 @@ app.post("/getSinglePost", async(req, res)=>{
 
 //follow user
 //Question here: how can we obtain the userID of the user we want to follow?
-app.post("/user/followuser", async(req, res)=>{
+app.post("/api/user/followuser", async(req, res)=>{
     console.log("follow user request received")
-    const userHandler=new UserHandler();
-    const result = await userHandler.followUser(req.body.targetuserID);   
+    const userHandler=new UserHandler(req.body.currentUserID);
+    const result = await userHandler.followUser(req.body.targetUserID);
     if(result.success){
-        console.log("Follow Success");
+        console.log("Follow success");
         delete userHandler;
         return res.status(200).send();
     }
@@ -417,8 +417,8 @@ app.post("/user/followuser", async(req, res)=>{
 
 app.post("/user/unfollowuser", async(req, res)=>{
     console.log("unfollow user request received")
-    const userHandler=new UserHandler();
-    const result = await userHandler.unfollowUser(req.body.targetuserID);   
+    const userHandler=new UserHandler(req.body.currentUserID);
+    const result = await userHandler.unfollowUser(req.body.targetUserID);   
     if(result.success){
         console.log("unFollow Success");
         delete userHandler;
