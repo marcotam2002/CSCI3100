@@ -172,16 +172,17 @@ class UserHandler extends AccountHandler {
           return {
             success: true,
             message: 'User profile retrieved successfully',
-            user: [username, description, posts, privacy]
+            user: [username, description, posts, privacy],
+            isFollowing: true
           };
 
         } else {
           client.release();
-          return { success: false, message: 'User is private', };
+          return { success: false, message: 'User is private', user : [username, description, privacy], isFollowing: false};
         }
     } catch (error) {
         console.error('Error retrieving user profile:', error);
-        return { success: false, message: 'Failed to retrieve user profile', user : [username, description, privacy]};
+        return { success: false, message: 'Failed to retrieve user profile'};
     }
   }
 
