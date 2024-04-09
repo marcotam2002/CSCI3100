@@ -214,8 +214,6 @@ app.post("/getUsername", async(req,res)=>{
 
 })
 
-
-
 //Edit Profile page
 app.put("/profile/edit", async(req,res)=>{
     console.log("Profile Edit request received")
@@ -243,6 +241,16 @@ Things may need:
 2. Check if user has like certain post before
 */
 
+app.post("/api/user/getFollowingUser", async(req, res)=>{
+    console.log("Get following user request received")
+    const userHandler = new UserHandler(req.body.userID);
+    const result = await userHandler.getFollowing();
+    if(result){
+        console.log("following user fetched")
+        return res.status(200).send(result.following);
+    }
+    else return res.status(404).send({message:"Error fetching user"});
+})
 
 app.get("/api/admin/getAllUser", async(req, res)=>{
     console.log("Get all user request received")
@@ -288,6 +296,18 @@ app.put("/api/admin/deleteUser", async(req,res)=>{
     else return res.status(404).send({message: result.message});
 })
 
+
+app.put("/api/user/sendMessage", async(req,res)=>{
+    console.log("send message request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.sendMessage(req.body.targetUserID, req.body.message);
+    if(result.success){
+        console.log("Successfully send message");
+        return res.status(200).send();
+    }
+    else return res.status(404).send({message: result.message});
+})
+
 app.put("/api/admin/deletePost", async(req,res)=>{
     console.log("Delete Post request received")
     const adminHandler=new AdminHandler();
@@ -298,6 +318,7 @@ app.put("/api/admin/deletePost", async(req,res)=>{
     }
     else return res.status(404).send();
 })
+
 
 //Need to test with post exist inside database, api request for comment
 app.put("/api/post/commentadd", async(req,res)=>{
