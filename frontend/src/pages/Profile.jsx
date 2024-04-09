@@ -36,50 +36,8 @@ const testUser =
   isPrivate: true,
 }
 
-function UserProfile({ openFunc }) {
-  const { userID } = useParams();
-  const currentUser = getCookie("userID");
-  const [isCurrentUser, setIsCurrentUser] = useState(false);
-  const [user, setUser] = useState("");
+function UserProfile({ openFunc, isCurrentUser, user }) {
 
-  useEffect(() => {
-    setIsCurrentUser(currentUser === userID);
-  }, [userID, currentUser]);
-  // setIsCurrentUser(true);
-
-  useEffect(() => {
-    const getUser = async() => {
-      try{
-        const data = {
-          userID: userID,
-        };
-
-        const response = await fetch(`${API_BASE_URL}/getUser`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-        if (response.status === 200) {
-          const resdata = await response.json();
-          setUser(resdata.user);
-        } else {
-            const resdata = await response.json()
-            console.log(resdata);
-            console.log("System Error");
-        }
-      } catch (error) {
-        console.log("Error in getting user profile.");
-      } 
-    };
-
-    getUser();
-  }, []);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]); // for debugging.
 
   const editProfile = () => {
     // For debugging.
@@ -124,6 +82,9 @@ function Profile(){
   const [state, setState] = useState(false);
   const [state2, setState2] = useState(false);
   const navigate = useNavigate();
+  const currentUser = getCookie("userID");
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [profileUser, setProfileUser] = useState("");
 
   const openEditProfileForm = () => {
     setState2(true);
@@ -140,6 +101,41 @@ function Profile(){
     setState(false);
   };
   const user = getCookie("username");
+  const { userID } = useParams();
+
+  useEffect(() => {
+    setIsCurrentUser(currentUser === userID);
+  }, [userID, currentUser]);
+
+  const getUser = async(userID) => {
+    const data = {
+      userID: userID,
+    };
+    const response = await fetch(`${API_BASE_URL}/api/getUser`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      setProfileUser(resdata.user);
+      const data2 = {
+        targetuserID: userID,
+        currentuserID: currentUser
+      };
+      
+    } else {
+        const resdata = await response.json()
+        console.log(resdata);
+        console.log("System Error");
+    }
+  }
+
+  useEffect(() => {
+    getUser(userID);
+  }, []);
 
   const [notificationState, setNotificationState] = useState(false);
   const updateNotificationState = async () => {
@@ -218,7 +214,7 @@ function Profile(){
           />
         </div>
         <div id="main">
-          <UserProfile openFunc={openEditProfileForm} />
+          <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser}/>
         </div>
       </div>
     </div>
