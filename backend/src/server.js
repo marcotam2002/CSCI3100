@@ -509,7 +509,7 @@ app.post("/api/user/getRecommendedUsers", async(req, res)=>{
     }
 })
 
-app.get("api/user/getRecentPopularPosts", async(req, res)=>{
+app.get("/api/user/getRecentPopularPosts", async(req, res)=>{
     console.log("Recent Popular Post request received")
     const userHandler=new UserHandler();
     const result = await userHandler.getRecentPopularPosts();
@@ -539,7 +539,7 @@ app.post("/api/user/getRecommendedPosts", async(req, res)=>{
     }
 })
 
-app.post("api/user/getFollowingPosts", async(req, res)=>{
+app.post("/api/user/getFollowingPosts", async(req, res)=>{
     console.log("Following posts request received")
     const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getFollowingPosts();
@@ -554,14 +554,13 @@ app.post("api/user/getFollowingPosts", async(req, res)=>{
     }
 })
 
-app.post("api/user/getUser", async(req,res)=>{
+app.post("/api/user/getUser", async(req,res)=>{
     console.log("Get User request received")
-    const userHandler=new UserHandler(currentUser);
-    const targetuserProfile = await userHandler.viewProfile(req.body.userID);
+    const userHandler=new UserHandler(req.body.currentUserID);
+    const targetuserProfile = await userHandler.viewProfile(req.body.targetUserID);
     if(targetuserProfile.success){
-        console.log(result);
         delete userHandler;
-        return res.status(200).send({user:targetuserProfile.user});
+        return res.status(200).send({user:targetuserProfile.targetUser});
     }
     else {
         delete userHandler;

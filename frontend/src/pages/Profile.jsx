@@ -94,7 +94,7 @@ function ProfilePostComponent({ posts, changeLike, loading2 }) {
   );
 }
 
-function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, isFollow, loading2 }) {
+function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, isFollow, loading2, unfollowUser }) {
 
 
   const editProfile = () => {
@@ -112,9 +112,9 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, 
       <div id="profileHeader">
         <h2><b>{user && user.username}</b></h2>
         <div id="followBox">
-          <p><b>{user && user.followersCount}</b></p>
+          {/* <p><b>{user && user.followersCount}</b></p> */}
           <p> followers </p>
-          <p><b>{user && user.followingCount}</b></p>
+          {/* <p><b>{user && user.followingCount}</b></p> */}
           <p> following </p>
         </div>
         <button onClick={isCurrentUser ? editProfile : (isFollow ? unfollowUser : followUser)}>
@@ -122,7 +122,7 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, 
         </button>
       </div>
       <div id="descriptionBox">
-        {user && user.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))}
+        {/* {user && user.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))} */}
       </div>
 
       {/* Row 4: Posts */}
@@ -229,8 +229,9 @@ function Profile(){
     });
     if (response.status === 200) {
       const resdata = await response.json();
+      console.log(resdata.user);
       setProfileUser(resdata.user);
-      if (userID === currentUser || resdata.user.privacy === "public" || resdata.isFollowing === true) {
+      if (userID == currentUser || resdata.user.privacy == "public" || resdata.isFollowing == true) {
         setAccess(true);
       }
       if (access) {
@@ -427,7 +428,7 @@ function Profile(){
         {loading ? (
               <div>Loading...</div>
             ) : (
-              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post}  changeLike={changeLike} loading2={loading2}/>
+              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post}  changeLike={changeLike} loading2={loading2} />
             )}
         </div>
       </div>
