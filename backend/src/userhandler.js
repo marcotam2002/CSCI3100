@@ -594,14 +594,14 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to get followers
-  async getFollowers() {
+  async getFollowers(userID) {
     /*
       * Retrieve the list of users that are following the user
     */
     try {
         const client = await pool.connect();
         const queryText = 'SELECT followerID FROM relationships WHERE followingID = $1';
-        const values = [this.userID];
+        const values = [userID];
         const result = await client.query(queryText, values);
         client.release();
 
@@ -613,14 +613,14 @@ class UserHandler extends AccountHandler {
   }
 
   // Method to get followings
-  async getFollowing() {
+  async getFollowing(userID) {
     /*
       * Retrieve the list of users that the user is following
     */
     try {
         const client = await pool.connect();
         const queryText = 'SELECT followingID FROM relationships WHERE followerID = $1';
-        const values = [this.userID];
+        const values = [userID];
         const result = await client.query(queryText, values);
         client.release();
 
