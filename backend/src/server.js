@@ -494,7 +494,7 @@ app.post("/api/user/rejectFollowRequest", async(req,res)=>{
     }
 })
 
-app.get("/api/user/getRecommendedUsers", async(req, res)=>{
+app.post("/api/user/getRecommendedUsers", async(req, res)=>{
     console.log("User recommendation request received")
     const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getRecommendedUsers();
@@ -511,7 +511,7 @@ app.get("/api/user/getRecommendedUsers", async(req, res)=>{
 
 app.get("api/user/getRecentPopularPosts", async(req, res)=>{
     console.log("Recent Popular Post request received")
-    const userHandler=new UserHandler(req.body.userID);
+    const userHandler=new UserHandler();
     const result = await userHandler.getRecentPopularPosts();
     if(result.success){
         console.log(result);
@@ -524,7 +524,7 @@ app.get("api/user/getRecentPopularPosts", async(req, res)=>{
     }
 })
 
-app.get("/api/user/getRecommendedPosts", async(req, res)=>{
+app.post("/api/user/getRecommendedPosts", async(req, res)=>{
     console.log("Post recommendation request received")
     const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getRecommendedPosts();
@@ -539,7 +539,7 @@ app.get("/api/user/getRecommendedPosts", async(req, res)=>{
     }
 })
 
-app.get("api/user/getFollowingPosts", async(req, res)=>{
+app.post("api/user/getFollowingPosts", async(req, res)=>{
     console.log("Following posts request received")
     const userHandler=new UserHandler(req.body.userID);
     const result = await userHandler.getFollowingPosts();
@@ -556,8 +556,8 @@ app.get("api/user/getFollowingPosts", async(req, res)=>{
 
 app.post("api/user/getUser", async(req,res)=>{
     console.log("Get User request received")
-    const userHandler=new UserHandler(req.body.userID);
-    const targetuserProfile = await userHandler.viewProfile(req.body.targetuserID);
+    const userHandler=new UserHandler(currentUser);
+    const targetuserProfile = await userHandler.viewProfile(req.body.userID);
     if(targetuserProfile.success){
         console.log(result);
         delete userHandler;
