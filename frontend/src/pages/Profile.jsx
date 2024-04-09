@@ -94,7 +94,7 @@ function ProfilePostComponent({ posts, changeLike, loading2 }) {
   );
 }
 
-function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, isFollow, loading2, unfollowUser }) {
+function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, isFollow, loading2, unfollowUser, followUser }) {
 
 
   const editProfile = () => {
@@ -103,10 +103,6 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, 
     console.log("Edit Profile function placeholder");
   };
 
-  const followUser = () => {
-    // For debugging.
-    console.log("Follow User function placeholder");
-  };
   return (
     <div id="profileBox">
       <div id="profileHeader">
@@ -229,7 +225,7 @@ function Profile(){
     });
     if (response.status === 200) {
       const resdata = await response.json();
-      console.log(resdata.user);
+      // console.log(resdata.user);
       setProfileUser(resdata.user);
       if (userID == currentUser || resdata.user.privacy == "public" || resdata.isFollowing == true) {
         setAccess(true);
@@ -354,12 +350,56 @@ function Profile(){
       setLoading2(true);
       getSinglePost(postID);
       replacePost(post, singlePost);
-      console.log("successful update")
+      console.log("successful update");
     } else {
       // failed update
-      console.log("failed to update")
+      console.log("failed to update");
     }
   };
+
+  const followUser = async () => {
+    const data = {
+      targetUserID: userID,
+      currentUserID: currentUser
+    };
+    const response = await fetch (`${API_BASE_URL}/api/user/followuser`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      console.log(resdata);
+      console.log("Follow user request sent.");
+    } else {
+      const resdata = await response.json();
+      console.log("System Error in sending follow user request");
+    }
+  }
+
+  const unFollowUser = async () => {
+    const data = {
+      targetUserID: userID,
+      currentUserID: currentUser
+    };
+    const response = await fetch (`${API_BASE_URL}/api/user/unfollowuser`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      console.log(resdata);
+      console.log("Follow user request sent.");
+    } else {
+      const resdata = await response.json();
+      console.log("System Error in sending follow user request");
+    }
+  }
 
   return (
     <div>
@@ -428,7 +468,7 @@ function Profile(){
         {loading ? (
               <div>Loading...</div>
             ) : (
-              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post}  changeLike={changeLike} loading2={loading2} />
+              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post}  changeLike={changeLike} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} />
             )}
         </div>
       </div>
