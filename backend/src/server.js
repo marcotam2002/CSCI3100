@@ -143,59 +143,43 @@ app.put("/api/post/changelikepost", async(req,res)=>{
 
 app.post("/api/search", async(req,res)=>{
     console.log("Search request received")
-    const userHandler = new UserHandler()
-    if(req.body.searchType == "user"){
-        const result = await userHandler.searchUser(req.body.keyword);
+    const userHandler = new UserHandler();
+    if(req.body.searchType == "username"){
+        const result = await userHandler.searchUser(req.body.searchText);
         if(result.success){
             console.log("Returning User Search Result");
-            if(result.users.length==0){
-                return res.status(200).send("No User Found")
-            }
-            else{
-                var userlist=[];
-                for(const userID of result.users){
-                    const response = await userHandler.viewProfile(userID)
-                    userlist.push({username: response[0], description: response[1]})
-                }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
-                return res.status(200).send(userlist);
-            }
+            return res.status(200).send(result.users);
         }
         else return res.status(404).send({message: result.message});
     }
     if(req.body.searchType == "tag"){
-        const result = await userHandler.searchByMessageTags(req.body.keyword);
+        const result = await userHandler.searchByMessageTags(req.body.searchText);
         if(result.success){
             
             console.log("Returning MessageTags search Result");
-            if(result.postIDs.length==0){
-                return res.status(200).send("No Post Found")
-            }
-            else{
-                var postlist=[];
+            var postlist=[];
+            if(result.postIDs.length!=0){
                 for(const postID of result.postIDs){
                     const response = await userHandler.getPost(postID)
-                    postlist.push([response])
+                    postlist.push(response)
                 }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
-                return res.status(200).send(postlist);
             }
+            return res.status(200).send(postlist);
         }
         else return res.status(404).send({message: result.message});
     }
     if(req.body.searchType == "general"){
-        const result = await userHandler.generalSearch(req.body.keyword);
+        const result = await userHandler.generalSearch(req.body.searchText);
         if(result.success){
             console.log("Returning general search Result");
-            if(result.postIDs.length==0){
-                return res.status(200).send("No Post Found")
-            }
-            else{
-                var postlist=[];
+            var postlist=[];
+            if(result.postIDs.length!=0){
                 for(const postID of result.postIDs){
                     const response = await userHandler.getPost(postID)
-                    postlist.push([response])
+                    postlist.push(response)
                 }  //Attention!!!!!!!!!!!!!!!!!  Check the viewProfile function for return value check.
-                return res.status(200).send(postlist);
             }
+            return res.status(200).send(postlist);
         }
         else return res.status(404).send({message: result.message});
     }
