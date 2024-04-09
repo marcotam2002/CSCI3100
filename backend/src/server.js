@@ -573,7 +573,7 @@ app.get("api/user/getFollowingPosts", async(req, res)=>{
 app.post("api/user/getUser", async(req,res)=>{
     console.log("Get User request received")
     const userHandler=new UserHandler(req.body.userID);
-    const targetuserProfile = await viewProfile(req.body.targetuserID);
+    const targetuserProfile = await userHandler.viewProfile(req.body.targetuserID);
     if(targetuserProfile.success){
         console.log(result);
         delete userHandler;
