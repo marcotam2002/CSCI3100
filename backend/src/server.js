@@ -405,6 +405,7 @@ app.post("/api/user/followuser", async(req, res)=>{
     const userHandler=new UserHandler(req.body.currentUserID);
     const result = await userHandler.followUser(req.body.targetUserID);
     if(result.success){
+        console.log("Follow success");
         delete userHandler;
         return res.status(200).send();
     }
