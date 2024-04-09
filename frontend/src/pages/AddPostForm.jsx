@@ -20,6 +20,7 @@ export default function AddPostForm({ closeFunc }) {
   const [fileURL, setFileURL] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [fileType, setFileType] = useState("");
+  var preview = document.querySelector('#preview');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -62,17 +63,24 @@ export default function AddPostForm({ closeFunc }) {
   }
 
   const handleFileUpload = (event) => {
+    if(preview.hasChildNodes()){
+      preview.removeChild(preview.children[0])
+    }
     const file = event.target.files[0];
 
     if (!file) return;
 
     const fileName = file.name;
     const fileType = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+    
 
     // for debugging
     // console.log(fileName);
     // console.log(fileType);
     const filURL = URL.createObjectURL(file);
+    var newimg = document.createElement('img');
+    newimg.src = filURL
+    preview.appendChild(newimg);
     // console.log(filURL);
     setFileType(fileType);
     setFileURL(filURL);
@@ -91,6 +99,7 @@ export default function AddPostForm({ closeFunc }) {
         </div>
         <div className="addpostbutton">
           <label htmlFor="fileUpload">
+            <div id = "preview"></div>
             <input type="file" id="fileUpload" accept=".jpg,.png,.mp4" onChange={handleFileUpload}/>
             <img src={uploadIcon} alt="Upload Photo/Video"/>
           </label>
