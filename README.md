@@ -50,7 +50,7 @@ By following these instructions and restoring the 'default.sql' file, you will s
 Please first check if you have the necessary dependencies.
 
 ```
-npm install pg vite express
+npm install pg pg-pool vite express react dotenv body-parser cors
 ```
 
 **Activate server:** 
