@@ -865,10 +865,11 @@ class UserHandler extends AccountHandler {
     */
     try {
       const client = await pool.connect();
-      const queryText = 'INSERT INTO messages (senderID, receiverID, content) VALUES ($1, $2, $3)';
+      const queryText = 'INSERT INTO messages (senderid, receiverid, content) VALUES ($1, $2, $3)';
       const values = [this.userID, receiverID, message];
       await client.query(queryText, values);
       client.release();
+      
       return { success: true, message: 'Message sent successfully' };
     } catch (error) {
       console.error('Error sending message:', error);

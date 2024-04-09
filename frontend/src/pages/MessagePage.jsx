@@ -11,7 +11,7 @@
 import "./format.css";
 import "./MessagePage.css";
 import { Header, SideBarButton, CheckNotification } from "./components";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
 import searchIcon from "../assets/search.svg";
@@ -23,6 +23,7 @@ import sendIcon from "../assets/send.svg";
 import AddPostForm from "./AddPostForm";
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 /* for testing */
 const testFollowingUsers = [
@@ -43,7 +44,7 @@ const testFollowingUsers = [
   { username: "Oscar", userid: 15 },
 ];
 
-function MessageBox({ user, followingUsers }) {
+function MessageBox({ userID, followingUsers }) {
   const [currTarget, setCurrTarget] = useState(null);
   const [message, setMessage] = useState("");
   const time = new Date().toLocaleTimeString();
@@ -53,12 +54,25 @@ function MessageBox({ user, followingUsers }) {
   const handleInput = (event) => {
     setMessage(event.target.value);
   };
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (message && currTarget) {
-      alert(`You should be able to send \n"${message} sent at ${time}"\n to ${currTarget.username}.`);
+        const data = { userID: userID, targetUserID: currTarget.userID, message: message};
+        const response = await fetch(`${API_BASE_URL}/api/user/sendMessage`, {
+          method: "PUT",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (response.status === 200) {
+          console.log("message sent");
+        } else {
+          console.log("ERROR");
+        }
       setMessage("");
     }
   };
+  const receiveMessage = async () => {
+  
+  }
   const handleKeyPress = (event) => {
     if (event.key == "Enter") {
       sendMessage();
@@ -72,9 +86,9 @@ function MessageBox({ user, followingUsers }) {
             id="usernameBox"
             key={followingUser.userid}
             onClick={() => setTarget(followingUser)}
-            className={`${currTarget == followingUser ? "selected" : ""} ${followingUser == followingUsers[followingUsers.length - 1]
-                ? "last"
-                : ""
+            className={`${currTarget == followingUser ? "selected" : ""} ${followingUser == followingUsers[followingUsers.length - 1] && followingUsers.length > 6
+              ? "last"
+              : ""
               }`}
           >
             <h6>{followingUser.username}</h6>
@@ -116,7 +130,35 @@ function Message() {
     setState(false);
   };
   const user = getCookie("username");
-
+  const userID = getCookie("userID");
+  const [userList, setUserList] = useState([]);
+  const getFollowingUsers = async () => {
+    const followingUsers = [];
+    const response = await fetch(`${API_BASE_URL}/api/user/getFollowingUser`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userID: userID })
+    });
+    if (response.status === 200) {
+      const data = await response.json();
+      const followingUsersID = data.map(user => user.followingid);
+      for (let i = 0; i < followingUsersID.length; i++) {
+        const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userID: followingUsersID[i] })
+        });
+        if (response.status === 200) {
+          const followingUser = await response.json();
+          followingUsers.push({ userID: followingUsersID[i], username: followingUser.username });
+        }
+        else {
+          console.log("Error in getting user data");
+        }
+      }
+    }
+    setUserList(followingUsers);
+  }
   const [notificationState, setNotificationState] = useState(false);
   const updateNotificationState = async () => {
     const result = await CheckNotification();
@@ -124,17 +166,17 @@ function Message() {
   };
   useEffect(() => {
     updateNotificationState();
+    getFollowingUsers();
     const interval = setInterval(() => {
       updateNotificationState();
     }, 5000);
     return () => clearInterval(interval);
   }, []);
-
   return (
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
-            <AddPostForm closeFunc={closeAddPost}/>
+          <AddPostForm closeFunc={closeAddPost} />
         </div>
       </div>
 
@@ -185,7 +227,7 @@ function Message() {
           />
         </div>
         <div id="main">
-          <MessageBox user={user} followingUsers={testFollowingUsers} />
+          <MessageBox userID={userID} followingUsers={userList} />
         </div>
       </div>
     </div>
