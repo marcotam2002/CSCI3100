@@ -9,7 +9,7 @@
 
 import "./format.css";
 import "./Profile.css";
-import { Header, SideBarButton, CheckNotification } from "./components";
+import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"
 import homeIcon from "../assets/home.svg";
@@ -267,15 +267,21 @@ function Profile(){
   }, []);
 
   const [notificationState, setNotificationState] = useState(false);
-  const updateNotificationState = async () => {
+  const [unreadMessages, setUnreadMessages] = useState(false);
+
+  const updateState = async () => {
     const result = await CheckNotification();
     setNotificationState(result);
+    const result2 = await CheckUnreadMessages();
+    setUnreadMessages(result2);
   };
+  
   useEffect(() => {
-    updateNotificationState();
+    updateState();
     const interval = setInterval(() => {
-      updateNotificationState();
-    }, 5000);
+      updateState();
+      console.log("unread messages", unreadMessages);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -413,7 +419,7 @@ function Profile(){
           <SideBarButton
             image={messageIcon}
             name={"Message"}
-            color={"black"}
+            color={unreadMessages ? "red" : "black"}
             func={() => navigate('/message')}
           />
           <SideBarButton

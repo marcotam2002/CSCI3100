@@ -940,6 +940,24 @@ class UserHandler extends AccountHandler {
     }
   }
 
+  async GetUnreadMessages() {
+    /*
+      * Retrieve unread messages sender id for the user
+    */
+    try {
+      const client = await pool.connect();
+      const queryText = 'SELECT DISTINCT senderID FROM messages WHERE receiverID = $1 AND read = false';
+      const values = [this.userID];
+      const result = await client.query(queryText, values);
+      client.release();
+
+      return { success: true, message: 'Unread messages retrieved successfully', unreadMessages: result.rows };
+
+    } catch (error) {
+      console.error('Error retrieving unread messages:', error);
+      return { success: false, message: 'Failed to retrieve unread messages senderID' };
+    }
+  }
   // Method to send a message
   async sendMessage(receiverID, message) {
     /*

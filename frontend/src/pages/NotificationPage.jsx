@@ -9,7 +9,7 @@
 
 import "./format.css";
 import "./NotificationPage.css";
-import { Header, SideBarButton } from "./components";
+import { Header, SideBarButton, CheckUnreadMessages } from "./components";
 import React, { useState, useEffect } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
@@ -129,15 +129,24 @@ function NotificationPage() {
         }
         getNotification();
     }
+    const [unreadMessages, setUnreadMessages] = useState(false);
 
+    const updateState = async () => {
+        const result = await CheckUnreadMessages();
+        setUnreadMessages(result);
+    };
+    
     useEffect(() => {
         getNotification();
+        updateState();
         const interval = setInterval(() => {
             getNotification();
-        }, 5000);
+            updateState();
+        }, 3000);
         return () => clearInterval(interval);
       }, []);
-      
+    
+    
     return (
         <div>
             <div className={`popupBox ${state ? "show" : ""}`} onClick={closeAddPost}>
@@ -170,7 +179,7 @@ function NotificationPage() {
                     <SideBarButton
                         image={messageIcon}
                         name={"Message"}
-                        color={"black"}
+                        color={unreadMessages ? "red" : "black"}
                         func={() => navigate('/message')}
                     />
                     <SideBarButton

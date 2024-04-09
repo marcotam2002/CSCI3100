@@ -9,7 +9,7 @@
 
 import "./format.css";
 import "./SearchPage.css";
-import { Header, SideBarButton, CheckNotification } from "./components";
+import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import React, { useState, useEffect } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
@@ -117,15 +117,21 @@ function SearchPage() {
   const user = getCookie("username");
 
   const [notificationState, setNotificationState] = useState(false);
-  const updateNotificationState = async () => {
+  const [unreadMessages, setUnreadMessages] = useState(false);
+
+  const updateState = async () => {
     const result = await CheckNotification();
     setNotificationState(result);
+    const result2 = await CheckUnreadMessages();
+    setUnreadMessages(result2);
   };
+  
   useEffect(() => {
-    updateNotificationState();
+    updateState();
     const interval = setInterval(() => {
-      updateNotificationState();
-    }, 5000);
+      updateState();
+      console.log("unread messages", unreadMessages);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -161,7 +167,7 @@ function SearchPage() {
           <SideBarButton
             image={messageIcon}
             name={"Message"}
-            color={"black"}
+            color={unreadMessages ? "red" : "black"}
             func={() => navigate('/message')}
           />
           <SideBarButton

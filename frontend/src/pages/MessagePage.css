@@ -39,6 +39,10 @@
   #usernameBox.last {
     border-bottom: none;
   }
+
+  #usernameBox.unread {
+    color: red;
+  }
   
   #usernameBox h6,
   #usernameBox p {

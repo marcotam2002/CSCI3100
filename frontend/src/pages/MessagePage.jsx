@@ -29,6 +29,7 @@ function MessageBox({ userID, followingUsers }) {
   const [currTarget, setCurrTarget] = useState(null);
   const [message, setMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
+  const [unreadUsers, setUnreadUsers] = useState([]);
 
   const setTarget = (user) => {
     setCurrTarget(user);
@@ -79,20 +80,42 @@ function MessageBox({ userID, followingUsers }) {
     }
   };
 
+  const getUnreadMessages = async () => {
+    const data = { userID: userID };
+    const response = await fetch(`${API_BASE_URL}/api/user/getUnreadMessages`, {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const fetchedMessages = await response.json();
+      setUnreadUsers(fetchedMessages.map((message) => message.senderid));
+    }
+
+  }
+
   useEffect(() => {
-    if(currTarget){
+    if (currTarget) {
       getMessage(currTarget);
     }
   }, [currTarget, message]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if(currTarget){
+      if (currTarget) {
         getMessage(currTarget);
       }
     }, 1000);
     return () => clearInterval(interval);
   }, [currTarget]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getUnreadMessages();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div id="messageInterface">
       <div id="userSideBar">
@@ -101,10 +124,9 @@ function MessageBox({ userID, followingUsers }) {
             id="usernameBox"
             key={followingUser.userID}
             onClick={() => setTarget(followingUser)}
-            className={`${currTarget == followingUser ? "selected" : ""} ${followingUser == followingUsers[followingUsers.length - 1] && followingUsers.length > 7
-              ? "last"
-              : ""
-              }`}
+            className={`${currTarget == followingUser ? "selected" : ""} 
+                        ${followingUser == followingUsers[followingUsers.length - 1] && followingUsers.length > 7 ? "last" : ""}
+                        ${unreadUsers.includes(followingUser.userID) ? "unread" : ""}`}
           >
             <h6>{followingUser.username}</h6>
           </div>
@@ -117,7 +139,7 @@ function MessageBox({ userID, followingUsers }) {
         <div id="message">
           {messageList.map((message) => (
             <div key={message.messageid} className={message.senderid == userID ? "send" : "receive"}>
-            <p>{message.content}</p>
+              <p>{message.content}</p>
             </div>
           ))}
         </div>
@@ -190,11 +212,11 @@ function Message() {
   };
 
   useEffect(() => {
-    //updateNotificationState();
+    updateNotificationState();
     getMutualFollowing();
     const interval = setInterval(() => {
-      //updateNotificationState();
-    }, 5000);
+      updateNotificationState();
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 

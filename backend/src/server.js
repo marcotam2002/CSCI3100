@@ -262,7 +262,31 @@ app.post("/api/user/getMutualFollowing", async(req, res)=>{
         console.log("mutual following user fetched");
         return res.status(200).send(result.mutualFollowing);
     }
-    else return res.status(404).send({message:"Error fetching user"});
+    else return res.status(404).send({message:"Error fetching mutual user"});
+})
+
+app.post("/api/user/getUnreadMessages", async(req, res)=>{
+    console.log("get unread messages request received")
+    const userHandler = new UserHandler(req.body.userID);
+    const result = await userHandler.GetUnreadMessages();
+    delete userHandler;
+    if(result){
+        console.log("unread messages fetched")
+        return res.status(200).send(result.unreadMessages);
+    }
+    else return res.status(404).send({message:"Error fetching unread messages"});
+})
+
+app.post("/api/user/checkUnreadMessages", async(req, res)=>{
+    console.log("check unread messages request received")
+    const userHandler = new UserHandler(req.body.userID);
+    const result = await userHandler.CheckUnreadMessages();
+    delete userHandler;
+    if(result){
+        console.log("unread messages situation fetched")
+        return res.status(200).send(result.unread);
+    }
+    else return res.status(404).send({message:"Error fetching unread messages situation"});
 })
 
 app.get("/api/admin/getAllUser", async(req, res)=>{

@@ -9,7 +9,7 @@
 // to do : update the getPost function (should only run in the outer layer, then pass as arg to the component layer.)
 
 
-import { Header, SideBarButton, CheckNotification } from "./components";
+import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import "./format.css";
 import React, { useEffect, useState } from "react";
 import homeIcon from "../assets/home.svg";
@@ -239,15 +239,21 @@ function SinglePostPage() {
   };
 
   const [notificationState, setNotificationState] = useState(false);
-  const updateNotificationState = async () => {
+  const [unreadMessages, setUnreadMessages] = useState(false);
+
+  const updateState = async () => {
     const result = await CheckNotification();
     setNotificationState(result);
+    const result2 = await CheckUnreadMessages();
+    setUnreadMessages(result2);
   };
+  
   useEffect(() => {
-    updateNotificationState();
+    updateState();
     const interval = setInterval(() => {
-      updateNotificationState();
-    }, 5000);
+      updateState();
+      console.log("unread messages", unreadMessages);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -283,7 +289,7 @@ function SinglePostPage() {
           <SideBarButton
             image={messageIcon}
             name={"Message"}
-            color={"black"}
+            color={unreadMessages ? "red" : "black"}
             func={() => navigate('/message')}
           />
           <SideBarButton
