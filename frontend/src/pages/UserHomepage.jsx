@@ -32,11 +32,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
-function UserHomepageComponent({ posts, changeLike }) {
-
-  const userID = getCookie("userID");
-
-  
+function UserHomepageComponent({ posts, changeLike }) {  
 
 
   const renderPost = (post) => {
