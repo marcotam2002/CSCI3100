@@ -6,6 +6,7 @@
  * Leung Ka Lun 1155157403
  * O Ching Lam 1155159131
  */
+// to do : update the getPost function (should only run in the outer layer, then pass as arg to the component layer.)
 
 
 import { Header, SideBarButton, CheckNotification } from "./components";
@@ -29,66 +30,6 @@ import './format.css';
 import './Post.css';
 
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
-
-
-const testPost = [
-  {
-    postID: 1,
-    username: "Billy",
-    time: "8 hours",
-    description:
-      "The sun rose gracefully over the horizon, casting golden hues across the sky.\nBirds chirped joyfully, welcoming the new day with their melodic songs.\nA gentle breeze rustled the leaves of the trees, carrying with it the scent of fresh blooms.\nNature's symphony echoed through the tranquil morning air.",
-    liked: true,
-    likes: 50,
-    commentnum: 2,
-    comments: [
-      { username: "Alice", text: "Beautiful description!" },
-      { username: "Bob", text: "I love mornings like these." }
-    ]
-  },
-  {
-    postID: 2,
-    username: "Tim",
-    time: "17:16",
-    description:
-      "I want to post nothing here.\n Please go.",
-    liked: false,
-    likes: 1,
-    commentnum: 3,
-    comments: [
-      { username: "Admin", text: "So rude!" },
-      { username: "Hei", text: "Aiiii......" },
-      { username: "Abdon", text: "Read." },
-    ]
-  },
-  {
-    postID: 3,
-    username: "Billy",
-    time: "8 hours",
-    description:
-      "The sun rose gracefully over the horizon, casting golden hues across the sky.\nBirds chirped joyfully, welcoming the new day with their melodic songs.\nA gentle breeze rustled the leaves of the trees, carrying with it the scent of fresh blooms.\nNature's symphony echoed through the tranquil morning air.",
-    liked: true,
-    likes: 50,
-    commentnum: 2,
-    comments: [
-      { username: "Alice", text: "Beautiful description!" },
-      { username: "Bob", text: "I love mornings like these." }
-    ]
-  },
-  {
-    postID: 4,
-    username: "Tim",
-    time: "17:16",
-    description:
-      "I want to post nothing here.\n Please go.",
-    liked: false,
-    likes: 1,
-    commentnum: 1,
-    comments: [
-      { username: "Admin", text: "So rude!" },
-    ]
-  },
-];
 
 
 function SinglePostFrame({ user, posts }) {
@@ -182,36 +123,46 @@ function SinglePostFrame({ user, posts }) {
     }
   };
 
-  const renderPost = (post) => {
+  // const renderPost = (post) => {
 
     return (
-      <div className="single-post" key={post.postID}>
+      <div className="single-post" key={singlePost.postid}>
         <div className="post-header">
-          <span className="post-username">{post.username}</span>
-          <span className="post-time">{post.time}</span>
+          <span className="post-username">{singlePost.username}</span>
+          <span className="post-time">{singlePost.time}</span>
         </div>
         <div className="post-description">
-          {post.description.split('\n').map((line, index) => (
+          {singlePost.content.split('\n').map((line, index) => (
             <p key={index}>{line}</p>
           ))}
         </div>
-        <div className="interaction-buttons">
-          <button className="like-button" onClick={(event) => ChangeLike(post.postID, event)}>
-            {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
-          </button>
-          <p>{post.likes}</p>
-          <img src={commentIcon} alt="comment" /><p>{post.commentnum}</p>
+        <div className="post-media">
+          {singlePost.mediauri !== "" && singlePost.mediauri.endsWith('.mp4') ? (
+            <video controls>
+              <source src={singlePost.mediauri} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img src={singlePost.mediauri} />
+          )}
         </div>
-        <div className="comments">
+        <div className="interaction-buttons">
+          <button className="like-button" onClick={(event) => ChangeLike(singlePost.postid, event)}>
+            {singlePost.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
+          </button>
+          <p>{singlePost.likes}</p>
+          <img src={commentIcon} alt="comment" /><p>{singlePost.commentnum}</p>
+        </div>
+        {/* <div className="comments">
           {post.comments.map((comment, index) => (
             <div className="comment" key={index}>
               <span className="comment-username"><b>{comment.username}</b></span>
               <span className="comment-text">{comment.text}</span>
             </div>
           ))}
-        </div>
+        </div> */}
         <div className="addcomments">
-          <form onSubmit={(event) => addComment(post.postID, event)}>
+          <form onSubmit={(event) => addComment(singlePost.postid, event)}>
             <input
               type="text"
               placeholder="Leave your comments here"
@@ -224,19 +175,20 @@ function SinglePostFrame({ user, posts }) {
         </div>
       </div>
     );
-  };
+  // };
 
-  return (
-    <div className="single-homepage">
-      {singlePost.map((post) => renderPost(post))}
-    </div>
-  );
+  // return (
+  //   <div className="single-homepage">
+  //     {posts.map((post) => renderPost(post))}
+  //   </div>
+  // );
 }
 
 function SinglePostPage() {
   const [state, setState] = useState(false);
   const { postID } = useParams();
-  const [post, setPost] = useState("");
+  const [post, setPost] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const user = getCookie("username");
 
@@ -254,15 +206,49 @@ function SinglePostPage() {
           },
           body: JSON.stringify(data)
         });
+        console.log(response);
+
         if (response.status === 200) {
           const resdata = await response.json();
-          setPost(resdata.post);
+          console.log(resdata.result);
+          // console.log("breakpoint 1");
+          const singlePost = resdata.result;
+          // console.log("breakpoint 2");
+          setPost(singlePost);
+          setLoading(false);
+          // try{
+          //   const data2 = {
+          //     userID: post.authorid,
+          //   };
+          //   console.log("data2 is" , data2);
+
+          //   const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+          //     method: 'POST',
+          //     headers: {
+          //       'Content-Type': 'application/json'
+          //     },
+          //     body: JSON.stringify(data2)
+          //   })  ;
+          //   if (response2.status === 200) {
+          //     const userData = await response2.text();
+          //     const updatedPost = {...singlePost, username: userData};
+          //     setPost(updatedPost);
+          //     setLoading(false);
+          //   } else {
+          //     console.log("System Error in getting username.");
+          //     return singlePost;
+          //   }
+          // } catch (error) {
+          //   console.log("Error in fetching username:", error);
+          //   setPost(singlePost);
+          //   setLoading(false);
+          // }
         } else {
             const resdata = await response.json()
             console.log(resdata);
             console.log("System Error");
         }
-      } catch (error) {
+      } catch (error) { 
         console.log("Error in getting Single Post.");
       } 
     };
@@ -351,7 +337,11 @@ function SinglePostPage() {
           />
         </div>
         <div id="main">
-          <SinglePostFrame user={user} posts={post} />
+        {loading ? (
+              <div>Loading...</div>
+            ) : (
+              <SinglePostFrame user={user} posts={post} />
+            )}
         </div>
       </div>
     </div>

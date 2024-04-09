@@ -94,10 +94,9 @@ function UserHomepageComponent({ posts }) {
 
 
   const renderPost = (post) => {
-    const [username, setUsername] = useState("");
 
     return (
-      <div className="post-container " key={post.postID}>
+      <div className="post-container " key={post.postid}>
         <div className="post-header">
           <span className="post-username">{post.username}</span>
           <span className="post-time">{post.time}</span>
@@ -189,7 +188,6 @@ function UserHomepage() {
         // console.log(response);
         if (response.status === 200) {
           const resdata = await response.json();
-          console.log(resdata);
 
           const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
             const data2= {
@@ -198,10 +196,10 @@ function UserHomepage() {
 
             const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
               method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data2)
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data2)
             });
             if (response2.status === 200) {
               const userData = await response2.text();
@@ -211,7 +209,7 @@ function UserHomepage() {
               return post;
             }
           }))
-          console.log("updated Posts are" + updatedPosts);
+          // console.log("updated Posts are" , updatedPosts);
           setPost(updatedPosts);
           setLoading(false);
         } else {
