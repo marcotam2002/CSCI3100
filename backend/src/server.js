@@ -130,7 +130,7 @@ app.put("/api/post/commentadd", async(req,res)=>{
 })
 
 
-app.put("/api/post/likepost", async(req,res)=>{
+app.put("/api/post/changelikepost", async(req,res)=>{
     console.log("Like Post request received")
     const userHandler=new UserHandler();
     const result = await userHandler.commentPost(req.body.userID, req.body.postID);    
@@ -332,16 +332,6 @@ app.put("/api/post/commentadd", async(req,res)=>{
     else return res.status(404).send({message: result.message});
 })
 
-app.put("/api/post/likepost", async(req,res)=>{
-    console.log("Like Post request received")
-    const userHandler=new UserHandler();
-    const result = await userHandler.commentPost(req.body.userID, req.body.postID);    
-    if(result.message=='User has already liked the post'){
-        console.log("User has already liked the post");
-        return res.status(200).send();
-    }
-    else return res.status(404).send({message: result.message});
-})
 
 app.post("/getHomepagePost", async(req, res)=>{
     console.log("Get User Own Post request received")

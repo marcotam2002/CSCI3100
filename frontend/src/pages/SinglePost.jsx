@@ -32,7 +32,7 @@ import './Post.css';
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 
-function SinglePostFrame({ user, posts }) {
+function SinglePostFrame({ user, posts, ChangeLike }) {
 
   if (!posts) {
     return (
@@ -42,29 +42,6 @@ function SinglePostFrame({ user, posts }) {
 
   const [newcomment, setNewComment] = useState("");
   const [singlePost, setSinglePost] = useState(posts);
-  const userID = getCookie("userID");
-
-  const getSinglePost = async() => {
-    const data = {
-      postID: postID,
-    };
-
-    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      const resdata = await response.json();
-      setSinglePost(resdata.post);
-    } else {
-      const resdata = await response.json();
-      console.log(resdata);
-      console.log("System Error in getting Single Post");
-    }
-  };
 
   const addComment = async (postID, event) => {
     event.preventDefault();
@@ -96,32 +73,7 @@ function SinglePostFrame({ user, posts }) {
     }
   }
 
-  const ChangeLike = async (postID, event) => {
-    event.preventDefault();
-
-
-    // for fetch part
-    const data = {
-      postID: postID,
-      userID: userID,
-    };
-
-    const response = await fetch(`${API_BASE_URL}/post/likepost`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      // successful update
-      getSinglePost();
-      console.log("successful update")
-    } else {
-      // failed update
-      console.log("failed to update")
-    }
-  };
+  
 
   // const renderPost = (post) => {
 
@@ -147,7 +99,7 @@ function SinglePostFrame({ user, posts }) {
           )}
         </div>
         <div className="interaction-buttons">
-          <button className="like-button" onClick={(event) => ChangeLike(singlePost.postid, event)}>
+          <button className="like-button" onClick={(event) => ChangeLike(singlePost.liked, singlePost.postid, event)}>
             {singlePost.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
           </button>
           <p>{singlePost.likes}</p>
@@ -189,78 +141,95 @@ function SinglePostPage() {
   const { postID } = useParams();
   const [post, setPost] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [found, setFound] = useState(false);
 
   const user = getCookie("username");
+  const userID = getCookie("userID");
 
-  useEffect(() => {
-    const getSinglePost = async() => {
-      try{
-        const data = {
-          postID: postID,
-        };
-
-        const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-        console.log(response);
-
-        if (response.status === 200) {
-          const resdata = await response.json();
-          console.log(resdata.result);
-          // console.log("breakpoint 1");
-          const singlePost = resdata.result;
-          // console.log("breakpoint 2");
-          setPost(singlePost);
-          setLoading(false);
-          // try{
-          //   const data2 = {
-          //     userID: post.authorid,
-          //   };
-          //   console.log("data2 is" , data2);
-
-          //   const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-          //     method: 'POST',
-          //     headers: {
-          //       'Content-Type': 'application/json'
-          //     },
-          //     body: JSON.stringify(data2)
-          //   })  ;
-          //   if (response2.status === 200) {
-          //     const userData = await response2.text();
-          //     const updatedPost = {...singlePost, username: userData};
-          //     setPost(updatedPost);
-          //     setLoading(false);
-          //   } else {
-          //     console.log("System Error in getting username.");
-          //     return singlePost;
-          //   }
-          // } catch (error) {
-          //   console.log("Error in fetching username:", error);
-          //   setPost(singlePost);
-          //   setLoading(false);
-          // }
-        } else {
-            const resdata = await response.json()
-            console.log(resdata);
-            console.log("System Error");
-        }
-      } catch (error) { 
-        console.log("Error in getting Single Post.");
-      } 
+  const getSinglePost = async(postID) => {
+    const data = {
+      postID: postID,
     };
+    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      const singlePost = resdata.result;
 
-    getSinglePost();
+      const data2 ={
+        userID: singlePost.authorid,
+      };
+
+      const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data2)
+        });
+
+        if (response2.status === 200) {
+          const userData = await response2.text();
+          const updatedPost = {...singlePost, username: userData};
+          console.log(updatedPost);
+          setPost(updatedPost);
+          setFound(true);
+          setLoading(false);
+        } else {
+          console.log("System Error in getting username.");
+          return singlePost;
+          setFound(true);
+          setLoading(false);
+        }
+  } else {
+    console.log("System Error in getting Single Post.");
+    setFound(false);
+    setLoading(false);
+  }
+}
+  useEffect(() => {
+    getSinglePost(postID);
   }, []);
 
-  const navigate = useNavigate();
+  const changeLike = async (liked, postID, event) => {
+    event.preventDefault();
+    const [type,setType] = useState("");
+    if (liked){
+      setType("unlike");
+    } else {
+      setType("like");
+    }
 
-  // for debugging.
-  //   console.log(requiredpost);
-  //   console.log(post);
+    // for fetch part
+    const data = {
+      postID: postID,
+      userID: userID,
+      type: type
+    };
+
+    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      // successful update
+      getSinglePost(postID);
+      console.log("successful update")
+    } else {
+      // failed update
+      console.log("failed to update")
+    }
+  };
+
+  const navigate = useNavigate();
 
   const openAddPost = () => {
     setState(true);
@@ -340,7 +309,7 @@ function SinglePostPage() {
         {loading ? (
               <div>Loading...</div>
             ) : (
-              <SinglePostFrame user={user} posts={post} />
+              <> {found ? (<SinglePostFrame user={user} posts={post} ChangeLike={changeLike}  />) : <div>Post not found.</div>} </>
             )}
         </div>
       </div>
