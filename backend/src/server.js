@@ -558,9 +558,16 @@ app.post("/api/user/getUser", async(req,res)=>{
     console.log("Get User request received")
     const userHandler=new UserHandler(req.body.currentUserID);
     const targetuserProfile = await userHandler.viewProfile(req.body.targetUserID);
+    const followers = await userHandler.getFollowers(req.body.targetUserID);
+    const following = await userHandler.getFollowing(req.body.targetUserID);
+    console.log("number of followers: " + followers.followers);
     if(targetuserProfile.success){
         delete userHandler;
-        return res.status(200).send({user:targetuserProfile.targetUser});
+        return res.status(200).send({
+            user:targetuserProfile.targetUser, 
+            followersCount:followers.followers,
+            followingCount:following.following,
+        });
     }
     else {
         delete userHandler;

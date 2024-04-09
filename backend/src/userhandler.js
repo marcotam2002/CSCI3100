@@ -605,7 +605,7 @@ class UserHandler extends AccountHandler {
         const result = await client.query(queryText, values);
         client.release();
 
-        return { success: true, message: 'Followers retrieved successfully', followers: result.rows };
+        return { success: true, message: 'Followers retrieved successfully', followers: result.rows.length };
     } catch (error) {
         console.error('Error retrieving followers:', error);
         return { success: false, message: 'Failed to retrieve followers' };
@@ -624,7 +624,7 @@ class UserHandler extends AccountHandler {
         const result = await client.query(queryText, values);
         client.release();
 
-        return { success: true, message: 'Following retrieved successfully', following: result.rows };
+        return { success: true, message: 'Following retrieved successfully', following: result.rows.length };
     } catch (error) {
         console.error('Error retrieving following:', error);
         return { success: false, message: 'Failed to retrieve following' };
