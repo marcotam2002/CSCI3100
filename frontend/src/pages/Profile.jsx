@@ -92,7 +92,7 @@ function ProfilePostComponent({ posts, changeLike }) {
   );
 }
 
-function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike }) {
+function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, isFollow }) {
 
 
   const editProfile = () => {
@@ -115,8 +115,8 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike }
           <p><b>{user && user.followingCount}</b></p>
           <p> following </p>
         </div>
-        <button onClick={isCurrentUser ? editProfile : followUser}>
-          {isCurrentUser ? "Edit Profile" : "Follow"}
+        <button onClick={isCurrentUser ? editProfile : (isFollow ? unfollowUser : followUser)}>
+          {isCurrentUser ? "Edit Profile" : (isFollow ? "Unfollow" : "Follow")}
         </button>
       </div>
       <div id="descriptionBox">
@@ -172,7 +172,7 @@ function Profile(){
         userID: currentUser,
       };
 
-      const response = await fetch(`${API_BASE_URL}/getProfilePost`, {
+      const response = await fetch(`${API_BASE_URL}/getOwnPost`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -214,7 +214,8 @@ function Profile(){
 
   const getUser = async(userID) => {
     const data = {
-      userID: userID,
+      targetUserID: userID,
+      currentUserID: currentUser
     };
     const response = await fetch(`${API_BASE_URL}/api/getUser`, {
       method: 'POST',

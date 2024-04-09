@@ -149,19 +149,18 @@ class UserHandler extends AccountHandler {
             return { success: true, message: 'Target user profile retrieved successfully', targetUser };
         }
 
+        // Retrieve username, description, and privacy from the database
+        const queryText0 = 'SELECT username, description, privacy FROM users WHERE userID = $1';
+        const values0 = [targetUserID];
+        const result0 = await client.query(queryText, values);
+        const userProfile = result0.rows[0];
+        const username = userProfile.username;
+        const description = userProfile.description;
+        const privacy = userProfile.privacy;
+
         // If target user is private, check if the user is following the target user
         const isFollowing = await this.isFollowing(this.userID, targetUserID);
         if (isFollowing) {
-            
-          // Retrieve username, description, and privacy from the database
-          const queryText = 'SELECT username, description, privacy FROM users WHERE userID = $1';
-          const values = [targetUserID];
-          const result = await client.query(queryText, values);
-          const userProfile = result.rows[0];
-          const username = userProfile.username;
-          const description = userProfile.description;
-          const privacy = userProfile.privacy;
-
           // Retrieve posts from the database
           const queryText2 = 'SELECT * FROM posts WHERE authorID = $1';
           const values2 = [targetUserID];
@@ -173,16 +172,17 @@ class UserHandler extends AccountHandler {
           return {
             success: true,
             message: 'User profile retrieved successfully',
-            user: [username, description, posts, privacy]
+            user: [username, description, posts, privacy],
+            isFollowing: true
           };
 
         } else {
           client.release();
-          return { success: false, message: 'User is private' };
+          return { success: false, message: 'User is private', user : [username, description, privacy], isFollowing: false};
         }
     } catch (error) {
         console.error('Error retrieving user profile:', error);
-        return { success: false, message: 'Failed to retrieve user profile' };
+        return { success: false, message: 'Failed to retrieve user profile'};
     }
   }
 
@@ -287,7 +287,7 @@ class UserHandler extends AccountHandler {
 }
 
   //Method to check if a particular user has liked a particualr post
-  async hasLikedPost(userID, postID) {
+  async hasLikedPost(postID) {
     /*
       * Check if a user has liked a post
       * @param {string} userID - The ID of the user
@@ -296,7 +296,7 @@ class UserHandler extends AccountHandler {
     try {
         const client = await pool.connect();
         const queryText = 'SELECT * FROM likes WHERE contentType = $1 AND contentID = $2 AND userID = $3';
-        const values = ['post', postID, userID];
+        const values = ['post', postID, this.userID];
         const result = await client.query(queryText, values);
         client.release();
 
@@ -305,7 +305,7 @@ class UserHandler extends AccountHandler {
         } else {
             return { success: true, message: 'User has liked the post', liked: true};
         }
-        
+
     } catch (error) {
         console.error('Error checking if user has liked post:', error);
         return false;
