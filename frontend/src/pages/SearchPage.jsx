@@ -22,7 +22,7 @@ import AddPostForm from './AddPostForm';
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
-const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 function UserSearch() {
@@ -40,12 +40,17 @@ function UserSearch() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     const data = {
       searchType: searchType,
       searchText: searchText
     }
-
+    if(searchType == "tag"){
+      data.searchText = searchText.match(/#\w+/g);
+    }
+    if(data.searchText == null){
+      data.searchText = "";
+    }
     const response = await fetch(`${API_BASE_URL}/api/search`, {
       method: 'POST',
       headers: {
@@ -54,46 +59,45 @@ function UserSearch() {
       body: JSON.stringify(data)
     });
 
-    // console.log('Response:', response);
-
-    if (response.status === 200){
+    if (response.status === 200) {
       const resdata = await response.json();
-      setSearchResults(resdata); 
+      setSearchResults(resdata);
     } else {
       // system error
-      const resdata = await response.json()
+      const resdata = await response.json();
       console.log('Error:', resdata.message);
     }
   };
-
+  
   return (
     <div id="Search">
       <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={searchText}
-            onChange={handleSearchTextChange}
-            placeholder="Search..."
-          />
-          <label>
-            <select value={searchType} onChange={handleSearchTypeChange}>
-              <option value="general">general</option>
-              <option value="username">username</option>
-              <option value="tag">tag</option>
-            </select>
-          </label>
-          <button type="submit">Search!</button>
+        <input
+          type="text"
+          value={searchText}
+          onChange={handleSearchTextChange}
+          placeholder="Search..."
+        />
+        <label>
+          <select value={searchType} onChange={handleSearchTypeChange}>
+            <option value="general">general</option>
+            <option value="username">username</option>
+            <option value="tag">tag</option>
+          </select>
+        </label>
+        <button type="submit">Search!</button>
         <div>
         </div>
       </form>
-      <h5><b>{searchResults.length > 0 ? "Search result" : "No result found"}</b></h5>
+      <h5 style={{margin:"20px",marginLeft:"0px"}}><b>{searchResults.length > 0 ? "Search result" : "No result found"}</b></h5>
+      {searchResults.length > 0 ? <hr ></hr> : null}
       <div>
-        {searchResults.length > 0 ? 
-        searchType == "general" || searchType == "tag" ? searchResults.map((result) =>  <p key={result.postID}> {result.content} </p>) :
-        searchType == "username" ? searchResults.map((result) =>  <p key={result.userID}> {result.username} </p>) : null : null}
+        {searchResults.length > 0 ?
+          searchType == "general" || searchType == "tag" ? searchResults.map((result) => <p key={result.postID}> {result.content} </p>) :
+            searchType == "username" ? searchResults.map((result) => <p key={result.userID}> {result.username} </p>) : null : null}
       </div>
-  </div>
-    );
+    </div>
+  );
 }
 
 function SearchPage() {
@@ -117,7 +121,7 @@ function SearchPage() {
     const result2 = await CheckUnreadMessages();
     setUnreadMessages(result2);
   };
-  
+
   useEffect(() => {
     updateState();
     const interval = setInterval(() => {

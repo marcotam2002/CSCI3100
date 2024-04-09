@@ -1102,6 +1102,7 @@ class UserHandler extends AccountHandler {
           }
         }
       }
+  
 
       // Sort the resultSet by tag counts in descending order
       const sortedResult = [...resultSet.entries()].sort((a, b) => b[1] - a[1]);
