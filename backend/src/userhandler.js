@@ -1203,10 +1203,11 @@ class UserHandler extends AccountHandler {
           LIMIT 10
         `);
   
-        const postIDs = queryResult.rows.map(row => row.postid);
+        // const postIDs = queryResult.rows.map(row => row.postid);
+        const posts = queryResult.rows;
     
         client.release();
-        return { success: true, message: 'Recent popular posts retrieved successfully', postIDs };
+        return { success: true, message: 'Recent popular posts retrieved successfully', posts };
       } catch (error) {
         return { success: false, message: 'Failed to get recent popular posts' };
       }
@@ -1239,10 +1240,11 @@ class UserHandler extends AccountHandler {
           LIMIT 10
         `, [this.userID, followerIDs]);
         
-        const postIDs = queryResult2.rows.map(row => row.postid);
+        // const postIDs = queryResult2.rows.map(row => row.postid);
+        const posts = queryResult2.rows
     
         client.release();
-        return { success: true, message: 'Recommended posts retrieved successfully', postIDs };
+        return { success: true, message: 'Recommended posts retrieved successfully', posts };
       } catch (error) {
         return { success: false, message: 'Failed to get recommended posts' };
       }
@@ -1265,10 +1267,11 @@ class UserHandler extends AccountHandler {
           LIMIT 10
         `, [this.userID]);
   
-        const postIDs = queryResult.rows.map(row => row.postid);
+        // const postIDs = queryResult.rows.map(row => row.postid);
+        const posts = queryResult.rows;
     
         client.release();
-        return { success: true, message: 'Following posts retrieved successfully', postIDs };
+        return { success: true, message: 'Following posts retrieved successfully', posts };
       } catch (error) {
         return { success: false, message: 'Failed to get following posts' };
       }

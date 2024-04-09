@@ -116,53 +116,132 @@ function UserHomepage() {
   const user = getCookie("username");
   const userID = getCookie("userID");
 
+  const getFollowingPost = async () => {
+    const data = {
+      userID: userID,
+    };
+    const response = await fetch(`${API_BASE_URL}/api/user/getFollowingPosts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      const post1 = resdata.posts;
+      console.log("get following posts successful.");
+      return post1;
+    } else {
+      const resdata = await response.json();
+      console.log(resdata);
+      console.log("fail to get following posts.");
+      return [];
+    }
+  }
+
+  const getPopularPost = async () => {
+    const data = {
+      userID: userID,
+    };
+    const response = await fetch(`${API_BASE_URL}/api/user/getRecentPopularPosts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      const post1 = resdata.posts;
+      console.log("get recent popular posts successful.");
+      return post1;
+    } else {
+      const resdata = await response.json();
+      console.log(resdata);
+      console.log("fail to get recent popular posts.");
+      return [];
+    }
+  }
+
+  const getRecommendPosts = async () => {
+    const data = {
+      userID: userID,
+    };
+    const response = await fetch(`${API_BASE_URL}/api/user/getRecommendedPosts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      const post1 = resdata.posts;
+      console.log("get recommend posts successful.");
+      return post1;
+    } else {
+      const resdata = await response.json();
+      console.log(resdata);
+      console.log("fail to get recommend posts.");
+      const post1 = [];
+      return post1;
+    }
+  }
+
+
+  
+
   useEffect(() => {
     const getHomepagePost = async () => {
       try {
-        const data = {
-          userID: userID,
-        };
+        
+        let postlist=[];
+        console.log("Testpoint 1");
+        
+         getFollowingPost().then((post1) => {
+          postlist = [...postlist,...post1];
+          console.log("Testpoint 2");
+         });
+         console.log("Testpoint 3");
 
-        const response = await fetch(`${API_BASE_URL}/getHomepagePost`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-        // console.log(response);
-        if (response.status === 200) {
-          const resdata = await response.json();
+         getPopularPost().then((post2) => {
+          postlist = [...postlist,...post2];
+          console.log("Testpoint 4");
+         });
+         console.log("Testpoint 5");
+         getRecommendPosts().then((post3) => {
+          postlist = [...postlist,...post3];
+          console.log("Testpoint 6");
+         });
+         console.log("Testpoint 7");
+         console.log(postlist);
+      
 
-          const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
-            const data2= {
-              userID: post.authorid,
-            };
+        const updatedPosts = await Promise.all(allpost.map(async (post) => {
+          const data2= {
+            userID: post.authorid,
+          };
 
-            const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data2)
-            });
-            if (response2.status === 200) {
-              const userData = await response2.text();
-              return {...post, username: userData};
-            } else {
-              console.log("System Error in getting username.");
-              return post;
-            }
-          }))
-          // console.log("updated Posts are" , updatedPosts);
-          const reversedPosts = updatedPosts.reverse();
-          setPost(reversedPosts);
-          setLoading(false);
-        } else {
-          const resdata = await response.json()
-          console.log(resdata);
-          console.log("System Error");
-        }
+          const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data2)
+          });
+          if (response2.status === 200) {
+            const userData = await response2.text();
+            return {...post, username: userData};
+          } else {
+            console.log("System Error in getting username.");
+            return post;
+          }
+        }))
+        // console.log("updated Posts are" , updatedPosts);
+        const reversedPosts = updatedPosts.reverse();
+        setPost(reversedPosts);
+        setLoading(false);
       } catch (error) {
         console.log("Error in getting user homepage post. ");
       }
