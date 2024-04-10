@@ -49,7 +49,8 @@ async function testUserFunctions() {
     // Test get username
     const username = await User.getUsername(1);
     console.log(username);
-
+    const state = await User.checkRepost(1);
+    console.log(state);
     // Test view own profile
     // const profile = await User.viewOwnProfile();
     // console.log(profile)

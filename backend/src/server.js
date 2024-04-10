@@ -384,6 +384,27 @@ app.put("/api/post/commentadd", async(req,res)=>{
     else return res.status(404).send({message: result.message});
 })
 
+app.post("/api/post/checkRepost", async(req,res)=>{
+    console.log("Check Repost request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.checkRepost(req.body.postID);    
+    delete userHandler;
+    if(result.success){
+        return res.status(200).send({isRepost:result.isRepost});
+    }
+    else return res.status(404).send({message: result.message});
+})
+
+app.post("/api/post/getAuthorName", async(req,res)=>{
+    console.log("Get Author Name request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getPost(req.body.postID); 
+    const result2 = await userHandler.getUsername(result.authorid);
+    if(result2.success){
+        return res.status(200).send(result2.username);
+    }
+    else return res.status(404).send({message: result.message});
+})
 
 app.post("/getOwnPost", async(req, res)=>{
     console.log("Get User Own Post request received")
@@ -593,7 +614,7 @@ app.get("/api/user/getRecentPopularPosts", async(req, res)=>{
     if(result.success){
         console.log(result);
         delete userHandler;
-        return res.status(200).send({posts: result.modifiedPosts});
+        return res.status(200).send({posts: result.modifiedPosts, isrecommended: false});
     }
     else {
         delete userHandler;
@@ -608,7 +629,7 @@ app.post("/api/user/getRecommendedPosts", async(req, res)=>{
     if(result.success){
         console.log(result);
         delete userHandler;
-        return res.status(200).send({posts: result.posts});
+        return res.status(200).send({posts: result.posts, isrecommended: true});
     }
     else {
         delete userHandler;
@@ -623,7 +644,7 @@ app.post("/api/user/getFollowingPosts", async(req, res)=>{
     if(result.success){
         console.log(result);
         delete userHandler;
-        return res.status(200).send({posts: result.posts});
+        return res.status(200).send({posts: result.posts, isrecommended: false});
     }
     else {
         delete userHandler;
