@@ -34,6 +34,9 @@ In this project, we try to set up a Content-Oriented application named Soru like
 |                          | Content recommendation                                         | 🔲  |
 |                          | Privacy Chat                                                   | ✅  |
 |                          | Higher level control type (support image)                      | ✅  |
+|                          | Admin can also list all posts and delele posts                 | ✅  |
+|                          | Forget password (User can change their password)               | ✅  |
+
 
 
 # Groupmates / Collaborators
@@ -116,3 +119,4 @@ That's it! The project should now be up and running.
 25/3/2024: Start the framework of the project <br>
 30/3/2024: Finish the basic framework of the project, start the connection to database and local server <br>
 07/4/2024: Finish most basic features, start working on the advanced feature <br>
+10/4/2024: Finish most advanced features and start testing for demo day <br>
