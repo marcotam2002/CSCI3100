@@ -27,13 +27,12 @@ export default function EditProfileForm({ closeFunc, originUserName, originDescr
         
         event.preventDefault();
 
-        const username = usernameRef.current.value || originUserName;
-        const description = descriptionRef.current.value || originDescription;
-        const isPrivate = isPrivateRef.current.checked || originPrivacy;
+        const username = usernameRef.current.value;
+        const description = descriptionRef.current.value;
+        const isPrivate = isPrivateRef.current.checked;
 
         let privacy = "";
 
-        console.log(isPrivate);
         if (isPrivate) {
             privacy = "private";
         } else {
@@ -85,7 +84,6 @@ export default function EditProfileForm({ closeFunc, originUserName, originDescr
                         id="description"
                         defaultValue={originDescription}
                         ref={descriptionRef}
-                        required
                     />
                 </div>
                 <div className="setprivate">
