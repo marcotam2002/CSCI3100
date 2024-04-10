@@ -93,7 +93,7 @@ export default function AddPostForm({ closeFunc }) {
     <div id="addPost">
       <CrossButton func={closeBoxFunc} />
       <h2><b>New post</b></h2>
-      <form onSubmit={handleSubmit} id="NewPostForm" enctype="multipart/form-data">
+      <form onSubmit={handleSubmit} id="NewPostForm" encType="multipart/form-data">
         <div className="newpostdescription">
           <textarea required
             value={thought} placeholder="Tell us your current thought..."
