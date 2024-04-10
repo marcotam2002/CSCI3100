@@ -216,12 +216,15 @@ app.post("/getUsername", async(req,res)=>{
 })
 
 //Edit Profile page
-app.put("/profile/edit", async(req,res)=>{
+app.put("/api/profile/edit", async(req,res)=>{
     console.log("Profile Edit request received")
-    const userHandler=new UserHandler();
-    const result = await userHandler.editProfile(req.body.username, req.body.description, req.body.isPrivate);    //test without media first
+    const userHandler=new UserHandler(req.body.userID);
+    const content = [req.body.username, req.body.description, req.body.isPrivate];
+    console.log(content);
+    const result = await userHandler.editProfile(content);    //test without media first
     if(result.success){
         console.log(result.message);
+        console.log("Success update profile");
         delete userHandler;
         return res.status(200).send();
     }

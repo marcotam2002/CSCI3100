@@ -122,7 +122,7 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, 
         </button>
       </div>
       <div id="descriptionBox">
-        {/* {user && user.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))} */}
+        {user.description && user.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))}
       </div>
 
       {/* Row 4: Posts */}
@@ -230,7 +230,7 @@ function Profile(){
     if (response.status === 200) {
       const resdata = await response.json();
       console.log(resdata.followersCount)
-      // console.log(resdata.user);
+      console.log(resdata.user);
       setProfileUser(resdata.user);
       if (userID == currentUser || resdata.user.privacy == "public" || resdata.isFollowing == true) {
         setAccess(true);
@@ -414,9 +414,9 @@ function Profile(){
         <div onClick={(e) => e.stopPropagation()}>
           <EditProfileForm 
           closeFunc={closeEditProfileForm} 
-          originUserName={user.username} 
-          originDescription={user.description}
-          originPrivacy={user.isPrivate} />
+          originUserName={profileUser.username} 
+          originDescription={profileUser.description}
+          originPrivacy={profileUser.privacy === "private"} />
         </div>
       </div>
 
