@@ -25,7 +25,7 @@ const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 function NotificationBox({ notifcations , action}) {
     return (
-        <div>
+        <div>{(notifcations.requestedUsers.length > 0 || notifcations.recommendedUsers.length > 0) ?  
             <table id="notificationTable">
                 <tbody>
                 {notifcations.requestedUsers && Object.keys(notifcations.requestedUsers).map((key) => (
@@ -54,8 +54,8 @@ function NotificationBox({ notifcations , action}) {
                     </tr>
                 ))}
                 </tbody>
-            </table>
-        </div>
+            </table> : <h4 style={{margin:"20px"}}>No notifications</h4>}
+        </div> 
     );
 }
 
@@ -72,6 +72,7 @@ function NotificationPage() {
     const user = getCookie("username");
     const [notifications, setNotifications] = useState({});
     const userID = getCookie("userID");
+    const [loading, setLoading] = useState(true);
 
     const getNotification = async () => {
         const notification = {
@@ -124,6 +125,7 @@ function NotificationPage() {
             }
         }
         setNotifications(notification);
+        setLoading(false);
     }
 
     
@@ -235,7 +237,7 @@ function NotificationPage() {
                     />
                 </div>
                 <div id="main">
-                    <NotificationBox notifcations={notifications} action={notificationAction}/>
+                    {loading ? <h4>loading...</h4> : <NotificationBox notifcations={notifications} action={notificationAction}/>}
                 </div>
             </div>
         </div>

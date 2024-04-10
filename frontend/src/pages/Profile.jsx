@@ -122,7 +122,7 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, isFollow, is
       <div><h5>Posts</h5></div>
       {access ? (<ProfilePostComponent posts={post} username={user.username} loading2={loading2} navigateFunc={navigateFunc}/>
       ) : (
-        <div>You do not have the access to view this user's posts. Please follow this user to see more.</div>
+        <p>You do not have the access to view this user's posts. Please follow this user to see more.</p>
 
       )}
     </div>
