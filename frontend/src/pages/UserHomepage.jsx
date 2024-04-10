@@ -39,10 +39,11 @@ function UserHomepageComponent({ posts, changeLike }) {
 
     return (
       <div className="post-container " key={object.post.postid}>
+        {object.isrecommend && <div>Recommended Post</div>}
         <div className="post-header">
           <span className="post-username">{object.authorName}</span>
           <span className="post-time">{object.post.time}</span>
-      </div>
+        </div>
         <div className="post-description">
           {object.post.content.split('\n').map((line, index) => (
             (index < 3 || object.post.content.split('\n').length <= 3) && (
@@ -130,8 +131,13 @@ function UserHomepage() {
     // console.log(response);
     if (response.status === 200) {
       const resdata = await response.json();
-      // console.log(resdata);
       const post1 = resdata.posts;
+      const isrecommend = resdata.isrecommended;
+      post1.forEach(post => {
+        // Add isrecommend attribute to each post
+        post.isrecommend = isrecommend;
+    });
+      console.log(post1);
       console.log("get following posts successful.");
       return post1;
     } else {
@@ -155,6 +161,11 @@ function UserHomepage() {
       console.log(resdata);
       const post1 = resdata.posts;
       console.log("get recent popular posts successful.");
+      const isrecommend = resdata.isrecommended;
+      post1.forEach(post => {
+        // Add isrecommend attribute to each post
+        post.isrecommend = isrecommend;
+    });
       return post1;
     } else {
       const resdata = await response.json();
@@ -178,6 +189,11 @@ function UserHomepage() {
     if (response.status === 200) {
       const resdata = await response.json();
       const post1 = resdata.posts;
+      const isrecommend = resdata.isrecommended;
+      post1.forEach(post => {
+        // Add isrecommend attribute to each post
+        post.isrecommend = isrecommend;
+    });
       console.log("get recommend posts successful.");
       return post1;
     } else {
@@ -221,33 +237,23 @@ function UserHomepage() {
             });
             if (response.status === 200) {
               const resdata = await response.json();
+              console.log(resdata);
+              resdata.isrecommend = post.isrecommend;
               return resdata;
             }
         }));
 
+        let uniquePosts = {};
+        allPosts.forEach(post => {
+          let postID = post.post.postid;
+          if (!uniquePosts[postID]){
+            uniquePosts[postID] = post;
+          }
+        })
 
-        // const updatedPosts = await Promise.all(postlist.map(async (post) => {
-        //   const data2 = {
-        //     userID: post.authorid,
-        //   };
-
-        //   const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(data2)
-        //   });
-        //   if (response2.status === 200) {
-        //     const userData = await response2.text();
-        //     return { ...post, username: userData };
-        //   } else {
-        //     console.log("System Error in getting username.");
-        //     return post;
-        //   }
-        // }));
-
-        const reversedPosts = allPosts.reverse();
+        let uniquePostsArray = Object.values(uniquePosts).filter(Boolean);
+        const reversedPosts = uniquePostsArray.reverse();
+        reversedPosts.sort(() => Math.random()-0.5);
         setPost(reversedPosts);
         console.log(reversedPosts);
         setLoading(false);

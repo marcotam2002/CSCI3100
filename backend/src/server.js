@@ -624,7 +624,7 @@ app.get("/api/user/getRecentPopularPosts", async(req, res)=>{
     if(result.success){
         console.log(result);
         delete userHandler;
-        return res.status(200).send({posts: result.modifiedPosts});
+        return res.status(200).send({posts: result.modifiedPosts, isrecommended: false});
     }
     else {
         delete userHandler;
@@ -639,7 +639,7 @@ app.post("/api/user/getRecommendedPosts", async(req, res)=>{
     if(result.success){
         console.log(result);
         delete userHandler;
-        return res.status(200).send({posts: result.posts});
+        return res.status(200).send({posts: result.posts, isrecommended: true});
     }
     else {
         delete userHandler;
@@ -654,7 +654,7 @@ app.post("/api/user/getFollowingPosts", async(req, res)=>{
     if(result.success){
         console.log(result);
         delete userHandler;
-        return res.status(200).send({posts: result.posts});
+        return res.status(200).send({posts: result.posts, isrecommended: false});
     }
     else {
         delete userHandler;
