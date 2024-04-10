@@ -25,37 +25,26 @@ const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 function NotificationBox({ notifcations , action}) {
     return (
-        <div>{(notifcations.requestedUsers.length > 0 || notifcations.recommendedUsers.length > 0) ?  
+        <div>
             <table id="notificationTable">
                 <tbody>
-                {notifcations.requestedUsers && Object.keys(notifcations.requestedUsers).map((key) => (
-                    <tr key={key}>
-                        <td className="notificationName">
-                            <p><b>{notifcations.requestedUsers[key]}</b></p>
-                        </td>
-                        <td className="notificationContent">
-                            <p>request to follow you!</p>
-                        </td>
-                        <td className="notificationButton">
-                            <button className="acceptFollow" onClick={() => action(true, key)}> Accept </button>
-                            <button className="rejectFollow" onClick={() => action(false, key)}> Reject </button>
-                        </td>
-                    </tr>
-                ))}
-                {notifcations.recommendedUsers && Object.keys(notifcations.recommendedUsers).map((key) => (
-                    <tr key={key}>
-                        <td>
-                        <p>You may be interested in <b>{notifcations.recommendedUsers[key]}</b></p>
-                        </td>
-                        <td>
-                        </td>
-                        <td className="notificationButton">
-                        </td>
-                    </tr>
-                ))}
+                    {Object.keys(notifcations).map((key) => (
+                        <tr key={key}>
+                            <td className="notificationName">
+                                <p><b>{notifcations[key]}</b></p>
+                            </td>
+                            <td className="notificationContent">
+                                <p>request to follow you!</p>
+                            </td>
+                            <td className="notificationButton">
+                                <button className="acceptFollow" onClick={() => action(true, key)}> Accept </button>
+                                <button className="rejectFollow" onClick={() => action(false, key)}> Reject </button>
+                            </td>
+                        </tr>
+                    ))} 
                 </tbody>
-            </table> : <h4 style={{margin:"20px"}}>No notifications</h4>}
-        </div> 
+                </table>
+        </div>
     );
 }
 
@@ -72,13 +61,9 @@ function NotificationPage() {
     const user = getCookie("username");
     const [notifications, setNotifications] = useState({});
     const userID = getCookie("userID");
-    const [loading, setLoading] = useState(true);
 
     const getNotification = async () => {
-        const notification = {
-            'requestedUsers': [],
-            'recommendedUsers': []
-        };
+        const notification = {};
         let data = [];
         const response = await fetch(`${API_BASE_URL}/api/user/getNotification`, {
             method: 'POST',
@@ -91,41 +76,21 @@ function NotificationPage() {
         else{
             console.log("Error in getting notification data");
         }
-        if(data.requestedUsers){
-            for (let i = 0; i < data.requestedUsers.length; i++) {
-                const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ userID: data.requestedUsers[i] })
-                });
-                if (response.status === 200) {
-                    const user = await response.json();
-                    notification.requestedUsers[i] = user.username;
-                }
-                else {
-                    console.log("Error in getting requested user data");
-                }
+        for (let i = 0; i < data.length; i++) {
+            const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ userID: data[i] })
+            });
+            if (response.status === 200) {
+                const user = await response.json();
+                notification[data[i]] = user.username;
             }
-        }
-            if(data.recommendedUsers)
-            {
-            for (let i = 0; i < data.recommendedUsers.length; i++) {
-                const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ userID: data.recommendedUsers[i] })
-                });
-                if (response.status === 200) {
-                    const user = await response.json();
-                    notification.recommendedUsers[i] = user.username;
-                }
-                else {
-                    console.log("Error in getting recommended user data");
-                }
+            else {
+                console.log("Error in getting user data");
             }
         }
         setNotifications(notification);
-        setLoading(false);
     }
 
     
@@ -237,7 +202,7 @@ function NotificationPage() {
                     />
                 </div>
                 <div id="main">
-                    {loading ? <h4>loading...</h4> : <NotificationBox notifcations={notifications} action={notificationAction}/>}
+                    <NotificationBox notifcations={notifications} action={notificationAction}/>
                 </div>
             </div>
         </div>

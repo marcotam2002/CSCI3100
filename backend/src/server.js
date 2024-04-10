@@ -589,22 +589,15 @@ app.post("/api/user/getMessage", async(req,res)=>{
 app.post("/api/user/getNotification", async(req,res)=>{
     console.log("fetching notication request received")
     const userHandler=new UserHandler(req.body.userID);
-    const requestResult = await userHandler.getNotifications();
-    const recommendedResult = await userHandler.getRecommendedUsers();
-    // console.log(requestResult);
-    // console.log(recommendedResult);
-
-    if(requestResult.success && recommendedResult.success){
-        // console.log('welcome to here!');
+    const result = await userHandler.getNotifications();   
+    if(result.success){
+        console.log(result.message);
         delete userHandler;
-        return res.status(200).send({requestedUsers: requestResult.notifications, recommendedUsers: recommendedResult.recommendedUserIDs});
+        return res.status(200).send(result.notifications);
     }
-    else if(!requestResult.success){
+    else {
         delete userHandler;
-        return res.status(404).send({message: requestResult.message});
-    } else {
-        delete userHandler;
-        return res.status(404).send({message: recommendedResult.message});
+        return res.status(404).send({message: result.message});
     }
 })
 

@@ -23,7 +23,7 @@ const CheckNotification = async () => {
     });
     if (response.status === 200) {
         const data = await response.json();
-        return (data.requestedUsers.length > 0);
+        return (data.length > 0);
     }
     else {
         console.log("ERROR");
