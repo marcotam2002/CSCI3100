@@ -28,69 +28,30 @@ import EditProfileForm from "./EditProfileForm";
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
 
-const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
-function ProfilePostComponent({ posts, changeLike, loading2 }) {
+function ProfilePostComponent({ posts, username, loading2, navigateFunc }) {
 
   if (loading2) {
     return <div>Loading...</div>
   }
-  const renderPost = (post) => {
 
+  const renderPost = (post) => {
+    // get post comment
+    const postSplit = post.content.split('\n');
+    const postContent = postSplit.length > 3 ? [postSplit[0], postSplit[1], postSplit[2], "..."] : postSplit;
     return (
-      <div className="post-container " key={post.postid}>
+      <div id="postCard" onClick={() => navigateFunc(`/post/${post.postid}`)}>
         <div className="post-header">
-          <span className="post-username">{post.username}</span>
+          <span className="post-username">{username}</span>
           <span className="post-time">{post.time}</span>
-      </div>
+        </div>
         <div className="post-description">
-          {post.content.split('\n').map((line, index) => (
-            (index < 3 || post.content.split('\n').length <= 3) && (
-              <p key={index}>{line}</p>
-            )
-          ))}
+          {postContent.map((line, index) => (<p key={index}>{line}</p>))}
         </div>
-        <div className="post-media">
-          {post.mediauri !== "" && post.mediauri.endsWith('.mp4') ? (
-            <video controls>
-              <source src={post.mediauri} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <img src={post.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
-          )}
-        </div>
-        {post.content.split('\n').length > 3 && (
-          <div className="read-more">
-            <Link to={`/post/${post.postid}`}>Read More</Link>
-          </div>
-        )}
-        <div className="interaction-buttons">
-          <button className="like-button" onClick={(event) => changeLike(post.liked, post.postid, event)}>
-            {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
-          </button>
-          <p>{post.likes}</p>
-          <Link to={`/post/${post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
-          <p>{post.commentnum}</p>
-        </div>
-        <div className="comments">
-          {post.comment && post.comments.slice(0, 2).map((comment, index) => (
-            <div className="comment" key={index}>
-              <span className="comment-username"><b>{comment.username}</b></span>
-              <span className="comment-text">{comment.text}</span>
-            </div>
-          ))}
-        </div>
-        {post.comment && post.comments.length > 2 && (
-          <div className="view-all-comments">
-            <Link to={`/post/${post.postID}`}>View all comments</Link>
-          </div>
-        )}
       </div>
     );
   };
-
   return (
     <div className="user-homepage">
       {posts.map((post) => renderPost(post))}
@@ -98,7 +59,7 @@ function ProfilePostComponent({ posts, changeLike, loading2 }) {
   );
 }
 
-function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, isFollow, loading2, unfollowUser, followUser, followerNum, followingNum }) {
+function UserProfile({ openFunc, isCurrentUser, user, access, post, isFollow, loading2, unfollowUser, followUser, followerNum, followingNum, navigateFunc }) {
 
 
   const editProfile = () => {
@@ -127,20 +88,19 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, 
 
       {/* Row 4: Posts */}
       <div><h5>Posts</h5></div>
-      {access ? ( <ProfilePostComponent posts={post} changeLike={changeLike} loading2={loading2} />
-            ) : (
-                  <div>You do not have the access to view this user's posts. Please follow this user to see more.</div>
+      {access ? (<ProfilePostComponent posts={post} username={user.username} loading2={loading2} navigateFunc={navigateFunc}/>
+      ) : (
+        <div>You do not have the access to view this user's posts. Please follow this user to see more.</div>
 
-            )}
+      )}
     </div>
   )
 }
 
-function Profile(){
+function Profile() {
   const [state, setState] = useState(false);
   const [state2, setState2] = useState(false);
   const [post, setPost] = useState([]);
-  const [singlePost, setSinglePost] = useState([]);
   const [access, setAccess] = useState(false);
   const navigate = useNavigate();
   const currentUser = getCookie("userID");
@@ -170,51 +130,51 @@ function Profile(){
   const { userID } = useParams();
 
   const getProfilePost = async () => {
-      const data = {
-        userID: userID,
-      };
+    const data = {
+      userID: userID,
+    };
 
-      const response = await fetch(`${API_BASE_URL}/getOwnPost`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-      if (response.status === 200) {
-        const resdata = await response.json();
+    const response = await fetch(`${API_BASE_URL}/getOwnPost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
 
-        const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
-          const data2= {
-            userID: post.authorid,
-          };
+      const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
+        const data2 = {
+          userID: post.authorid,
+        };
 
-          const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data2)
-          });
-          if (response2.status === 200) {
-            const userData = await response2.text();
-            return {...post, username: userData};
-          } else {
-            console.log("System Error in getting username.");
-            return post;
-          }
-        }))
-        // console.log("updated Posts are" , updatedPosts);
-        const reversedPosts = updatedPosts.reverse();
-        setPost(reversedPosts);
-      } else {
-        const resdata = await response.json()
-        console.log(resdata);
-        console.log("System Error");
-      }
+        const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data2)
+        });
+        if (response2.status === 200) {
+          const userData = await response2.text();
+          return { ...post, username: userData };
+        } else {
+          console.log("System Error in getting username.");
+          return post;
+        }
+      }))
+      // console.log("updated Posts are" , updatedPosts);
+      const reversedPosts = updatedPosts.reverse();
+      setPost(reversedPosts);
+    } else {
+      const resdata = await response.json()
+      console.log(resdata);
+      console.log("System Error");
+    }
   };
 
-  const getUser = async(userID) => {
+  const getUser = async (userID) => {
     const data = {
       targetUserID: userID,
       currentUserID: currentUser
@@ -228,11 +188,7 @@ function Profile(){
     });
     if (response.status === 200) {
       const resdata = await response.json();
-      // console.log(resdata.followersCount)
-      // console.log(resdata.user);
-      // console.log(resdata);
       setProfileUser(resdata.user);
-      // console.log(resdata);
       setIsFollow(resdata.isFollowing)
       setFollowerNum(resdata.followersCount);
       setFollowingNum(resdata.followingCount);
@@ -242,15 +198,15 @@ function Profile(){
       }
       setLoading(false);
     } else {
-        const resdata = await response.json()
-        console.log(resdata);
-        console.log("System Error in getting User Profile.");
+      const resdata = await response.json()
+      console.log(resdata);
+      console.log("System Error in getting User Profile.");
     }
   }
   useEffect(() => {
     setLoading(true);
     getUser(userID);
-}, [userID]);
+  }, [userID]);
 
   useEffect(() => {
     setIsCurrentUser(currentUser === userID);
@@ -265,115 +221,21 @@ function Profile(){
     const result2 = await CheckUnreadMessages();
     setUnreadMessages(result2);
   };
-  
+
   useEffect(() => {
     updateState();
     const interval = setInterval(() => {
-      updateState();
-      console.log("unread messages", unreadMessages);
+      // updateState();
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
-  const getSinglePost = async(postID) => {
-    const data = {
-      postID: postID,
-      userID: userID,
-    };
-    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      const resdata = await response.json();
-      const singlePost = resdata.result;
-
-      const data2 ={
-        userID: singlePost.authorid,
-      };
-
-      const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data2)
-        });
-
-        if (response2.status === 200) {
-          const userData = await response2.text();
-          const updatedPost = {...singlePost, username: userData};
-          setSinglePost(updatedPost);
-          setLoading2(false);
-        } else {
-          console.log("System Error in getting username.");
-          setLoading2(false);
-          return singlePost;
-        }
-  } else {
-    console.log("System Error in getting Single Post.");
-    setLoading2(false);
-  }
-};
-
-  const replacePost = (posts, singlePost) => {
-    if (!posts || !singlePost) return posts;
-
-    const updatedPosts = posts.map(post => {
-      if (post.postID === singlePost.postID) {
-        return singlePost;
-      } else {
-        return post;
-      }
-    });
-
-    return updatedPosts;
-  };
-
-  const changeLike = async (liked, postID, event) => {
-    event.preventDefault();
-    const [type,setType] = useState("");
-    if (liked){
-      setType("unlike");
-    } else {
-      setType("like");
-    }
-
-    // for fetch part
-    const data = {
-      postID: postID,
-      userID: userID,
-      type: type
-    };
-
-    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      // successful update
-      setLoading2(true);
-      getSinglePost(postID);
-      replacePost(post, singlePost);
-      console.log("successful update");
-    } else {
-      // failed update
-      console.log("failed to update");
-    }
-  };
 
   const followUser = async () => {
     const data = {
       targetUserID: userID,
       currentUserID: currentUser
     };
-    const response = await fetch (`${API_BASE_URL}/api/user/followuser`, {
+    const response = await fetch(`${API_BASE_URL}/api/user/followUser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -384,6 +246,7 @@ function Profile(){
       const resdata = await response.text();
       console.log(resdata);
       console.log("Follow user request sent.");
+      getUser(userID);
     } else {
       const resdata = await response.text();
       console.log("System Error in sending follow user request");
@@ -395,7 +258,7 @@ function Profile(){
       targetUserID: userID,
       currentUserID: currentUser
     };
-    const response = await fetch (`${API_BASE_URL}/api/user/unfollowuser`, {
+    const response = await fetch(`${API_BASE_URL}/api/user/unfollowuser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -406,6 +269,7 @@ function Profile(){
       const resdata = await response.text();
       console.log(resdata);
       console.log("Follow user request sent.");
+      getUser(userID);
     } else {
       const resdata = await response.text();
       console.log("System Error in sending follow user request");
@@ -421,11 +285,11 @@ function Profile(){
       </div>
       <div className={`popupBox ${state2 ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
-          <EditProfileForm 
-          closeFunc={closeEditProfileForm} 
-          originUserName={profileUser.username} 
-          originDescription={profileUser.description}
-          originPrivacy={profileUser.privacy === "private"} />
+          <EditProfileForm
+            closeFunc={closeEditProfileForm}
+            originUserName={profileUser.username}
+            originDescription={profileUser.description}
+            originPrivacy={profileUser.privacy === "private"} />
         </div>
       </div>
 
@@ -448,7 +312,7 @@ function Profile(){
             image={searchIcon}
             name={"Search"}
             color={"black"}
-            func = {()=>navigate('/search')}
+            func={() => navigate('/search')}
           />
           <SideBarButton
             image={messageIcon}
@@ -460,7 +324,7 @@ function Profile(){
             image={notificationIcon}
             name={"Notification"}
             color={notificationState ? "red" : "black"}
-            func = {()=>navigate('/notification')}
+            func={() => navigate('/notification')}
           />
           <SideBarButton
             image={profileIcon}
@@ -476,11 +340,11 @@ function Profile(){
           />
         </div>
         <div id="main">
-        {loading ? (
-              <div>Loading...</div>
-            ) : (
-              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post} isFollow={isFollow} changeLike={changeLike} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} followerNum={followerNum} followingNum={followingNum}  />
-            )}
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post} isFollow={isFollow} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} followerNum={followerNum} followingNum={followingNum} navigateFunc={navigate} />
+          )}
         </div>
       </div>
     </div>
