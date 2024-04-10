@@ -14,6 +14,7 @@ const cors = require("cors");
 const AccountHandler = require('./accounthandler');
 const AdminHandler = require('./adminhandler');
 const UserHandler = require('./userhandler');
+const { lookupService } = require("dns");
 //const pool = require("./database")
 
 /* cloudinary.config({
@@ -111,13 +112,30 @@ app.post("/api/user/addpost", async(req, res)=>{
     if(result.success){
         console.log("New Post added to database");
         delete userHandler;
-        return res.status(200).send();
+        return res.status(200).send({postID: result.postID});
     }
     else {
         delete userHandler;
         return res.status(404).send({message: result.message});
     }
 })
+
+app.post("/api/user/repost", async(req, res)=>{
+    console.log("Repost request received")
+    const userHandler=new UserHandler(req.body.userID);
+    const result = await userHandler.repostPost(req.body.postID);
+    console.log(result)    //test without media first
+    if(result.success){
+        console.log("repost successs");
+        delete userHandler;
+        return res.status(200).send({postID: result.postID});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
 function encodeFileAsURL(FileURL){
     var fileReader = new FileReader();
     fileReader.onload = function(fileLoadedEvent){
@@ -388,9 +406,17 @@ app.post("/api/post/checkRepost", async(req,res)=>{
     console.log("Check Repost request received")
     const userHandler=new UserHandler();
     const result = await userHandler.checkRepost(req.body.postID);    
-    delete userHandler;
     if(result.success){
-        return res.status(200).send({isRepost:result.isRepost});
+        if(result.isRepost){
+            const result2 = await userHandler.getPost(req.body.postID);
+            delete userHandler;
+            return res.status(200).send({isRepost:result.isRepost,content:result2.content});
+        }
+        else{
+            delete userHandler;
+            return res.status(200).send({isRepost:result.isRepost,content:null});
+        }
+        
     }
     else return res.status(404).send({message: result.message});
 })

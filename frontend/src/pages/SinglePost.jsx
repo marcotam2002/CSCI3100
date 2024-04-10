@@ -119,7 +119,25 @@ function Post({ userID, postID }) {
     }
   }
 
-  useEffect(() => { getPost(); }, []);
+  const rePost = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/user/repost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({userID: userID,postID: postID})
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      alert("Reposted");
+    } else {
+      // system error
+      alert("You cannot repost this post!")
+      console.log('Error:', resdata.message);
+    }
+  }
+
+  useEffect(() => { getPost();}, []);
   useEffect(() => { getCommentUserName(); }, [post]);
 
   if (loadingPost || loadingComment) {
@@ -144,6 +162,9 @@ function Post({ userID, postID }) {
         </button>
         <p>{post.post.likes}</p>
         <img src={commentIcon} alt="comment" /><p>{post.comment.length}</p>
+        <button className="repost-button" onClick={() => rePost()}>
+          <img src={repostIcon} alt="repost" />
+        </button>
       </div>
       <div className="comments">
         {commentList.map((comment, index) => (
@@ -170,9 +191,11 @@ function Post({ userID, postID }) {
 
 }
 
-function PostBox({ userID, postID }) {
+function PostBox({ userID, postID, navigateFunc }) {
   const [isRepost, setIsRepost] = useState(false);
   const [username, setUsername] = useState("");
+  const [repostID, setRepostID] = useState(0);
+
   const checkIsRepost = async () => {
     const response = await fetch(`${API_BASE_URL}/api/post/checkRepost`, {
       method: 'POST',
@@ -184,6 +207,8 @@ function PostBox({ userID, postID }) {
     if (response.status === 200) {
       const resdata = await response.json();
       setIsRepost(resdata.isRepost);
+      setRepostID(parseInt(resdata.content));
+      console.log(resdata);
     } else {
       // system error
       console.log('Error:', resdata.message);
@@ -206,9 +231,34 @@ function PostBox({ userID, postID }) {
       console.log('Error:', resdata.message);
     }
   }
+
+
+    // for fetch part
+    // const data = {
+    //   postID: postID,
+    //   userID: userID,
+    //   type: type
+    // };
+
+    // const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
+    //   method: 'PUT',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify(data)
+    // });
+    // if (response.status === 200) {
+    //   // successful update
+    //   getSinglePost(postID);
+    //   console.log("successful update")
+    // } else {
+    //   // system error
+    //   console.log('Error:', resdata.message);
+    // }
+  
   useEffect(() => { checkIsRepost(); getUsername();}, []);
-  if(isRepost){return(<div id="repostBox"><h6><b>{username}</b> Reposted</h6><div id="repost"><Post userID={userID} postID={1} /></div></div> )}
-  else{return <Post userID={userID} postID={postID} />;}
+  if(isRepost){return(<div id="repostBox"><h6><b>{username}</b> Reposted</h6><div id="repost"><Post userID={userID} postID={repostID} navigateFunc={navigateFunc} /></div></div> )}
+  else{return <Post userID={userID} postID={postID} navigateFunc={navigateFunc}/>;}
 }
 
 
@@ -302,7 +352,7 @@ function SinglePostPage() {
           />
         </div>
         <div id="main">
-          <PostBox userID={userID} postID={postID} />
+          <PostBox userID={userID} postID={postID} navigateFunc={navigate}/>
         </div>
       </div>
     </div>
