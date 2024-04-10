@@ -499,17 +499,25 @@ app.post("/api/user/getMessage", async(req,res)=>{
 app.post("/api/user/getNotification", async(req,res)=>{
     console.log("fetching notication request received")
     const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.getNotifications();   
-    if(result.success){
-        console.log(result.message);
+    const requestResult = await userHandler.getNotifications();
+    const recommendedResult = await userHandler.getRecommendedUsers();
+    // console.log(requestResult);
+    // console.log(recommendedResult);
+
+    if(requestResult.success && recommendedResult.success){
+        // console.log('welcome to here!');
         delete userHandler;
-        return res.status(200).send(result.notifications);
+        return res.status(200).send({requestedUsers: requestResult.notifications, recommendedUsers: recommendedResult.recommendedUserIDs});
     }
-    else {
+    else if(!requestResult.success){
         delete userHandler;
-        return res.status(404).send({message: result.message});
+        return res.status(404).send({message: requestResult.message});
+    } else {
+        delete userHandler;
+        return res.status(404).send({message: recommendedResult.message});
     }
 })
+
 //Accept follower request
 app.post("/api/user/acceptFollowRequest", async(req,res)=>{
     console.log("accept follower request received")
@@ -541,20 +549,20 @@ app.post("/api/user/rejectFollowRequest", async(req,res)=>{
     }
 })
 
-app.post("/api/user/getRecommendedUsers", async(req, res)=>{
-    console.log("User recommendation request received")
-    const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.getRecommendedUsers();
-    if(result.success){
-        console.log(result);
-        delete userHandler;
-        return res.status(200).send();
-    }
-    else {
-        delete userHandler;
-        return res.status(404).send({message: result.message});
-    }
-})
+// app.post("/api/user/getRecommendedUsers", async(req, res)=>{
+//     console.log("User recommendation request received")
+//     const userHandler=new UserHandler(req.body.userID);
+//     const result = await userHandler.getRecommendedUsers();
+//     if(result.success){
+//         console.log(result);
+//         delete userHandler;
+//         return res.status(200).send();
+//     }
+//     else {
+//         delete userHandler;
+//         return res.status(404).send({message: result.message});
+//     }
+// })
 
 app.get("/api/user/getRecentPopularPosts", async(req, res)=>{
     console.log("Recent Popular Post request received")

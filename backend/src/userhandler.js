@@ -1163,6 +1163,11 @@ class UserHandler extends AccountHandler {
           LIMIT 1
         `, [this.userID]);
         
+        if (queryResult.rows.length === 0) {
+          client.release();
+          return { success: true, message: 'No recommended users' };
+        }
+        
         const nearestUserID = queryResult.rows[0].followerid;
     
         // Get the users that the most followed user is following and the current user is not following

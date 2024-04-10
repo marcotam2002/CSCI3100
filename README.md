@@ -11,6 +11,34 @@ In this project, we try to set up a Content-Oriented application named Soru like
 
 # Objectives
 
+| Functionality            | Requirements                                                   | Completion |
+|--------------------------|----------------------------------------------------------------|------|
+| Application Architecture | A client-server architecture that can support multiple clients | ✅  |
+| User Interface           | Graphic UI Design                                              | ✅  |
+| Database                 | Database Integration (e.g., MySQL)                             | ✅  |
+| User Management          | User signup                                                    | ✅  |
+|                          | User Login & Logout                                            | ✅  |
+| Admin User               | Admin user interface                                           | ✅  |
+|                          | List all users                                                 | ✅  |
+|                          | Delete users                                                   | ✅  |
+| Application Requirements | Search for users                                               | ✅  |
+|                          | Follow other users                                             | ✅  |
+|                          | Like/Dislike messages                                          | 🔲  |
+|                          | Comment messages                                               | 🔲  |
+|                          | Post messages                                                  | ✅  |
+|                          | Retweet messages                                               | 🔲  |
+|                          | Show following user messages                                   | 🔲  |
+| Advanced Features        | Search for message tags                                        | ✅  |
+|                          | Privacy Control (private and public)                           | ✅  |
+|                          | User recommendation                                            | 🔲  |
+|                          | Content recommendation                                         | 🔲  |
+|                          | Privacy Chat                                                   | ✅  |
+|                          | Higher level control type (support image)                      | ✅  |
+|                          | Admin can also list all posts and delele posts                 | ✅  |
+|                          | Forget password (User can change their password)               | ✅  |
+
+
+
 # Groupmates / Collaborators
 Tam King Man https://github.com/marcotam2002 <br>
 Tsang Ho Yin https://github.com/Andrewolf2002 <br>
@@ -91,3 +119,4 @@ That's it! The project should now be up and running.
 25/3/2024: Start the framework of the project <br>
 30/3/2024: Finish the basic framework of the project, start the connection to database and local server <br>
 07/4/2024: Finish most basic features, start working on the advanced feature <br>
+10/4/2024: Finish most advanced features and start testing for demo day <br>

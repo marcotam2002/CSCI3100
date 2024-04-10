@@ -63,7 +63,10 @@ function NotificationPage() {
     const userID = getCookie("userID");
 
     const getNotification = async () => {
-        const notification = {};
+        const notification = {
+            'requestedUsers': [],
+            'recommendedUsers': []
+        };
         let data = [];
         const response = await fetch(`${API_BASE_URL}/api/user/getNotification`, {
             method: 'POST',
@@ -72,24 +75,41 @@ function NotificationPage() {
         });
         if (response.status === 200) {
             data = await response.json();
+            console.log(data.requestedUsers);
+            console.log(data.recommendedUsers);
         }
         else{
             console.log("Error in getting notification data");
         }
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.requestedUsers.length; i++) {
             const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ userID: data[i] })
+                body: JSON.stringify({ userID: data.requestedUsers[i] })
             });
             if (response.status === 200) {
                 const user = await response.json();
-                notification[data[i]] = user.username;
+                notification.requestedUsers[i] = user.username;
             }
             else {
-                console.log("Error in getting user data");
+                console.log("Error in getting requested user data");
             }
         }
+        for (let i = 0; i < data.recommendedUsers.length; i++) {
+            const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ userID: data.recommendedUsers[i] })
+            });
+            if (response.status === 200) {
+                const user = await response.json();
+                notification.recommendedUsers[i] = user.username;
+            }
+            else {
+                console.log("Error in getting recommended user data");
+            }
+        }
+        console.log(notification);
         setNotifications(notification);
     }
 
