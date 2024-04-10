@@ -44,13 +44,12 @@ function NotificationBox({ notifcations , action}) {
                 ))}
                 {notifcations.recommendedUsers && Object.keys(notifcations.recommendedUsers).map((key) => (
                     <tr key={key}>
-                        <td className="notificationName">
-                            {/* <p><b>{notifcations.recommendedUsers[key]}</b></p> */}
+                        <td>
+                        <p>You may be interested in <b>{notifcations.recommendedUsers[key]}</b></p>
                         </td>
-                        <td className="notificationContent">
-                            <p>You may be interested in {notifcations.recommendedUsers[key]}</p>
+                        <td>
                         </td>
-                        <td className="notificationButton">
+                        <td>
                         </td>
                     </tr>
                 ))}
@@ -87,41 +86,43 @@ function NotificationPage() {
         });
         if (response.status === 200) {
             data = await response.json();
-            console.log(data.requestedUsers);
-            console.log(data.recommendedUsers);
         }
         else{
             console.log("Error in getting notification data");
         }
-        for (let i = 0; i < data.requestedUsers.length; i++) {
-            const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ userID: data.requestedUsers[i] })
-            });
-            if (response.status === 200) {
-                const user = await response.json();
-                notification.requestedUsers[i] = user.username;
-            }
-            else {
-                console.log("Error in getting requested user data");
-            }
-        }
-        for (let i = 0; i < data.recommendedUsers.length; i++) {
-            const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ userID: data.recommendedUsers[i] })
-            });
-            if (response.status === 200) {
-                const user = await response.json();
-                notification.recommendedUsers[i] = user.username;
-            }
-            else {
-                console.log("Error in getting recommended user data");
+        if(data.requestedUsers){
+            for (let i = 0; i < data.requestedUsers.length; i++) {
+                const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userID: data.requestedUsers[i] })
+                });
+                if (response.status === 200) {
+                    const user = await response.json();
+                    notification.requestedUsers[i] = user.username;
+                }
+                else {
+                    console.log("Error in getting requested user data");
+                }
             }
         }
-        console.log(notification);
+            if(data.recommendedUsers)
+            {
+            for (let i = 0; i < data.recommendedUsers.length; i++) {
+                const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userID: data.recommendedUsers[i] })
+                });
+                if (response.status === 200) {
+                    const user = await response.json();
+                    notification.recommendedUsers[i] = user.username;
+                }
+                else {
+                    console.log("Error in getting recommended user data");
+                }
+            }
+        }
         setNotifications(notification);
     }
 
