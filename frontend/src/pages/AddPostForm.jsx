@@ -37,12 +37,15 @@ export default function AddPostForm({ closeFunc }) {
       description: thought,
     }
 
+    var formData = new FormData();
+    formData.append('fileURL', data.fileURL)
+    formData.append('userID', data.userID)
+    formData.append('fileType', data.fileType)
+    formData.append('description', data.description)
+
     const response = await fetch(`${API_BASE_URL}/api/user/addpost`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+      body: formData
     });
 
     const message = await response.text();
@@ -83,14 +86,14 @@ export default function AddPostForm({ closeFunc }) {
     preview.appendChild(newimg);
     // console.log(filURL);
     setFileType(fileType);
-    setFileURL(filURL);
+    setFileURL(file);
   };
 
   return (
     <div id="addPost">
       <CrossButton func={closeBoxFunc} />
       <h2><b>New post</b></h2>
-      <form onSubmit={handleSubmit} id="NewPostForm">
+      <form onSubmit={handleSubmit} id="NewPostForm" enctype="multipart/form-data">
         <div className="newpostdescription">
           <textarea required
             value={thought} placeholder="Tell us your current thought..."
@@ -100,7 +103,7 @@ export default function AddPostForm({ closeFunc }) {
         <div className="addpostbutton">
           <label htmlFor="fileUpload">
             <div id = "preview"></div>
-            <input type="file" id="fileUpload" accept=".jpg,.png,.mp4" onChange={handleFileUpload}/>
+            <input type="file" name = "file" id="fileUpload" accept=".jpg,.png,.mp4" onChange={handleFileUpload}/>
             <img src={uploadIcon} alt="Upload Photo/Video"/>
           </label>
           <button className="btn-primary" type="submit">Post!</button>
