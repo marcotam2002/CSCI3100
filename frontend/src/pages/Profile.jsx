@@ -11,6 +11,10 @@ import "./format.css";
 import "./Profile.css";
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
+import likeIcon from '../assets/like.svg';
+import likedIcon from '../assets/liked.svg';
+import commentIcon from '../assets/comment.svg';
 import { useParams } from "react-router-dom"
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
@@ -123,10 +127,10 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, 
 
       {/* Row 4: Posts */}
       <div><h5>Posts</h5></div>
-      {access ? (
-              <div>You do not have the access to view this user's posts. Please follow this user to see more.</div>
+      {access ? ( <ProfilePostComponent posts={post} changeLike={changeLike} loading2={loading2} />
             ) : (
-              <ProfilePostComponent posts={post} changeLike={changeLike} loading2={loading2} />
+                  <div>You do not have the access to view this user's posts. Please follow this user to see more.</div>
+
             )}
     </div>
   )
@@ -166,50 +170,50 @@ function Profile(){
     setIsCurrentUser(currentUser === userID);
   }, [userID, currentUser]);
 
-  // const getProfilePost = async () => {
-  //     const data = {
-  //       userID: currentUser,
-  //     };
+  const getProfilePost = async () => {
+      const data = {
+        userID: currentUser,
+      };
 
-  //     const response = await fetch(`${API_BASE_URL}/getOwnPost`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(data)
-  //     });
-  //     if (response.status === 200) {
-  //       const resdata = await response.json();
+      const response = await fetch(`${API_BASE_URL}/getOwnPost`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 200) {
+        const resdata = await response.json();
 
-  //       const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
-  //         const data2= {
-  //           userID: post.authorid,
-  //         };
+        const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
+          const data2= {
+            userID: post.authorid,
+          };
 
-  //         const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-  //           method: 'POST',
-  //           headers: {
-  //             'Content-Type': 'application/json'
-  //           },
-  //           body: JSON.stringify(data2)
-  //         });
-  //         if (response2.status === 200) {
-  //           const userData = await response2.text();
-  //           return {...post, username: userData};
-  //         } else {
-  //           console.log("System Error in getting username.");
-  //           return post;
-  //         }
-  //       }))
-  //       // console.log("updated Posts are" , updatedPosts);
-  //       const reversedPosts = updatedPosts.reverse();
-  //       setPost(reversedPosts);
-  //     } else {
-  //       const resdata = await response.json()
-  //       console.log(resdata);
-  //       console.log("System Error");
-  //     }
-  // };
+          const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data2)
+          });
+          if (response2.status === 200) {
+            const userData = await response2.text();
+            return {...post, username: userData};
+          } else {
+            console.log("System Error in getting username.");
+            return post;
+          }
+        }))
+        // console.log("updated Posts are" , updatedPosts);
+        const reversedPosts = updatedPosts.reverse();
+        setPost(reversedPosts);
+      } else {
+        const resdata = await response.json()
+        console.log(resdata);
+        console.log("System Error");
+      }
+  };
 
   const getUser = async(userID) => {
     const data = {
@@ -229,10 +233,7 @@ function Profile(){
       setProfileUser(resdata.user);
       if (userID == currentUser || resdata.user.privacy == "public" || resdata.isFollowing == true) {
         setAccess(true);
-      }
-      if (access) {
-        const updatedPosts = resdata.user.posts.reverse();
-        setPost(updatedPosts);
+        getProfilePost();
       }
       setLoading(false);
     } else {
