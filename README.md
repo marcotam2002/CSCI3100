@@ -23,10 +23,10 @@ In this project, we try to set up a Content-Oriented application named Soru like
 |                          | Delete users                                                   | ✅  |
 | Application Requirements | Search for users                                               | ✅  |
 |                          | Follow other users                                             | ✅  |
-|                          | Like/Dislike messages                                          | 🔲  |
-|                          | Comment messages                                               | 🔲  |
+|                          | Like/Dislike messages                                          | ✅  |
+|                          | Comment messages                                               | ✅  |
 |                          | Post messages                                                  | ✅  |
-|                          | Retweet messages                                               | 🔲  |
+|                          | Retweet messages                                               | ✅  |
 |                          | Show following user messages                                   | ✅  |
 | Advanced Features        | Search for message tags                                        | ✅  |
 |                          | Privacy Control (private and public)                           | ✅  |
