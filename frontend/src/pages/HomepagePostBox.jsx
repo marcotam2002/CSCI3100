@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import likeIcon from '../assets/like.svg';
 import likedIcon from '../assets/liked.svg';
 import commentIcon from '../assets/comment.svg';
+import { Link } from 'react-router-dom';
 import repostIcon from '../assets/repost.svg';
 
 
@@ -72,26 +73,6 @@ function Post({ userID, postID, isrecommend }) {
       }
     };
   
-    const addComment = async (event) => {
-      event.preventDefault();
-      console.log(newcomment);
-      const response = await fetch(`${API_BASE_URL}/api/post/addComment`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userID: userID, postID: postID, comment: newcomment })
-      });
-      if (response.status === 200) {
-        alert("Commented on this post!");
-        getPost();
-        setNewComment("");
-      } else {
-        // system error
-        console.log('Error:', resdata.message);
-      }
-    }
-  
     const likePost = async () => {
       const data = { userID: userID, postID: postID, type: post.liked };
       const response = await fetch(`${API_BASE_URL}/api/post/likePost`, {
@@ -107,6 +88,24 @@ function Post({ userID, postID, isrecommend }) {
         console.log("System Error in liking Post.");
       }
     }
+
+    const rePost = async () => {
+      const response = await fetch(`${API_BASE_URL}/api/user/repost`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({userID: userID,postID: postID})
+      });
+      if (response.status === 200) {
+        const resdata = await response.json();
+        alert("Reposted");
+      } else {
+        // system error
+        alert("You cannot repost this post!")
+        console.log('Error:', resdata.message);
+      }
+    }
   
     useEffect(() => { getPost(); }, []);
     useEffect(() => { getCommentUserName(); }, [post]);
@@ -118,7 +117,7 @@ function Post({ userID, postID, isrecommend }) {
       return (<h3>Post not found!</h3>);
     }
     return (
-      <div className="single-post" key={post.post.postid}>
+      <div className="post-container" key={post.post.postid}>
         {isrecommend && <div>Recommended Post</div>}
         <div className="post-header">
           <span className="post-username">{post.authorName}</span>
@@ -142,7 +141,11 @@ function Post({ userID, postID, isrecommend }) {
             {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
           </button>
           <p>{post.post.likes}</p>
-          <img src={commentIcon} alt="comment" /><p>{post.comment.length}</p>
+          <Link to={`/post/${post.post.postid}`} className="comment-button">
+          <img src={commentIcon} alt="comment" /></Link><p>{post.comment.length}</p>
+          <button className="repost-button" onClick={() => rePost()}>
+            <img src={repostIcon} alt="repost" />
+          </button>
         </div>
         <div className="comments">
           {/* {commentList.map((comment, index) => (
@@ -159,21 +162,9 @@ function Post({ userID, postID, isrecommend }) {
           ))}
           {commentList.length > 2 && (
             <div className="view-all-comments">
-              <Link to={`/post/${object.post.postID}`}>View all comments</Link>
+              <Link to={`/post/${post.post.postid}`}>View all comments</Link>
             </div>
           )}
-        </div>
-        <div className="addcomments">
-          <form onSubmit={(event) => addComment(event)}>
-            <input
-              type="text"
-              placeholder="Leave your comments here"
-              value={newcomment}
-              onChange={(event) => setNewComment(event.target.value)}
-              required
-            />
-            <button className="addcomments-btn" type="submit">Submit</button>
-          </form>
         </div>
       </div>
     );

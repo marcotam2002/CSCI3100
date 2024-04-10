@@ -22,6 +22,7 @@ import likeIcon from '../assets/like.svg';
 import logoutIcon from "../assets/log-out.svg";
 import likedIcon from '../assets/liked.svg';
 import commentIcon from '../assets/comment.svg';
+import repostIcon from '../assets/repost.svg';
 import { useNavigate } from 'react-router';
 import { getCookie } from "./CookieHandlers";
 import { useParams } from 'react-router-dom';
@@ -31,7 +32,7 @@ import './Post.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function Post({ userID, postID, navigateFunc }) {
+function Post({ userID, postID }) {
   const [post, setPost] = useState({});
   const [newcomment, setNewComment] = useState("");
   const [loadingPost, setLoadingPost] = useState(true);
@@ -195,6 +196,7 @@ function PostBox({ userID, postID, navigateFunc }) {
   const [isRepost, setIsRepost] = useState(false);
   const [username, setUsername] = useState("");
   const [repostID, setRepostID] = useState(0);
+
   const checkIsRepost = async () => {
     const response = await fetch(`${API_BASE_URL}/api/post/checkRepost`, {
       method: 'POST',
@@ -209,34 +211,54 @@ function PostBox({ userID, postID, navigateFunc }) {
       setRepostID(parseInt(resdata.content));
       console.log(resdata);
     } else {
-      setType("like");
+       // system error
+       console.log('Error:', resdata.message);
     }
+  }
 
-    // for fetch part
-    const data = {
-      postID: postID,
-      userID: userID,
-      type: type
-    };
-
-    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
-      method: 'PUT',
+  const getUsername = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/post/getAuthorName`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ postID: postID })
     });
     if (response.status === 200) {
-      // successful update
-      getSinglePost(postID);
-      console.log("successful update")
+      const resdata = await response.text();
+      setUsername(resdata);
     } else {
       // system error
       console.log('Error:', resdata.message);
     }
   }
+
+
+    // for fetch part
+    // const data = {
+    //   postID: postID,
+    //   userID: userID,
+    //   type: type
+    // };
+
+    // const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
+    //   method: 'PUT',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify(data)
+    // });
+    // if (response.status === 200) {
+    //   // successful update
+    //   getSinglePost(postID);
+    //   console.log("successful update")
+    // } else {
+    //   // system error
+    //   console.log('Error:', resdata.message);
+    // }
+  
   useEffect(() => { checkIsRepost(); getUsername();}, []);
-  if(isRepost){return(<div id="repostBox"><h6><b>{username}</b> Reposted</h6><div id="repost"><Post userID={userID} postID={repostID} /></div></div> )}
+  if(isRepost){return(<div id="repostBox"><h6><b>{username}</b> Reposted</h6><div id="repost"><Post userID={userID} postID={repostID} navigateFunc={navigateFunc} /></div></div> )}
   else{return <Post userID={userID} postID={postID} navigateFunc={navigateFunc}/>;}
 }
 
