@@ -446,7 +446,7 @@ app.post("/api/user/followuser", async(req, res)=>{
     }
 })
 
-app.post("/user/unfollowuser", async(req, res)=>{
+app.post("/api/user/unfollowuser", async(req, res)=>{
     console.log("unfollow user request received")
     const userHandler=new UserHandler(req.body.currentUserID);
     const result = await userHandler.unfollowUser(req.body.targetUserID);   
@@ -594,21 +594,21 @@ app.post("/api/user/getUser", async(req,res)=>{
     console.log("number of followers: " + followers.followers);
     if(targetuserProfile.success){
         delete userHandler;
-        if (targetuserProfile.message === "Target user profile retrieved successfully") {
-            return res.status(200).send({
-                user:targetuserProfile.targetUser, 
-                followersCount:followers.followers,
-                followingCount:following.following,
-            });
-        };
-        if (targetuserProfile.message === "User profile retrieved successfully" || targetuserProfile.message === "User is private") {
+        // if (targetuserProfile.message === "Target user profile retrieved successfully") {
+        //     return res.status(200).send({
+        //         user:targetuserProfile.targetUser, 
+        //         followersCount:followers.followers,
+        //         followingCount:following.following,
+        //     });
+        // };
+        // if (targetuserProfile.message === "User profile retrieved successfully" || targetuserProfile.message === "User is private") {
             return res.status(200).send({
                 user:targetuserProfile.targetUser, 
                 followersCount:followers.followers,
                 followingCount:following.following,
                 isFollowing: targetuserProfile.isFollowing,
             });
-        }
+        // }
         
     }
     else {

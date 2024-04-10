@@ -74,19 +74,19 @@ function ProfilePostComponent({ posts, changeLike, loading2 }) {
           <Link to={`/post/${post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
           <p>{post.commentnum}</p>
         </div>
-        {/* <div className="comments">
-          {post.comments.slice(0, 2).map((comment, index) => (
+        <div className="comments">
+          {post.comment && post.comments.slice(0, 2).map((comment, index) => (
             <div className="comment" key={index}>
               <span className="comment-username"><b>{comment.username}</b></span>
               <span className="comment-text">{comment.text}</span>
             </div>
           ))}
-        </div> */}
-        {/* {post.comments.length > 2 && (
+        </div>
+        {post.comment && post.comments.length > 2 && (
           <div className="view-all-comments">
             <Link to={`/post/${post.postID}`}>View all comments</Link>
           </div>
-        )} */}
+        )}
       </div>
     );
   };
@@ -145,6 +145,7 @@ function Profile(){
   const navigate = useNavigate();
   const currentUser = getCookie("userID");
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [isFollow, setIsFollow] = useState("");
   const [profileUser, setProfileUser] = useState("");
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(false);
@@ -231,7 +232,8 @@ function Profile(){
       // console.log(resdata.user);
       // console.log(resdata);
       setProfileUser(resdata.user);
-      console.log(resdata);
+      // console.log(resdata);
+      setIsFollow(resdata.isFollowing)
       setFollowerNum(resdata.followersCount);
       setFollowingNum(resdata.followingCount);
       if (userID == currentUser || resdata.user.privacy == "public" || resdata.isFollowing == true) {
@@ -379,11 +381,11 @@ function Profile(){
       body: JSON.stringify(data)
     });
     if (response.status === 200) {
-      const resdata = await response.json();
+      const resdata = await response.text();
       console.log(resdata);
       console.log("Follow user request sent.");
     } else {
-      const resdata = await response.json();
+      const resdata = await response.text();
       console.log("System Error in sending follow user request");
     }
   }
@@ -401,11 +403,11 @@ function Profile(){
       body: JSON.stringify(data)
     });
     if (response.status === 200) {
-      const resdata = await response.json();
+      const resdata = await response.text();
       console.log(resdata);
       console.log("Follow user request sent.");
     } else {
-      const resdata = await response.json();
+      const resdata = await response.text();
       console.log("System Error in sending follow user request");
     }
   }
@@ -477,7 +479,7 @@ function Profile(){
         {loading ? (
               <div>Loading...</div>
             ) : (
-              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post}  changeLike={changeLike} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} followerNum={followerNum} followingNum={followingNum}  />
+              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post} isFollow={isFollow} changeLike={changeLike} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} followerNum={followerNum} followingNum={followingNum}  />
             )}
         </div>
       </div>

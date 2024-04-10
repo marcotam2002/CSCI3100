@@ -116,7 +116,7 @@ function UserHomepage() {
   const user = getCookie("username");
   const userID = getCookie("userID");
 
-  const getFollowingPost = async () => {
+  const getFollowingPost = async (userID) => {
     const data = {
       userID: userID,
     };
@@ -127,6 +127,7 @@ function UserHomepage() {
       },
       body: JSON.stringify(data)
     });
+    console.log(response);
     if (response.status === 200) {
       const resdata = await response.json();
       const post1 = resdata.posts;
@@ -140,7 +141,7 @@ function UserHomepage() {
     }
   }
 
-  const getPopularPost = async () => {
+  const getPopularPost = async (userID) => {
     const data = {
       userID: userID,
     };
@@ -164,7 +165,7 @@ function UserHomepage() {
     }
   }
 
-  const getRecommendPosts = async () => {
+  const getRecommendPosts = async (userID) => {
     const data = {
       userID: userID,
     };
@@ -193,29 +194,29 @@ function UserHomepage() {
   
 
   useEffect(() => {
-    const getHomepagePost = async () => {
+    const getHomepagePost = async (userID) => {
       try {
         
         let postlist=[];
         console.log("Testpoint 1");
         
-         getFollowingPost().then((post1) => {
-          postlist = [...postlist,...post1];
-          console.log("Testpoint 2");
-         });
-         console.log("Testpoint 3");
+        getFollowingPost(userID).then((post1) => {
+        postlist = [...postlist,...post1];
+        console.log("Testpoint 2");
+        });
+        console.log("Testpoint 3");
 
-         getPopularPost().then((post2) => {
-          postlist = [...postlist,...post2];
-          console.log("Testpoint 4");
-         });
-         console.log("Testpoint 5");
-         getRecommendPosts().then((post3) => {
-          postlist = [...postlist,...post3];
-          console.log("Testpoint 6");
-         });
-         console.log("Testpoint 7");
-         console.log(postlist);
+        getPopularPost(userID).then((post2) => {
+        postlist = [...postlist,...post2];
+        console.log("Testpoint 4");
+        });
+        console.log("Testpoint 5");
+        getRecommendPosts(userID).then((post3) => {
+        postlist = [...postlist,...post3];
+        console.log("Testpoint 6");
+        });
+        console.log("Testpoint 7");
+        console.log(postlist);
       
 
         const updatedPosts = await Promise.all(allpost.map(async (post) => {
@@ -247,8 +248,8 @@ function UserHomepage() {
       }
     };
 
-    getHomepagePost();
-  }, []);
+    getHomepagePost(userID);
+  }, [userID]);
 
   
   const [notificationState, setNotificationState] = useState(false);

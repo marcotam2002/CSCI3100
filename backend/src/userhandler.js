@@ -142,9 +142,10 @@ class UserHandler extends AccountHandler {
 
         // Check if target user is public
         const targetUser = result.rows[0];
+        const isFollowing = await this.isFollowing(this.userID, targetUserID);
         if (targetUser.privacy === 'public') {
             client.release();
-            return { success: true, message: 'Target user profile retrieved successfully', targetUser };
+            return { success: true, message: 'Target user profile retrieved successfully', targetUser, isFollowing: isFollowing, };
         }
 
         // Retrieve username, description, and privacy from the database
@@ -158,7 +159,6 @@ class UserHandler extends AccountHandler {
         const privacy = userProfile.privacy;
 
         // If target user is private, check if the user is following the target user
-        const isFollowing = await this.isFollowing(this.userID, targetUserID);
         if (isFollowing) {
           // Retrieve posts from the database
           const queryText2 = 'SELECT * FROM posts WHERE authorID = $1';
@@ -1237,7 +1237,7 @@ class UserHandler extends AccountHandler {
           FROM posts
           WHERE authorID NOT IN (SELECT followingID FROM relationships WHERE followerID = $1) AND privacy = 'public'
           AND authorID IN (SELECT followingID FROM relationships WHERE followerID = ANY($2))
-          ORDER BY date DESC
+          ORDER BY time DESC
           LIMIT 10
         `, [this.userID, followerIDs]);
         
@@ -1264,12 +1264,13 @@ class UserHandler extends AccountHandler {
           SELECT postID
           FROM posts
           WHERE authorID IN (SELECT followingID FROM relationships WHERE followerID = $1)
-          ORDER BY date DESC
+          ORDER BY time DESC
           LIMIT 10
         `, [this.userID]);
   
         // const postIDs = queryResult.rows.map(row => row.postid);
         const posts = queryResult.rows;
+        console.log(posts);
     
         client.release();
         return { success: true, message: 'Following posts retrieved successfully', posts };
