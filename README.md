@@ -27,13 +27,13 @@ In this project, we try to set up a Content-Oriented application named Soru like
 |                          | Comment messages                                               | 🔲  |
 |                          | Post messages                                                  | ✅  |
 |                          | Retweet messages                                               | 🔲  |
-|                          | Show following user messages                                   | 🔲  |
+|                          | Show following user messages                                   | ✅  |
 | Advanced Features        | Search for message tags                                        | ✅  |
 |                          | Privacy Control (private and public)                           | ✅  |
-|                          | User recommendation                                            | 🔲  |
-|                          | Content recommendation                                         | 🔲  |
+|                          | User recommendation                                            | ✅  |
+|                          | Content recommendation                                         | ✅  |
 |                          | Privacy Chat                                                   | ✅  |
-|                          | Higher level control type (support image)                      | ✅  |
+|                          | Higher level control type (support images and videos)          | 🔲  |
 |                          | Admin can also list all posts and delele posts                 | ✅  |
 |                          | Forget password (User can change their password)               | ✅  |
 

@@ -152,6 +152,7 @@ function UserHomepage() {
     });
     if (response.status === 200) {
       const resdata = await response.json();
+      console.log(resdata);
       const post1 = resdata.posts;
       console.log("get recent popular posts successful.");
       return post1;
@@ -204,6 +205,7 @@ function UserHomepage() {
 
         const post3 = await getPopularPost();
         postlist = [...postlist, ...post3];
+        console.log(postlist);
 
         const allPosts = await Promise.all(postlist.map(async (post) => {
             const data = {
