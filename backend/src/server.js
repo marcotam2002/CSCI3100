@@ -31,6 +31,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static('public'));
+
 app.get("/test",async(req, res)=>{
     res.json({message:"Hello!"});
 });
