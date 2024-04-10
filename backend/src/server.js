@@ -122,20 +122,24 @@ const upload = multer({storage: storage})
 app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
     console.log("Add Post request received")
     console.log(req.file)
-    let newPath = `public/${
-        req.file.originalname
-        .substring(0, req.file.originalname.lastIndexOf("."))
-        +'-'+Date.now()
-        +"."
-        +req.body.fileType}`
-    fs.rename(req.file.path, newPath, ()=>{
-        console.log("image uploaded successful")
-    })
-    filepath = "../../../backend/"+newPath;
-    console.log(filepath)
-    const userHandler=new UserHandler();
-    
-    const result = await userHandler.createPost(req.body.userID,req.body.description, filepath);   
+    var filepath = null;
+    if(req.file){
+        let newPath = `public/${
+            req.file.originalname
+            .substring(0, req.file.originalname.lastIndexOf("."))
+            +'-'+Date.now()
+            +"."
+            +req.body.fileType}`
+        fs.rename(req.file.path, newPath, ()=>{
+            console.log("image uploaded successful")
+        })
+        //filepath = "../../../backend/"+newPath;
+        filepath = "http://localhost:5164/"+newPath;
+        console.log(filepath)
+    }
+    const userHandler = new UserHandler();
+    const result = await userHandler.createPost(req.body.userID, filepath);
+       
     if(result.success){
         console.log("New Post added to database");
         delete userHandler;
