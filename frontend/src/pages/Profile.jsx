@@ -168,10 +168,6 @@ function Profile(){
   const user = getCookie("username");
   const { userID } = useParams();
 
-  useEffect(() => {
-    setIsCurrentUser(currentUser === userID);
-  }, [userID, currentUser]);
-
   const getProfilePost = async () => {
       const data = {
         userID: userID,
@@ -251,7 +247,11 @@ function Profile(){
   useEffect(() => {
     setLoading(true);
     getUser(userID);
-  }, []);
+}, [userID]);
+
+  useEffect(() => {
+    setIsCurrentUser(currentUser === userID);
+  }, [userID, currentUser]);
 
   const [notificationState, setNotificationState] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(false);
