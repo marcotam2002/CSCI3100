@@ -11,6 +11,24 @@ In this project, we try to set up a Content-Oriented application named Soru like
 
 # Objectives
 
+| Functionality           | Requirements                                                 | Completion |
+|-------------------------|--------------------------------------------------------------|------|
+| Application Architecture | A client-server architecture that can support multiple clients | [x]  |
+| User Interface          | Graphic UI Design                                            | [x]  |
+| Database                | Database Integration (e.g., MySQL)                           | [x]  |
+| User Management         | User signup                                                  | [x]  |
+|                         | User Login & Logout                                          | [x]  |
+| Admin User              | Admin user interface                                         | [x]  |
+|                         | List all users                                               | [x]  |
+|                         | Delete users                                                 | [x]  |
+| Application Requirements | Search for users                                             | [x]  |
+|                         | Follow other users                                           | [x]  |
+|                         | Like/Dislike messages                                        | [ ]  |
+|                         | Comment messages                                             | [ ]  |
+|                         | Post messages                                                | [x]  |
+|                         | Retweet messages                                             | [ ]  |
+|                         | Show following user messages                                 | [ ]  |
+
 # Groupmates / Collaborators
 Tam King Man https://github.com/marcotam2002 <br>
 Tsang Ho Yin https://github.com/Andrewolf2002 <br>
