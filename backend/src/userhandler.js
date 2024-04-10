@@ -40,7 +40,7 @@ class UserHandler extends AccountHandler {
 
     } catch (error) {
       console.error('Error getting username:', error);
-      return null;
+      return {success: false, message: "Error getting username", username: null};
     }
   }
 
@@ -53,7 +53,6 @@ class UserHandler extends AccountHandler {
     try {
         // Update user profile accordingly in the database
         const client = await pool.connect();
-        console.log("breakpoint 1");
         const username = content[0];
         const description = content[1];
         const privacy = content[2];
@@ -64,9 +63,8 @@ class UserHandler extends AccountHandler {
         const result = await client.query(queryText, values);
     
         // if the username is already taken, return an error
-        if (result.rows.length > 0) {
+        if (result.rows.length > 0 && result.rows[0].userid != this.userID) {
           client.release();
-          console.log("breakpoint 2");
           return { success: false, message: 'Username already taken' };
         }
 
@@ -86,7 +84,6 @@ class UserHandler extends AccountHandler {
         await client.query(queryText3, values3);
 
         client.release();
-        console.log("breakpoint 3");
         return { success: true, message: 'User profile edited successfully' };
     } catch (error) {
         console.error('Error editing user profile:', error);
@@ -153,6 +150,7 @@ class UserHandler extends AccountHandler {
         // Retrieve username, description, and privacy from the database
         const queryText0 = 'SELECT username, description, privacy FROM users WHERE userID = $1';
         const values0 = [targetUserID];
+        const userID = [targetUserID];
         const result0 = await client.query(queryText, values);
         const userProfile = result0.rows[0];
         const username = userProfile.username;
@@ -167,19 +165,20 @@ class UserHandler extends AccountHandler {
           const values2 = [targetUserID];
           const result2 = await client.query(queryText2, values2);
           const posts = result2.rows;
+          const userID = [targetUserID];
 
           client.release();
 
           return {
             success: true,
             message: 'User profile retrieved successfully',
-            user: [username, description, posts, privacy],
+            targetUser: targetUser,
             isFollowing: true
           };
 
         } else {
           client.release();
-          return { success: false, message: 'User is private', user : [username, description, privacy], isFollowing: false};
+          return { success: true, message: 'User is private', targetUser : targetUser, isFollowing: false};
         }
     } catch (error) {
         console.error('Error retrieving user profile:', error);
@@ -309,7 +308,7 @@ class UserHandler extends AccountHandler {
 
     } catch (error) {
         console.error('Error checking if user has liked post:', error);
-        return false;
+        return { success: false, message: 'Error checking if user has liked post', liked: null};
     }
   }
 

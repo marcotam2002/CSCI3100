@@ -9,6 +9,7 @@
 
 import "./format.css";
 import "./SearchPage.css";
+import "./Post.css"
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import React, { useState, useEffect } from "react";
 import homeIcon from "../assets/home.svg";
@@ -24,8 +25,62 @@ import { useNavigate } from 'react-router';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+function PostCard({ post, navigateFunc }) {
+  const [username, setUsername] = useState("");
+  const getUserName = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/getUser`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userID: post.authorid })
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      setUsername(resdata.username);
+    } else {
+      // system error
+      console.log('Error:', resdata.message);
+    }
+  }
+  const postSplit = post.content.split('\n');
+  // if postSplit.length > 3, only show the first 3 lines, add ... to the end
+  const postContent = postSplit.length > 3 ? [postSplit[0], postSplit[1], postSplit[2], "..."] : postSplit;
+  useEffect(() => {
+    getUserName();
+  }, []);
 
-function UserSearch() {
+  return (
+    <div id="postCard" onClick={() => navigateFunc(`/post/${post.postid}`)}>
+      <div className="post-header">
+        <span className="post-username">{username}</span>
+        <span className="post-time">{post.time}</span>
+      </div>
+      <div className="post-description">
+        {postContent.map((line, index) => (<p key={index}>{line}</p>))}
+      </div>
+    </div>
+  );
+}
+
+function UserCard({ userid, username, userDescription, navigateFunc }) {
+  let description = [];
+  if (userDescription != null) {
+    const descrptionSplit = userDescription.split('\n');
+    description = descrptionSplit.length > 3 ? [descrptionSplit[0], descrptionSplit[1], descrptionSplit[2], "..."] : descrptionSplit;
+    console.log(description);
+  }
+  return (
+    <div id="userCard" onClick={() => navigateFunc(`/profile/${userid}`)}>
+      <div className="userCardHeader">
+        <span className="username">{username}</span>
+      </div>
+      <div className="userDescription">
+        {description.map((line, index) => (<p key={index}>{line}</p>))}
+      </div>
+    </div>
+  );
+}
+
+function UserSearch({ navigateFunc }) {
   const [searchType, setSearchType] = useState("general");
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -45,10 +100,10 @@ function UserSearch() {
       searchType: searchType,
       searchText: searchText
     }
-    if(searchType == "tag"){
+    if (searchType == "tag") {
       data.searchText = searchText.match(/#\w+/g);
     }
-    if(data.searchText == null){
+    if (data.searchText == null) {
       data.searchText = "";
     }
     const response = await fetch(`${API_BASE_URL}/api/search`, {
@@ -62,13 +117,14 @@ function UserSearch() {
     if (response.status === 200) {
       const resdata = await response.json();
       setSearchResults(resdata);
+      console.log(resdata);
     } else {
       // system error
       const resdata = await response.json();
       console.log('Error:', resdata.message);
     }
   };
-  
+
   return (
     <div id="Search">
       <form onSubmit={handleSubmit}>
@@ -86,15 +142,13 @@ function UserSearch() {
           </select>
         </label>
         <button type="submit">Search!</button>
-        <div>
-        </div>
       </form>
-      <h5 style={{margin:"20px",marginLeft:"0px"}}><b>{searchResults.length > 0 ? "Search result" : "No result found"}</b></h5>
+      <h5 style={{ margin: "20px", marginLeft: "0px" }}><b>{searchResults.length > 0 ? "Search result" : "No result found"}</b></h5>
       {searchResults.length > 0 ? <hr ></hr> : null}
       <div>
         {searchResults.length > 0 ?
-          searchType == "general" || searchType == "tag" ? searchResults.map((result) => <p key={result.postID}> {result.content} </p>) :
-            searchType == "username" ? searchResults.map((result) => <p key={result.userID}> {result.username} </p>) : null : null}
+          searchType == "general" || searchType == "tag" ? searchResults.map((result) => <PostCard key={result.postid} post={result} navigateFunc={navigateFunc} />) :
+            searchType == "username" ? searchResults.map((result) => <UserCard userid={result.userid} username={result.username} userDescription={result.description} navigateFunc={navigateFunc} />) : null : null}
       </div>
     </div>
   );
@@ -186,7 +240,7 @@ function SearchPage() {
           />
         </div>
         <div id="main">
-          <UserSearch />
+          <UserSearch navigateFunc={navigate} />
         </div>
       </div>
     </div>

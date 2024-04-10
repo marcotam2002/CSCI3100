@@ -29,19 +29,62 @@ import AddPostForm from "./AddPostForm";
 import './format.css';
 import './Post.css';
 
-const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+function CommentRender({ comments }) {
+  if (!comments) {
+    return (<div></div>);
+  }
+  console.log(comments);
 
-function SinglePostFrame({ user, posts, ChangeLike }) {
+  const [commentList, setCommentList] = useState([]);
 
-  if (!posts) {
+  const getCommentUserName = async () => {
+    const storage = [];
+    for (let i = 0; i < comments.length; i++) {
+      const response = await fetch(`${API_BASE_URL}/getUsername`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userID: comments[i].authorid })
+      });
+      if (response.status === 200) {
+        const resdata = await response.text();
+        storage.push({ username: resdata, content: comments[i].content });
+      } else {
+        // system error
+        console.log('Error:', resdata.message);
+      }
+    }
+    setCommentList(storage);
+  }
+
+  useEffect(() => {getCommentUserName();}, []);
+
+  return (
+    <div className="comments">
+      {commentList.map((comment, index) => (
+        <div className="comment" key={index}>
+          <span className="comment-username"><b>{comment.username}</b></span>
+          <span className="comment-text">{comment.content}</span>
+        </div>
+      ))}
+    </div>
+  );
+
+}
+
+function SinglePostFrame({ user, post, ChangeLike }) {
+
+  if (!post) {
     return (
       <div>Post not found!</div>
     )
   }
-
+  console.log(post);
   const [newcomment, setNewComment] = useState("");
-  const [singlePost, setSinglePost] = useState(posts);
+  const [singlePost, setSinglePost] = useState(post);
 
   const addComment = async (postID, event) => {
     event.preventDefault();
@@ -56,77 +99,70 @@ function SinglePostFrame({ user, posts, ChangeLike }) {
       comment: newcomment,
     };
 
-    const response = await fetch(`${API_BASE_URL}/post/commentadd`, { 
+    const response = await fetch(`${API_BASE_URL}/post/commentadd`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     });
-    if (response.status === 200){
-        // successful update
-        getSinglePost();
-        console.log("successful update")
-    }else{
-        // failed update
-        console.log("failed to update")
+    if (response.status === 200) {
+      // successful update
+      getSinglePost();
+      console.log("successful update")
+    } else {
+      // failed update
+      console.log("failed to update")
     }
   }
 
-  
+
 
   // const renderPost = (post) => {
 
-    return (
-      <div className="single-post" key={singlePost.postid}>
-        <div className="post-header">
-          <span className="post-username">{singlePost.username}</span>
-          <span className="post-time">{singlePost.time}</span>
-        </div>
-        <div className="post-description">
-          {singlePost.content.split('\n').map((line, index) => (
-            <p key={index}>{line}</p>
-          ))}
-        </div>
-        <div className="post-media">
-          {singlePost.mediauri !== "" && singlePost.mediauri.endsWith('.mp4') ? (
-            <video controls>
-              <source src={singlePost.mediauri} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <img src={singlePost.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
-          )}
-        </div>
-        <div className="interaction-buttons">
-          <button className="like-button" onClick={(event) => ChangeLike(singlePost.liked, singlePost.postid, event)}>
-            {singlePost.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
-          </button>
-          <p>{singlePost.likes}</p>
-          <img src={commentIcon} alt="comment" /><p>{singlePost.commentnum}</p>
-        </div>
-        {/* <div className="comments">
-          {post.comments.map((comment, index) => (
-            <div className="comment" key={index}>
-              <span className="comment-username"><b>{comment.username}</b></span>
-              <span className="comment-text">{comment.text}</span>
-            </div>
-          ))}
-        </div> */}
-        <div className="addcomments">
-          <form onSubmit={(event) => addComment(singlePost.postid, event)}>
-            <input
-              type="text"
-              placeholder="Leave your comments here"
-              value={newcomment}
-              onChange={(event) => setNewComment(event.target.value)}
-              required // Require the input field
-            />
-            <button className="addcomments-btn" type="submit">Submit</button>
-          </form>
-        </div>
+  return (
+    <div className="single-post" key={post.post.postid}>
+      <div className="post-header">
+        <span className="post-username">{post.authorName}</span>
+        <span className="post-time">{post.post.time}</span>
       </div>
-    );
+      <div className="post-description">
+        {post.post.content.split('\n').map((line, index) => (
+          <p key={index}>{line}</p>
+        ))}
+      </div>
+      <div className="post-media">
+        {post.post.mediauri !== "" && post.post.mediauri.endsWith('.mp4') ? (
+          <video controls>
+            <source src={post.post.mediauri} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <img src={post.post.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
+        )}
+      </div>
+      <div className="interaction-buttons">
+        <button className="like-button" onClick={(event) => ChangeLike(post.liked, post.post.postid, event)}>
+          {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
+        </button>
+        <p>{post.post.likes}</p>
+        <img src={commentIcon} alt="comment" /><p>{post.comment.length}</p>
+      </div>
+      <CommentRender comments={post.comment} />
+      <div className="addcomments">
+        <form onSubmit={(event) => addComment(singlePost.postid, event)}>
+          <input
+            type="text"
+            placeholder="Leave your comments here"
+            value={newcomment}
+            onChange={(event) => setNewComment(event.target.value)}
+            required // Require the input field
+          />
+          <button className="addcomments-btn" type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+  );
   // };
 
   // return (
@@ -146,60 +182,32 @@ function SinglePostPage() {
   const user = getCookie("username");
   const userID = getCookie("userID");
 
-  const getSinglePost = async(postID) => {
-    const data = {
-      postID: postID,
-      userID: userID,
-    };
+  const getSinglePost = async (postID) => {
     const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ postID: postID, userID: userID })
     });
     if (response.status === 200) {
       const resdata = await response.json();
-      const singlePost = resdata.result;
-
-      const data2 ={
-        userID: singlePost.authorid,
-      };
-
-      const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data2)
-        });
-
-        if (response2.status === 200) {
-          const userData = await response2.text();
-          const updatedPost = {...singlePost, username: userData};
-          setPost(updatedPost);
-          setFound(true);
-          setLoading(false);
-        } else {
-          console.log("System Error in getting username.");
-          return singlePost;
-          setFound(true);
-          setLoading(false);
-        }
-  } else {
-    console.log("System Error in getting Single Post.");
-    setFound(false);
-    setLoading(false);
-  }
-};
-  useEffect(() => {
-    getSinglePost(postID);
-  }, []);
+      setPost(resdata);
+      setFound(true);
+      setLoading(false);
+    } else {
+      console.log("System Error in getting Single Post.");
+      setFound(false);
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {getSinglePost(postID);}, []);
 
   const changeLike = async (liked, postID, event) => {
     event.preventDefault();
-    const [type,setType] = useState("");
-    if (liked){
+    const [type, setType] = useState("");
+    if (liked) {
       setType("unlike");
     } else {
       setType("like");
@@ -247,7 +255,7 @@ function SinglePostPage() {
     const result2 = await CheckUnreadMessages();
     setUnreadMessages(result2);
   };
-  
+
   useEffect(() => {
     updateState();
     const interval = setInterval(() => {
@@ -261,7 +269,7 @@ function SinglePostPage() {
     <div>
       <div className={`popupBox ${state ? "show" : ""}`}>
         <div onClick={(e) => e.stopPropagation()}>
-          <AddPostForm closeFunc={closeAddPost}/>
+          <AddPostForm closeFunc={closeAddPost} />
         </div>
       </div>
 
@@ -304,19 +312,19 @@ function SinglePostPage() {
             color={"black"}
             func={() => navigate(`/profile/${getCookie("userID")}`)}
           />
-          <SideBarButton 
+          <SideBarButton
             image={logoutIcon}
             name={"Log out"}
             color={"black"}
-            func = {() => navigate("/")}
+            func={() => navigate("/")}
           />
         </div>
         <div id="main">
-        {loading ? (
-              <div>Loading...</div>
-            ) : (
-              <> {found ? (<SinglePostFrame user={user} posts={post} ChangeLike={changeLike}  />) : <div>Post not found.</div>} </>
-            )}
+          {loading ? (
+            <h3>Loading...</h3>
+          ) : (
+            <> {found ? (<SinglePostFrame user={user} post={post} ChangeLike={changeLike} />) : <h3>Post not found!</h3>} </>
+          )}
         </div>
       </div>
     </div>

@@ -51,3 +51,27 @@
     background-color: #0056b3;
     color: white;
  }
+
+ #postCard, #userCard  {   
+   border: 1px solid #ccc;
+   border-radius: 10px;
+   padding: 20px;
+   margin-top: 20px;
+   cursor: pointer;
+ }
+
+ #postCard:hover, #userCard:hover  {
+   background-color: #f6f6f6;
+   color: #3f3f3f;
+ }
+
+#userCard .userCardHeader {
+   font-family: Brandon Grotesque;
+   font-size: 24px;
+   font-weight: bold;
+ }
+
+ #userCard .userDescription {
+   font-family: Assistant Light;
+   font-size: 20px;
+ }
