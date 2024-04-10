@@ -124,7 +124,7 @@ app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
     console.log(req.file)
     var filepath = null;
     if(req.file){
-        let newPath = `public/${
+        let newPath = `${
             req.file.originalname
             .substring(0, req.file.originalname.lastIndexOf("."))
             +'-'+Date.now()
@@ -138,7 +138,7 @@ app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
         console.log(filepath)
     }
     const userHandler = new UserHandler();
-    const result = await userHandler.createPost(req.body.userID, filepath);
+    const result = await userHandler.createPost(req.body.userID,req.body.description, filepath);
        
     if(result.success){
         console.log("New Post added to database");
