@@ -638,6 +638,13 @@ class UserHandler extends AccountHandler {
       * @param {string} targetUserID - The ID of the user want to follow
     */
     try {
+
+        // Handle the case if the user has sent pending follow request to the target user
+        if ((await this.hasPendingFollowRequest(targetUserID)).isPending) { // Check if the user sent follow request to the target user
+          // Remove the pending follow request
+          return { success: false, message: 'User has already sent follow request to the user.' };
+        }
+
         // Check if the user is already following the target user
         if (await this.isFollowing(this.userID, targetUserID)) {
             return { success: false, message: 'User is already following the target user' };
@@ -650,7 +657,7 @@ class UserHandler extends AccountHandler {
         const result = await client.query(queryText, values);
 
         // Check if the target user is public
-        if (result.rows[0].privacy === 'public') {
+        if (result.rows[0].privacy == 'public') {
             // If the target user is public, append userID to target user's list of followers
             const queryText2 = 'INSERT INTO relationships (followerID, followingID) VALUES ($1, $2)';
             const values2 = [this.userID, targetUserID];
@@ -719,6 +726,28 @@ class UserHandler extends AccountHandler {
         return { success: false, message: 'Failed to reject follow request' };
     }
   }
+  
+  // Method to get if the user has pending follow request to target user
+  async hasPendingFollowRequest(targetUserID) {
+    /*
+      * Check if the user has pending follow request to the target user
+      * @param {string} targetUserID - The ID of the target user
+    */
+    try {
+        // Check if the user has pending follow request to the target user
+        const client = await pool.connect();
+        const queryText = 'SELECT * FROM followRequests WHERE followerID = $1 AND followingID = $2';
+        const values = [this.userID, targetUserID];
+        const result = await client.query(queryText, values);
+        client.release();
+        console.log(result.rows.length);
+        const isPending = result.rows.length > 0 ? true : false ;
+        return {success: true, message: "check pending request successfully", isPending: isPending}
+    } catch (error) {
+        console.error('Error checking if user has pending follow request:', error);
+        return { success: false, message: 'Error checking if user has pending follow request', isPending: null};
+    }
+  }
 
   // Method to unfollow other users
   async unfollowUser(targetUserID) {
@@ -727,6 +756,18 @@ class UserHandler extends AccountHandler {
       * @param {string} targetUserID - The ID of the user to unfollow
     */
     try {
+
+        // Handle the case if the user has sent pending follow request to the target user
+        if ((await this.hasPendingFollowRequest(targetUserID)).isPending) { // Check if the user sent follow request to the target user
+          // Remove the pending follow request
+          const client = await pool.connect();
+          const queryText = 'DELETE FROM followRequests WHERE followerID = $1 AND followingID = $2';
+          const values = [this.userID, targetUserID];
+          await client.query(queryText, values);
+          client.release();
+          return { success: true, message: 'User has removed pending follow request to target user' };
+        }
+
         // Check if the user is following the target user
         if (!await this.isFollowing(this.userID, targetUserID)) {
             return { success: false, message: 'User is not following the target user' };

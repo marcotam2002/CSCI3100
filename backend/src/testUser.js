@@ -28,20 +28,21 @@ async function testUserFunctions() {
     //   usertype: 'user'
     // }
 
-    const user = {
-      userID: 3,
-      username: 'test3',
-      salt: '47bcbe97174c37b83ccdef3ead4a27d1',
-      password: 'fdf73f3f4f030663085dcd4513d4d34ac26d16845929ceeddb4a83867c0f9d9265e49ebacda4d1e90884ad0ffa1581fc9197628819de8f012b54077ec79ebef4',
-      secureqans: '123',
-      privacy: 'public',
-      description: null,
-      active: true,
-      usertype: 'user'
-    }
+    // const user = {
+    //   userID: 3,
+    //   username: 'test3',
+    //   salt: '47bcbe97174c37b83ccdef3ead4a27d1',
+    //   password: 'fdf73f3f4f030663085dcd4513d4d34ac26d16845929ceeddb4a83867c0f9d9265e49ebacda4d1e90884ad0ffa1581fc9197628819de8f012b54077ec79ebef4',
+    //   secureqans: '123',
+    //   privacy: 'public',
+    //   description: null,
+    //   active: true,
+    //   usertype: 'user'
+    // }
 
     // Create a new user
-    const User = new UserHandler(user.userID, user.username, user.salt, user.password, user.usertype, user.privacy, user.active);
+    // const User = new UserHandler(user.userID, user.username, user.salt, user.password, user.usertype, user.privacy, user.active);
+    const User = new UserHandler(2);
 
     console.log('now start testing!');
 
@@ -163,6 +164,10 @@ async function testUserFunctions() {
     // Test general test
     // const generalSearchResult = await User.generalSearch("hehe");
     // console.log(generalSearchResult);
+
+    // Test check pending requests
+    const pendingRequests = await User.hasPendingFollowRequest(1);
+    console.log(pendingRequests);
 
     console.log('Test ended.')
 }
