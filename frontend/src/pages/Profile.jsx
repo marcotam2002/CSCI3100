@@ -172,7 +172,7 @@ function Profile(){
 
   const getProfilePost = async () => {
       const data = {
-        userID: currentUser,
+        userID: userID,
       };
 
       const response = await fetch(`${API_BASE_URL}/getOwnPost`, {
