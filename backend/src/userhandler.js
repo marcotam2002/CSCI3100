@@ -64,7 +64,7 @@ class UserHandler extends AccountHandler {
         const result = await client.query(queryText, values);
     
         // if the username is already taken, return an error
-        if (result.rows.length > 0) {
+        if (result.rows.length > 0 && result.rows[0].userid != this.userID) {
           client.release();
           console.log("breakpoint 2");
           return { success: false, message: 'Username already taken' };
