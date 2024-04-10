@@ -220,10 +220,9 @@ app.put("/api/profile/edit", async(req,res)=>{
     console.log("Profile Edit request received")
     const userHandler=new UserHandler(req.body.userID);
     const content = [req.body.username, req.body.description, req.body.isPrivate];
-    console.log(content);
     const result = await userHandler.editProfile(content);    //test without media first
     if(result.success){
-        console.log(result.message);
+        // console.log(result.message);
         console.log("Success update profile");
         delete userHandler;
         return res.status(200).send();
@@ -400,17 +399,34 @@ app.post("/getSinglePost", async(req, res)=>{
     console.log("Access single post request received")
     const userHandler=new UserHandler(req.body.userID);
     const post = await userHandler.getPost(req.body.postID);
-    const comment = await userHandler.getComment(req.body.postID);
-    const liked= await userHandler.hasLikedPost(req.body.postID);    //test without media first
-    if(post.success){
+    if(post)
+    {
+        const comment = await userHandler.getComment(req.body.postID);
+        if(!comment.success)
+        {
+            delete userHandler;
+            return res.status(404).send({message: "error retrieving comment"});
+        }
+        const liked = await userHandler.hasLikedPost(req.body.postID); 
+        if(!liked.success)
+        {
+            delete userHandler;
+            return res.status(404).send({message: "error retrieving like status"});
+        }
+        const authorName = await userHandler.getUsername(post.authorid);
+        if(!authorName.success) 
+        {
+            delete userHandler;
+            return res.status(404).send({message: "error retrieving authorname"});
+        }  //test without media first
         console.log("Post retrieved");
         delete userHandler;
-        return res.status(200).send({post:post, comment: comment.comments, liked:liked.liked});
+        return res.status(200).send({post:post, comment: comment.comments, liked:liked.liked, authorName: authorName.username});
     }
     else {
         delete userHandler;
         return res.status(404).send({message: "error retrieving post"});
-    }
+    }    
 })
 
 //follow user
@@ -587,15 +603,26 @@ app.post("/api/user/getUser", async(req,res)=>{
     console.log("number of followers: " + followers.followers);
     if(targetuserProfile.success){
         delete userHandler;
-        return res.status(200).send({
-            user:targetuserProfile.targetUser, 
-            followersCount:followers.followers,
-            followingCount:following.following,
-        });
+        if (targetuserProfile.message === "Target user profile retrieved successfully") {
+            return res.status(200).send({
+                user:targetuserProfile.targetUser, 
+                followersCount:followers.followers,
+                followingCount:following.following,
+            });
+        };
+        if (targetuserProfile.message === "User profile retrieved successfully" || targetuserProfile.message === "User is private") {
+            return res.status(200).send({
+                user:targetuserProfile.targetUser, 
+                followersCount:followers.followers,
+                followingCount:following.following,
+                isFollowing: targetuserProfile.isFollowing,
+            });
+        }
+        
     }
     else {
         delete userHandler;
-        return res.status(404).send({message: result.message});
+        return res.status(404).send({message: targetuserProfile.message});
     }
 })
 

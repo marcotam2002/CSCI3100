@@ -24,20 +24,28 @@ export default function EditProfileForm({ closeFunc, originUserName, originDescr
     const userID = getCookie("userID");
 
     const handleSubmit = async (event) => {
+        
         event.preventDefault();
 
         const username = usernameRef.current.value || originUserName;
         const description = descriptionRef.current.value || originDescription;
         const isPrivate = isPrivateRef.current.checked || originPrivacy;
 
+        let privacy = "";
+
         console.log(isPrivate);
+        if (isPrivate) {
+            privacy = "private";
+        } else {
+            privacy = "public";
+        }
 
         const data = {
             username: username,
             userID: userID,
             description: description,
-            isPrivate: isPrivate,
-        }
+            isPrivate: privacy
+        };
 
         const response = await fetch(`${API_BASE_URL}/api/profile/edit`, {
             method: 'PUT',

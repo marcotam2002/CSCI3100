@@ -98,7 +98,7 @@ function ProfilePostComponent({ posts, changeLike, loading2 }) {
   );
 }
 
-function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, isFollow, loading2, unfollowUser, followUser }) {
+function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, isFollow, loading2, unfollowUser, followUser, followerNum, followingNum }) {
 
 
   const editProfile = () => {
@@ -112,9 +112,9 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, changeLike, 
       <div id="profileHeader">
         <h2><b>{user && user.username}</b></h2>
         <div id="followBox">
-          {/* <p><b>{user && user.followersCount}</b></p> */}
+          <p><b>{user && followerNum}</b></p>
           <p> followers </p>
-          {/* <p><b>{user && user.followingCount}</b></p> */}
+          <p><b>{user && followingNum}</b></p>
           <p> following </p>
         </div>
         <button onClick={isCurrentUser ? editProfile : (isFollow ? unfollowUser : followUser)}>
@@ -148,6 +148,8 @@ function Profile(){
   const [profileUser, setProfileUser] = useState("");
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(false);
+  const [followingNum, setFollowingNum] = useState("");
+  const [followerNum, setFollowerNum] = useState("");
 
   const openEditProfileForm = () => {
     setState2(true);
@@ -165,10 +167,6 @@ function Profile(){
   };
   const user = getCookie("username");
   const { userID } = useParams();
-
-  useEffect(() => {
-    setIsCurrentUser(currentUser === userID);
-  }, [userID, currentUser]);
 
   const getProfilePost = async () => {
       const data = {
@@ -229,9 +227,13 @@ function Profile(){
     });
     if (response.status === 200) {
       const resdata = await response.json();
-      console.log(resdata.followersCount)
-      console.log(resdata.user);
+      // console.log(resdata.followersCount)
+      // console.log(resdata.user);
+      // console.log(resdata);
       setProfileUser(resdata.user);
+      console.log(resdata);
+      setFollowerNum(resdata.followersCount);
+      setFollowingNum(resdata.followingCount);
       if (userID == currentUser || resdata.user.privacy == "public" || resdata.isFollowing == true) {
         setAccess(true);
         getProfilePost();
@@ -244,8 +246,13 @@ function Profile(){
     }
   }
   useEffect(() => {
+    setLoading(true);
     getUser(userID);
-  }, []);
+}, [userID]);
+
+  useEffect(() => {
+    setIsCurrentUser(currentUser === userID);
+  }, [userID, currentUser]);
 
   const [notificationState, setNotificationState] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(false);
@@ -470,7 +477,7 @@ function Profile(){
         {loading ? (
               <div>Loading...</div>
             ) : (
-              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post}  changeLike={changeLike} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} />
+              <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post}  changeLike={changeLike} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} followerNum={followerNum} followingNum={followingNum}  />
             )}
         </div>
       </div>
