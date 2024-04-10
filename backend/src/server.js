@@ -397,17 +397,34 @@ app.post("/getSinglePost", async(req, res)=>{
     console.log("Access single post request received")
     const userHandler=new UserHandler(req.body.userID);
     const post = await userHandler.getPost(req.body.postID);
-    const comment = await userHandler.getComment(req.body.postID);
-    const liked= await userHandler.hasLikedPost(req.body.postID);    //test without media first
-    if(post.success){
+    if(post)
+    {
+        const comment = await userHandler.getComment(req.body.postID);
+        if(!comment.success)
+        {
+            delete userHandler;
+            return res.status(404).send({message: "error retrieving comment"});
+        }
+        const liked = await userHandler.hasLikedPost(req.body.postID); 
+        if(!liked.success)
+        {
+            delete userHandler;
+            return res.status(404).send({message: "error retrieving like status"});
+        }
+        const authorName = await userHandler.getUsername(post.authorid);
+        if(!authorName.success) 
+        {
+            delete userHandler;
+            return res.status(404).send({message: "error retrieving authorname"});
+        }  //test without media first
         console.log("Post retrieved");
         delete userHandler;
-        return res.status(200).send({post:post, comment: comment.comments, liked:liked.liked});
+        return res.status(200).send({post:post, comment: comment.comments, liked:liked.liked, authorName: authorName.username});
     }
     else {
         delete userHandler;
         return res.status(404).send({message: "error retrieving post"});
-    }
+    }    
 })
 
 //follow user

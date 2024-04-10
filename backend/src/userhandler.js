@@ -40,7 +40,7 @@ class UserHandler extends AccountHandler {
 
     } catch (error) {
       console.error('Error getting username:', error);
-      return null;
+      return {success: false, message: "Error getting username", username: null};
     }
   }
 
@@ -308,7 +308,7 @@ class UserHandler extends AccountHandler {
 
     } catch (error) {
         console.error('Error checking if user has liked post:', error);
-        return false;
+        return { success: false, message: 'Error checking if user has liked post', liked: null};
     }
   }
 
