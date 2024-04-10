@@ -1209,11 +1209,17 @@ class UserHandler extends AccountHandler {
           LIMIT 10
         `);
   
-        // const postIDs = queryResult.rows.map(row => row.postid);
+        // const postIDs = queryResult.rows.map(row => row.contentid);
         const posts = queryResult.rows;
+        const modifiedPosts = posts.map(post => {
+          return {
+            postid: post.contentid,
+            count: post.count
+          }
+        })
     
         client.release();
-        return { success: true, message: 'Recent popular posts retrieved successfully', posts };
+        return { success: true, message: 'Recent popular posts retrieved successfully', modifiedPosts };
       } catch (error) {
         return { success: false, message: 'Failed to get recent popular posts' };
       }

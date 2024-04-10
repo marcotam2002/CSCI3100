@@ -577,7 +577,7 @@ app.get("/api/user/getRecentPopularPosts", async(req, res)=>{
     if(result.success){
         console.log(result);
         delete userHandler;
-        return res.status(200).send({posts: result.posts});
+        return res.status(200).send({posts: result.modifiedPosts});
     }
     else {
         delete userHandler;
