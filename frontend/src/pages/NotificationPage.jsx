@@ -44,13 +44,12 @@ function NotificationBox({ notifcations , action}) {
                 ))}
                 {notifcations.recommendedUsers && Object.keys(notifcations.recommendedUsers).map((key) => (
                     <tr key={key}>
-                        <td className="notificationName">
-                            {/* <p><b>{notifcations.recommendedUsers[key]}</b></p> */}
-                        </td>
                         <td className="notificationContent">
-                            <p>You may be interested in {notifcations.recommendedUsers[key]}</p>
+                        <p>You may be interested in {notifcations.recommendedUsers[key]}</p>
                         </td>
-                        <td className="notificationButton">
+                        <td>
+                        </td>
+                        <td>
                         </td>
                     </tr>
                 ))}
