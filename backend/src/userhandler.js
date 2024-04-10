@@ -1165,7 +1165,7 @@ class UserHandler extends AccountHandler {
         
         if (queryResult.rows.length === 0) {
           client.release();
-          return { success: false, message: 'No recommended users' };
+          return { success: true, message: 'No recommended users' };
         }
         
         const nearestUserID = queryResult.rows[0].followerid;
