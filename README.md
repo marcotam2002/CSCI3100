@@ -33,7 +33,7 @@ In this project, we try to set up a Content-Oriented application named Soru like
 |                          | User recommendation                                            | ✅  |
 |                          | Content recommendation                                         | ✅  |
 |                          | Privacy Chat                                                   | ✅  |
-|                          | Higher level control type (support images and videos)          | 🔲  |
+|                          | Higher level control type (support images)                     | ✅  |
 |                          | Admin can also list all posts and delele posts                 | ✅  |
 |                          | Forget password (User can change their password)               | ✅  |
 
