@@ -1238,7 +1238,7 @@ class UserHandler extends AccountHandler {
           FROM posts
           WHERE authorID NOT IN (SELECT followingID FROM relationships WHERE followerID = $1) AND privacy = 'public'
           AND authorID IN (SELECT followingID FROM relationships WHERE followerID = ANY($2))
-          ORDER BY date DESC
+          ORDER BY time DESC
           LIMIT 10
         `, [this.userID, followerIDs]);
         
@@ -1265,7 +1265,7 @@ class UserHandler extends AccountHandler {
           SELECT postID
           FROM posts
           WHERE authorID IN (SELECT followingID FROM relationships WHERE followerID = $1)
-          ORDER BY date DESC
+          ORDER BY time DESC
           LIMIT 10
         `, [this.userID]);
   
