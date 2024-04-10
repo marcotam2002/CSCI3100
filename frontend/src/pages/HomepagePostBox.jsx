@@ -15,6 +15,7 @@ import likedIcon from '../assets/liked.svg';
 import commentIcon from '../assets/comment.svg';
 import { Link } from 'react-router-dom';
 import repostIcon from '../assets/repost.svg';
+import { useNavigate } from 'react-router';
 
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -23,11 +24,11 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function Post({ userID, postID, isrecommend }) {
     const [post, setPost] = useState({});
-    const [newcomment, setNewComment] = useState("");
     const [loadingPost, setLoadingPost] = useState(true);
     const [loadingComment, setLoadingComment] = useState(true);
     const [found, setFound] = useState(false);
     const [commentList, setCommentList] = useState([]);
+    const navigate = useNavigate();
   
     const getCommentUserName = async () => {
       if (post.comment) {
@@ -99,7 +100,9 @@ function Post({ userID, postID, isrecommend }) {
       });
       if (response.status === 200) {
         const resdata = await response.json();
+        const postID = resdata.postID;
         alert("Reposted");
+        // navigate(`/post/${postID}`);
       } else {
         // system error
         alert("You cannot repost this post!")
@@ -171,9 +174,11 @@ function Post({ userID, postID, isrecommend }) {
   
 }
   
-function HomepagePostBox({ userID, postID }) {
+function HomepagePostBox({ userID, postID, isrecommend }) {
     const [isRepost, setIsRepost] = useState(false);
     const [username, setUsername] = useState("");
+    const [repostID, setRepostID] = useState(0);
+
     const checkIsRepost = async () => {
       const response = await fetch(`${API_BASE_URL}/api/post/checkRepost`, {
         method: 'POST',
@@ -185,6 +190,7 @@ function HomepagePostBox({ userID, postID }) {
       if (response.status === 200) {
         const resdata = await response.json();
         setIsRepost(resdata.isRepost);
+        setRepostID(parseInt(resdata.content));
       } else {
         // system error
         console.log('Error:', resdata.message);
@@ -208,8 +214,8 @@ function HomepagePostBox({ userID, postID }) {
       }
     }
     useEffect(() => { checkIsRepost(); getUsername();}, []);
-    if(isRepost){return(<div id="repostBox"><h6><b>{username}</b> Reposted</h6><div id="repost"><Post userID={userID} postID={1} /></div></div> )}
-    else{return <Post userID={userID} postID={postID} />;}
+    if(isRepost){return(<div id="repostBox"><h6><b>{username}</b> Reposted</h6><div id="repost"><Post userID={userID} postID={repostID} isrecommend={isrecommend}/></div></div> )}
+    else{return <Post userID={userID} postID={postID} isrecommend={isrecommend}/>;}
   }
 
 export default HomepagePostBox;
