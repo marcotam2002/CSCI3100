@@ -11,6 +11,7 @@
 
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import "./format.css";
+import './Post.css';
 import React, { useEffect, useState } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
@@ -22,16 +23,15 @@ import likeIcon from '../assets/like.svg';
 import logoutIcon from "../assets/log-out.svg";
 import likedIcon from '../assets/liked.svg';
 import commentIcon from '../assets/comment.svg';
+import repostIcon from '../assets/repost.svg';
 import { useNavigate } from 'react-router';
 import { getCookie } from "./CookieHandlers";
 import { useParams } from 'react-router-dom';
 import AddPostForm from "./AddPostForm";
-import './format.css';
-import './Post.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function PostBox({ userID, postID }) {
+function Post({ userID, postID }) {
   const [post, setPost] = useState({});
   const [newcomment, setNewComment] = useState("");
   const [loadingPost, setLoadingPost] = useState(true);
@@ -104,7 +104,7 @@ function PostBox({ userID, postID }) {
   }
 
   const likePost = async () => {
-    const data = {userID: userID, postID: postID, type: post.liked};
+    const data = { userID: userID, postID: postID, type: post.liked };
     const response = await fetch(`${API_BASE_URL}/api/post/likePost`, {
       method: 'PUT',
       headers: {
@@ -119,7 +119,6 @@ function PostBox({ userID, postID }) {
     }
   }
 
-  
   useEffect(() => { getPost(); }, []);
   useEffect(() => { getCommentUserName(); }, [post]);
 
@@ -155,7 +154,7 @@ function PostBox({ userID, postID }) {
         ))}
       </div>
       <div className="addcomments">
-        <form onSubmit={(event)=>addComment(event)}>
+        <form onSubmit={(event) => addComment(event)}>
           <input
             type="text"
             placeholder="Leave your comments here"
@@ -171,49 +170,54 @@ function PostBox({ userID, postID }) {
 
 }
 
+function PostBox({ userID, postID }) {
+  const [isRepost, setIsRepost] = useState(false);
+  const [username, setUsername] = useState("");
+  const checkIsRepost = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/post/checkRepost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ postID: postID })
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      setIsRepost(resdata.isRepost);
+    } else {
+      // system error
+      console.log('Error:', resdata.message);
+    }
+  }
+  
+  const getUsername = async () => {
+    const response = await fetch(`${API_BASE_URL}/getUsername`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ userID: userID })
+    });
+    if (response.status === 200) {
+      const resdata = await response.text();
+      setUsername(resdata);
+    } else {
+      // system error
+      console.log('Error:', resdata.message);
+    }
+  }
+  useEffect(() => { checkIsRepost(); getUsername();}, []);
+  if(isRepost){return(<div id="repostBox"><h6><b>{username}</b> Reposted</h6><div id="repost"><Post userID={userID} postID={1} /></div></div> )}
+  else{return <Post userID={userID} postID={postID} />;}
+}
+
 
 function SinglePostPage() {
   const [state, setState] = useState(false);
   const { postID } = useParams();
-  const [post, setPost] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [found, setFound] = useState(false);
 
   const user = getCookie("username");
   const userID = getCookie("userID");
-
-  const changeLike = async (liked, postID, event) => {
-    event.preventDefault();
-    const [type, setType] = useState("");
-    if (liked) {
-      setType("unlike");
-    } else {
-      setType("like");
-    }
-
-    // for fetch part
-    const data = {
-      postID: postID,
-      userID: userID,
-      type: type
-    };
-
-    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      // successful update
-      getSinglePost(postID);
-      console.log("successful update")
-    } else {
-      // failed update
-      console.log("failed to update")
-    }
-  };
 
   const navigate = useNavigate();
 
@@ -223,7 +227,6 @@ function SinglePostPage() {
   const closeAddPost = () => {
     setState(false);
   };
-
 
   const [notificationState, setNotificationState] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(false);

@@ -392,7 +392,20 @@ class UserHandler extends AccountHandler {
         return { success: false, message: 'Failed to unlike post' };
     }
   }
-
+  async checkRepost(postID) {
+    try {
+      // Delete likes associated with the post
+      const client = await pool.connect();
+      const queryText = 'SELECT isrepost FROM posts WHERE postid = $1';
+      const values = [postID];
+      const result = await client.query(queryText, values);
+      client.release();
+      return { success: true, isRepost: result.rows[0].isrepost, message: 'Check is repost request success'};
+    } catch (error) {
+      console.error('Error check repost:', error);
+      return { success: false, isRepost: null, message: "Failed to check is repost request" };
+    }
+  }
   // Method to repost a post
   async repostPost(postID) {
     /*
