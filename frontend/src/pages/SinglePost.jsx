@@ -31,7 +31,7 @@ import './Post.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function PostBox({ userID, postID }) {
+function Post({ userID, postID, navigateFunc }) {
   const [post, setPost] = useState({});
   const [newcomment, setNewComment] = useState("");
   const [loadingPost, setLoadingPost] = useState(true);
@@ -119,8 +119,25 @@ function PostBox({ userID, postID }) {
     }
   }
 
-  
-  useEffect(() => { getPost(); }, []);
+  const rePost = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/user/repost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({userID: userID,postID: postID})
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      alert("Reposted");
+    } else {
+      // system error
+      alert("You cannot repost this post!")
+      console.log('Error:', resdata.message);
+    }
+  }
+
+  useEffect(() => { getPost();}, []);
   useEffect(() => { getCommentUserName(); }, [post]);
 
   if (loadingPost || loadingComment) {
@@ -145,6 +162,9 @@ function PostBox({ userID, postID }) {
         </button>
         <p>{post.post.likes}</p>
         <img src={commentIcon} alt="comment" /><p>{post.comment.length}</p>
+        <button className="repost-button" onClick={() => rePost()}>
+          <img src={repostIcon} alt="repost" />
+        </button>
       </div>
       <div className="comments">
         {commentList.map((comment, index) => (
@@ -171,22 +191,23 @@ function PostBox({ userID, postID }) {
 
 }
 
-
-function SinglePostPage() {
-  const [state, setState] = useState(false);
-  const { postID } = useParams();
-  const [post, setPost] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [found, setFound] = useState(false);
-
-  const user = getCookie("username");
-  const userID = getCookie("userID");
-
-  const changeLike = async (liked, postID, event) => {
-    event.preventDefault();
-    const [type, setType] = useState("");
-    if (liked) {
-      setType("unlike");
+function PostBox({ userID, postID, navigateFunc }) {
+  const [isRepost, setIsRepost] = useState(false);
+  const [username, setUsername] = useState("");
+  const [repostID, setRepostID] = useState(0);
+  const checkIsRepost = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/post/checkRepost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ postID: postID })
+    });
+    if (response.status === 200) {
+      const resdata = await response.json();
+      setIsRepost(resdata.isRepost);
+      setRepostID(parseInt(resdata.content));
+      console.log(resdata);
     } else {
       setType("like");
     }
@@ -210,10 +231,22 @@ function SinglePostPage() {
       getSinglePost(postID);
       console.log("successful update")
     } else {
-      // failed update
-      console.log("failed to update")
+      // system error
+      console.log('Error:', resdata.message);
     }
-  };
+  }
+  useEffect(() => { checkIsRepost(); getUsername();}, []);
+  if(isRepost){return(<div id="repostBox"><h6><b>{username}</b> Reposted</h6><div id="repost"><Post userID={userID} postID={repostID} /></div></div> )}
+  else{return <Post userID={userID} postID={postID} navigateFunc={navigateFunc}/>;}
+}
+
+
+function SinglePostPage() {
+  const [state, setState] = useState(false);
+  const { postID } = useParams();
+
+  const user = getCookie("username");
+  const userID = getCookie("userID");
 
   const navigate = useNavigate();
 
@@ -299,7 +332,7 @@ function SinglePostPage() {
           />
         </div>
         <div id="main">
-          <PostBox userID={userID} postID={postID} />
+          <PostBox userID={userID} postID={postID} navigateFunc={navigate}/>
         </div>
       </div>
     </div>
