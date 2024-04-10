@@ -124,7 +124,7 @@ app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
     console.log(req.file)
     var filepath = null;
     if(req.file){
-        let newPath = `${
+        let newPath = `public/${
             req.file.originalname
             .substring(0, req.file.originalname.lastIndexOf("."))
             +'-'+Date.now()
@@ -134,7 +134,7 @@ app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
             console.log("image uploaded successful")
         })
         //filepath = "../../../backend/"+newPath;
-        filepath = "http://localhost:5164/"+newPath;
+        filepath = "http://localhost:5164/"+newPath.replace("public/","");
         console.log(filepath)
     }
     const userHandler = new UserHandler();
