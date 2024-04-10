@@ -467,17 +467,26 @@ app.post("/api/user/getMessage", async(req,res)=>{
 app.post("/api/user/getNotification", async(req,res)=>{
     console.log("fetching notication request received")
     const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.getNotifications();   
-    if(result.success){
-        console.log(result.message);
+    const requestResult = await userHandler.getNotifications();
+    const recommendedResult = await userHandler.getRecommendedUsers();
+    console.log(requestResult)
+    console.log(recommendedResult)
+
+    if(requestResult.success && recommendedResult.success){
+        console.log(requestResult.message);
+        console.log(recommendedResult.message);
         delete userHandler;
-        return res.status(200).send(result.notifications);
+        return res.status(200).send({notifications: requestResult.notifications, recommendedUsers: recommendedResult.recommendedUserIDs});
     }
-    else {
+    else if(!requestResult.success){
         delete userHandler;
-        return res.status(404).send({message: result.message});
+        return res.status(404).send({message: requestResult.message});
+    } else {
+        delete userHandler;
+        return res.status(404).send({message: recommendedResult.message});
     }
 })
+
 //Accept follower request
 app.post("/api/user/acceptFollowRequest", async(req,res)=>{
     console.log("accept follower request received")
