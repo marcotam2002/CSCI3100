@@ -34,6 +34,9 @@ In this project, we try to set up a Content-Oriented application named Soru like
 |                          | Content recommendation                                         | 🔲  |
 |                          | Privacy Chat                                                   | ✅  |
 |                          | Higher level control type (support image)                      | ✅  |
+|                          | Admin can also list all posts and delele posts                 | ✅  |
+|                          | Forget password (User can change their password)               | ✅  |
+
 
 
 # Groupmates / Collaborators
