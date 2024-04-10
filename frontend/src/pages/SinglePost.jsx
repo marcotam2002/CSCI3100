@@ -191,12 +191,12 @@ function PostBox({ userID, postID }) {
   }
   
   const getUsername = async () => {
-    const response = await fetch(`${API_BASE_URL}/getUsername`, {
+    const response = await fetch(`${API_BASE_URL}/api/post/getAuthorName`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ userID: userID })
+      body: JSON.stringify({ postID: postID })
     });
     if (response.status === 200) {
       const resdata = await response.text();
