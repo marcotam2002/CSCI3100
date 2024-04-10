@@ -61,9 +61,9 @@ function PostCard({ post, navigateFunc }) {
   );
 }
 
-function UserCard({ userid, username, userDescription,  navigateFunc }) {
+function UserCard({ userid, username, userDescription, navigateFunc }) {
   let description = [];
-  if(userDescription != null){
+  if (userDescription != null) {
     const descrptionSplit = userDescription.split('\n');
     description = descrptionSplit.length > 3 ? [descrptionSplit[0], descrptionSplit[1], descrptionSplit[2], "..."] : descrptionSplit;
     console.log(description);
@@ -80,7 +80,7 @@ function UserCard({ userid, username, userDescription,  navigateFunc }) {
   );
 }
 
-function UserSearch({ navigateFunc}) {
+function UserSearch({ navigateFunc }) {
   const [searchType, setSearchType] = useState("general");
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -148,7 +148,7 @@ function UserSearch({ navigateFunc}) {
       <div>
         {searchResults.length > 0 ?
           searchType == "general" || searchType == "tag" ? searchResults.map((result) => <PostCard key={result.postid} post={result} navigateFunc={navigateFunc} />) :
-            searchType == "username" ? searchResults.map((result) => <UserCard userid={result.userid} username={result.username} userDescription={result.description} navigateFunc={navigateFunc}/>) : null : null}
+            searchType == "username" ? searchResults.map((result) => <UserCard userid={result.userid} username={result.username} userDescription={result.description} navigateFunc={navigateFunc} />) : null : null}
       </div>
     </div>
   );
@@ -177,9 +177,9 @@ function SearchPage() {
   };
 
   useEffect(() => {
-    // updateState();
+    updateState();
     const interval = setInterval(() => {
-      // updateState();
+      updateState();
       console.log("unread messages", unreadMessages);
     }, 3000);
     return () => clearInterval(interval);
@@ -240,7 +240,7 @@ function SearchPage() {
           />
         </div>
         <div id="main">
-          <UserSearch navigateFunc={navigate}/>
+          <UserSearch navigateFunc={navigate} />
         </div>
       </div>
     </div>
