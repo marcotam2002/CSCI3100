@@ -23,7 +23,7 @@ import logoutIcon from "../assets/log-out.svg";
 import AddPostForm from './AddPostForm';
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
-
+import HomepagePostBox from './HomepagePostBox';
 import './format.css'
 import './Post.css';
 
@@ -32,17 +32,18 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
-function UserHomepageComponent({ posts, changeLike }) {  
+function UserHomepageComponent({ userID, posts, changeLike }) {  
 
 
   const renderPost = (object) => {
 
     return (
       <div className="post-container " key={object.post.postid}>
+        {object.isrecommend && <div>Recommended Post</div>}
         <div className="post-header">
           <span className="post-username">{object.authorName}</span>
           <span className="post-time">{object.post.time}</span>
-      </div>
+        </div>
         <div className="post-description">
           {object.post.content.split('\n').map((line, index) => (
             (index < 3 || object.post.content.split('\n').length <= 3) && (
@@ -67,7 +68,7 @@ function UserHomepageComponent({ posts, changeLike }) {
         )}
         <div className="interaction-buttons">
           <button className="like-button" onClick={(event) => changeLike(object.liked, object.post.postid, event)}>
-            {object.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
+            {object.post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
           </button>
           <p>{object.post.likes}</p>
           <Link to={`/post/${object.post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
@@ -92,7 +93,7 @@ function UserHomepageComponent({ posts, changeLike }) {
 
   return (
     <div className="user-homepage">
-      {posts.map((object) => renderPost(object))}
+      {posts.map((object) => <HomepagePostBox userID={userID} postID={object.post.postid} isrecommend={object.isrecommend} /> )}
     </div>
   );
 }
@@ -130,8 +131,13 @@ function UserHomepage() {
     // console.log(response);
     if (response.status === 200) {
       const resdata = await response.json();
-      // console.log(resdata);
       const post1 = resdata.posts;
+      const isrecommend = resdata.isrecommended;
+      post1.forEach(post => {
+        // Add isrecommend attribute to each post
+        post.isrecommend = isrecommend;
+    });
+      console.log(post1);
       console.log("get following posts successful.");
       return post1;
     } else {
@@ -155,6 +161,11 @@ function UserHomepage() {
       console.log(resdata);
       const post1 = resdata.posts;
       console.log("get recent popular posts successful.");
+      const isrecommend = resdata.isrecommended;
+      post1.forEach(post => {
+        // Add isrecommend attribute to each post
+        post.isrecommend = isrecommend;
+    });
       return post1;
     } else {
       const resdata = await response.json();
@@ -178,6 +189,11 @@ function UserHomepage() {
     if (response.status === 200) {
       const resdata = await response.json();
       const post1 = resdata.posts;
+      const isrecommend = resdata.isrecommended;
+      post1.forEach(post => {
+        // Add isrecommend attribute to each post
+        post.isrecommend = isrecommend;
+    });
       console.log("get recommend posts successful.");
       return post1;
     } else {
@@ -221,33 +237,23 @@ function UserHomepage() {
             });
             if (response.status === 200) {
               const resdata = await response.json();
+              console.log(resdata);
+              resdata.isrecommend = post.isrecommend;
               return resdata;
             }
         }));
 
+        let uniquePosts = {};
+        allPosts.forEach(post => {
+          let postID = post.post.postid;
+          if (!uniquePosts[postID]){
+            uniquePosts[postID] = post;
+          }
+        })
 
-        // const updatedPosts = await Promise.all(postlist.map(async (post) => {
-        //   const data2 = {
-        //     userID: post.authorid,
-        //   };
-
-        //   const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(data2)
-        //   });
-        //   if (response2.status === 200) {
-        //     const userData = await response2.text();
-        //     return { ...post, username: userData };
-        //   } else {
-        //     console.log("System Error in getting username.");
-        //     return post;
-        //   }
-        // }));
-
-        const reversedPosts = allPosts.reverse();
+        let uniquePostsArray = Object.values(uniquePosts).filter(Boolean);
+        const reversedPosts = uniquePostsArray.reverse();
+        reversedPosts.sort(() => Math.random()-0.5);
         setPost(reversedPosts);
         console.log(reversedPosts);
         setLoading(false);
@@ -339,21 +345,16 @@ function UserHomepage() {
 
   const changeLike = async (liked, postID, event) => {
     event.preventDefault();
-    const [type,setType] = useState("");
-    if (liked){
-      setType("unlike");
-    } else {
-      setType("like");
-    }
 
     // for fetch part
     const data = {
       postID: postID,
       userID: userID,
-      type: type
+      type: liked
     };
+    console.log(data);
 
-    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
+    const response = await fetch(`${API_BASE_URL}/api/post/likePost`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -430,7 +431,7 @@ function UserHomepage() {
           {loading ? (
               <div>Loading...</div>
             ) : (
-              <UserHomepageComponent posts={post} changeLike={changeLike} />
+              <UserHomepageComponent userID={userID} posts={post} changeLike={changeLike} />
             )}
         </div>
       </div>

@@ -210,7 +210,7 @@ class UserHandler extends AccountHandler {
         // Get the postID of the newly created post
         const postID = result.rows[0].postid;
         client.release();
-        return { success: true, message: 'Post created successfully', postID };
+        return { success: true, message: 'Post created successfully', postID:postID };
     } catch (error) {
         console.error('Error creating post:', error);
         return { success: false, message: 'Failed to create post' };
@@ -392,7 +392,20 @@ class UserHandler extends AccountHandler {
         return { success: false, message: 'Failed to unlike post' };
     }
   }
-
+  async checkRepost(postID) {
+    try {
+      // Delete likes associated with the post
+      const client = await pool.connect();
+      const queryText = 'SELECT isrepost FROM posts WHERE postid = $1';
+      const values = [postID];
+      const result = await client.query(queryText, values);
+      client.release();
+      return { success: true, isRepost: result.rows[0].isrepost, message: 'Check is repost request success'};
+    } catch (error) {
+      console.error('Error check repost:', error);
+      return { success: false, isRepost: null, message: "Failed to check is repost request" };
+    }
+  }
   // Method to repost a post
   async repostPost(postID) {
     /*
@@ -410,10 +423,9 @@ class UserHandler extends AccountHandler {
       client.release();
 
       const authorID = result.rows[0].authorid;
-
+      console.log(authorID,this.userID)
       // Check if the user is private, unless they repost their own posts
-      if ((await this.isprivate(authorID)) && result.rows[0].userID !== this.userID) {
-          client.release();
+      if ((await this.isprivate(authorID)) && authorID != this.userID) {
           return { success: false, message: 'User is private' };
       }
 
@@ -425,12 +437,13 @@ class UserHandler extends AccountHandler {
 
       // Repost the post
       const client2 = await pool.connect();
-      const queryText2 = 'INSERT INTO posts (authorID, content, mediaURI, privacy, isrepost) VALUES ($1, $2, $3, $4, $5)';
-      const values2 = [this.userID, postID, result.rows[0].mediauri, privacy, true];
-      await client2.query(queryText2, values2);
+      const queryText2 = 'INSERT INTO posts (authorID, content, mediaURI, privacy, isrepost) VALUES ($1, $2, $3, $4, $5) RETURNING postID';
+      const values2 = [this.userID, postID, null, privacy, true];
+      const result2 = await client2.query(queryText2, values2);
+      const postID2 = result2.rows[0].postid;
       client2.release();
 
-      return { success: true, message: 'Post reposted successfully' };
+      return { success: true, message: 'Post reposted successfully', postID: postID2 };
         
     } catch (error) {
         console.error('Error reposting post:', error);

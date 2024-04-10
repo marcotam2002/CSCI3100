@@ -28,22 +28,33 @@ function NotificationBox({ notifcations , action}) {
         <div>
             <table id="notificationTable">
                 <tbody>
-                    {Object.keys(notifcations).map((key) => (
-                        <tr key={key}>
-                            <td className="notificationName">
-                                <p><b>{notifcations[key]}</b></p>
-                            </td>
-                            <td className="notificationContent">
-                                <p>request to follow you!</p>
-                            </td>
-                            <td className="notificationButton">
-                                <button className="acceptFollow" onClick={() => action(true, key)}> Accept </button>
-                                <button className="rejectFollow" onClick={() => action(false, key)}> Reject </button>
-                            </td>
-                        </tr>
-                    ))} 
+                {notifcations.requestedUsers && Object.keys(notifcations.requestedUsers).map((key) => (
+                    <tr key={key}>
+                        <td className="notificationName">
+                            <p><b>{notifcations.requestedUsers[key]}</b></p>
+                        </td>
+                        <td className="notificationContent">
+                            <p>request to follow you!</p>
+                        </td>
+                        <td className="notificationButton">
+                            <button className="acceptFollow" onClick={() => action(true, key)}> Accept </button>
+                            <button className="rejectFollow" onClick={() => action(false, key)}> Reject </button>
+                        </td>
+                    </tr>
+                ))}
+                {notifcations.recommendedUsers && Object.keys(notifcations.recommendedUsers).map((key) => (
+                    <tr key={key}>
+                        <td className="notificationContent">
+                        <p>You may be interested in {notifcations.recommendedUsers[key]}</p>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                ))}
                 </tbody>
-                </table>
+            </table>
         </div>
     );
 }

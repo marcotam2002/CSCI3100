@@ -48,9 +48,23 @@ function ProfilePostComponent({ posts, username, loading2, navigateFunc }) {
       </div>
     );
   };
+
+  const renderRepost = (post) => {
+    return (
+      <div id="repostCard" onClick={()=>navigateFunc(`/post/${post.postid}`)}>
+          <div className="post-header">
+            <span className="post-username">{username}</span>
+            <span className="post-time">{post.time}</span>
+          </div>
+          <div className="post-description">
+            <p>Reposted a post!</p>
+          </div>
+        </div>
+    )
+  }
   return (
     <div className="user-homepage">
-      {posts.map((post) => renderPost(post))}
+      {posts.map((post) => post.isrepost ? renderRepost(post) : renderPost(post) )}
     </div>
   );
 }
