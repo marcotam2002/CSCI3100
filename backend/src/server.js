@@ -220,10 +220,9 @@ app.put("/api/profile/edit", async(req,res)=>{
     console.log("Profile Edit request received")
     const userHandler=new UserHandler(req.body.userID);
     const content = [req.body.username, req.body.description, req.body.isPrivate];
-    console.log(content);
     const result = await userHandler.editProfile(content);    //test without media first
     if(result.success){
-        console.log(result.message);
+        // console.log(result.message);
         console.log("Success update profile");
         delete userHandler;
         return res.status(200).send();
@@ -595,15 +594,26 @@ app.post("/api/user/getUser", async(req,res)=>{
     console.log("number of followers: " + followers.followers);
     if(targetuserProfile.success){
         delete userHandler;
-        return res.status(200).send({
-            user:targetuserProfile.targetUser, 
-            followersCount:followers.followers,
-            followingCount:following.following,
-        });
+        if (targetuserProfile.message === "Target user profile retrieved successfully") {
+            return res.status(200).send({
+                user:targetuserProfile.targetUser, 
+                followersCount:followers.followers,
+                followingCount:following.following,
+            });
+        };
+        if (targetuserProfile.message === "User profile retrieved successfully" || targetuserProfile.message === "User is private") {
+            return res.status(200).send({
+                user:targetuserProfile.targetUser, 
+                followersCount:followers.followers,
+                followingCount:following.following,
+                isFollowing: targetuserProfile.isFollowing,
+            });
+        }
+        
     }
     else {
         delete userHandler;
-        return res.status(404).send({message: result.message});
+        return res.status(404).send({message: targetuserProfile.message});
     }
 })
 

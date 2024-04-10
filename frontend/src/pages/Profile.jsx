@@ -231,6 +231,7 @@ function Profile(){
       // console.log(resdata.user);
       // console.log(resdata);
       setProfileUser(resdata.user);
+      console.log(resdata);
       setFollowerNum(resdata.followersCount);
       setFollowingNum(resdata.followingCount);
       if (userID == currentUser || resdata.user.privacy == "public" || resdata.isFollowing == true) {
