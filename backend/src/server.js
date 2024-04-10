@@ -104,6 +104,9 @@ app.put("/api/user/forgetpw/changepw", async(req, res)=>{
 app.post("/api/user/addpost", async(req, res)=>{
     console.log("Add Post request received")
     const userHandler=new UserHandler();
+    if(req.body.fileURL){
+        req.body.fileURL = encodeFileAsURL(req.body.fileURL);
+    }
     const result = await userHandler.createPost(req.body.userID,req.body.description, req.body.fileURL);    //test without media first
     if(result.success){
         console.log("New Post added to database");
@@ -115,6 +118,15 @@ app.post("/api/user/addpost", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
+function encodeFileAsURL(FileURL){
+    var fileReader = new FileReader();
+    fileReader.onload = function(fileLoadedEvent){
+        var base64URL = fileLoadedEvent.target.result;
+        console.log(base64URL);
+    }
+    return fileReader.readAsDataURL(FileURL);
+}
+//following the second response from here: https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript
 
 //Code below except admin Not yet tested
 //Need to test with post exist inside database, api request for comment
@@ -558,9 +570,16 @@ app.post("/api/user/getUser", async(req,res)=>{
     console.log("Get User request received")
     const userHandler=new UserHandler(req.body.currentUserID);
     const targetuserProfile = await userHandler.viewProfile(req.body.targetUserID);
+    const followers = await userHandler.getFollowers(req.body.targetUserID);
+    const following = await userHandler.getFollowing(req.body.targetUserID);
+    console.log("number of followers: " + followers.followers);
     if(targetuserProfile.success){
         delete userHandler;
-        return res.status(200).send({user:targetuserProfile.targetUser});
+        return res.status(200).send({
+            user:targetuserProfile.targetUser, 
+            followersCount:followers.followers,
+            followingCount:following.following,
+        });
     }
     else {
         delete userHandler;

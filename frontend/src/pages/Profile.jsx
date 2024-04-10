@@ -229,6 +229,7 @@ function Profile(){
     });
     if (response.status === 200) {
       const resdata = await response.json();
+      console.log(resdata.followersCount)
       // console.log(resdata.user);
       setProfileUser(resdata.user);
       if (userID == currentUser || resdata.user.privacy == "public" || resdata.isFollowing == true) {
