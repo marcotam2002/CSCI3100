@@ -1270,7 +1270,6 @@ class UserHandler extends AccountHandler {
   
         // const postIDs = queryResult.rows.map(row => row.postid);
         const posts = queryResult.rows;
-        console.log(posts);
     
         client.release();
         return { success: true, message: 'Following posts retrieved successfully', posts };

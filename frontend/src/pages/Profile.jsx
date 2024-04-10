@@ -46,7 +46,7 @@ function ProfilePostComponent({ posts, changeLike, loading2 }) {
       </div>
         <div className="post-description">
           {post.content.split('\n').map((line, index) => (
-            (index < 3 || post.description.split('\n').length <= 3) && (
+            (index < 3 || post.content.split('\n').length <= 3) && (
               <p key={index}>{line}</p>
             )
           ))}

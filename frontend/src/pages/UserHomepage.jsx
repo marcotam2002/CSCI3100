@@ -35,64 +35,64 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 function UserHomepageComponent({ posts, changeLike }) {  
 
 
-  const renderPost = (post) => {
+  const renderPost = (object) => {
 
     return (
-      <div className="post-container " key={post.postid}>
+      <div className="post-container " key={object.post.postid}>
         <div className="post-header">
-          <span className="post-username">{post.username}</span>
-          <span className="post-time">{post.time}</span>
+          <span className="post-username">{object.authorName}</span>
+          <span className="post-time">{object.post.time}</span>
       </div>
         <div className="post-description">
-          {post.content.split('\n').map((line, index) => (
-            (index < 3 || post.description.split('\n').length <= 3) && (
+          {object.post.content.split('\n').map((line, index) => (
+            (index < 3 || object.post.content.split('\n').length <= 3) && (
               <p key={index}>{line}</p>
             )
           ))}
         </div>
         <div className="post-media">
-          {post.mediauri !== "" && post.mediauri.endsWith('.mp4') ? (
+          {object.post.mediauri !== "" && object.post.mediauri.endsWith('.mp4') ? (
             <video controls>
-              <source src={post.mediauri} type="video/mp4" />
+              <source src={object.post.mediauri} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           ) : (
-            <img src={post.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
+            <img src={object.post.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
           )}
         </div>
-        {post.content.split('\n').length > 3 && (
+        {object.post.content.split('\n').length > 3 && (
           <div className="read-more">
-            <Link to={`/post/${post.postid}`}>Read More</Link>
+            <Link to={`/post/${object.post.postid}`}>Read More</Link>
           </div>
         )}
         <div className="interaction-buttons">
-          <button className="like-button" onClick={(event) => changeLike(post.liked, post.postid, event)}>
-            {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
+          <button className="like-button" onClick={(event) => changeLike(object.liked, object.post.postid, event)}>
+            {object.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
           </button>
-          <p>{post.likes}</p>
-          <Link to={`/post/${post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
-          <p>{post.commentnum}</p>
+          <p>{object.post.likes}</p>
+          <Link to={`/post/${object.post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
+          <p>{object.comment.length}</p>
         </div>
-        {/* <div className="comments">
-          {post.comments.slice(0, 2).map((comment, index) => (
+        <div className="comments">
+          {Array.isArray(object.comments) && object.comments.slice(0, 2).map((comment, index) => (
             <div className="comment" key={index}>
               <span className="comment-username"><b>{comment.username}</b></span>
               <span className="comment-text">{comment.text}</span>
             </div>
           ))}
-        </div> */}
-        {/* {post.comments.length > 2 && (
+        </div>
+        {Array.isArray(object.comments) && object.comments.length > 2 && (
           <div className="view-all-comments">
-            <Link to={`/post/${post.postID}`}>View all comments</Link>
+            <Link to={`/post/${object.post.postID}`}>View all comments</Link>
           </div>
-        )} */}
+        )}
       </div>
     );
   };
 
   return (
     <div className="user-homepage">
-      {posts.map((post) => renderPost(post))}
+      {posts.map((object) => renderPost(object))}
     </div>
   );
 }
@@ -127,9 +127,10 @@ function UserHomepage() {
       },
       body: JSON.stringify(data)
     });
-    console.log(response);
+    // console.log(response);
     if (response.status === 200) {
       const resdata = await response.json();
+      // console.log(resdata);
       const post1 = resdata.posts;
       console.log("get following posts successful.");
       return post1;
@@ -141,16 +142,13 @@ function UserHomepage() {
     }
   }
 
-  const getPopularPost = async (userID) => {
-    const data = {
-      userID: userID,
-    };
+  const getPopularPost = async () => {
+
     const response = await fetch(`${API_BASE_URL}/api/user/getRecentPopularPosts`, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
     });
     if (response.status === 200) {
       const resdata = await response.json();
@@ -182,7 +180,7 @@ function UserHomepage() {
       console.log("get recommend posts successful.");
       return post1;
     } else {
-      const resdata = await response.json();
+      const resdata = await response.text();
       console.log(resdata);
       console.log("fail to get recommend posts.");
       const post1 = [];
@@ -195,58 +193,66 @@ function UserHomepage() {
 
   useEffect(() => {
     const getHomepagePost = async (userID) => {
-      try {
-        
+      try{ 
         let postlist=[];
-        console.log("Testpoint 1");
         
-        getFollowingPost(userID).then((post1) => {
-        postlist = [...postlist,...post1];
-        console.log("Testpoint 2");
-        });
-        console.log("Testpoint 3");
+        const post1 = await getFollowingPost(userID);
+        postlist = [...postlist, ...post1];
 
-        getPopularPost(userID).then((post2) => {
-        postlist = [...postlist,...post2];
-        console.log("Testpoint 4");
-        });
-        console.log("Testpoint 5");
-        getRecommendPosts(userID).then((post3) => {
-        postlist = [...postlist,...post3];
-        console.log("Testpoint 6");
-        });
-        console.log("Testpoint 7");
-        console.log(postlist);
-      
+        const post2 = await getRecommendPosts(userID);
+        postlist = [...postlist, ...post2];
 
-        const updatedPosts = await Promise.all(allpost.map(async (post) => {
-          const data2= {
-            userID: post.authorid,
-          };
+        const post3 = await getPopularPost();
+        postlist = [...postlist, ...post3];
 
-          const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data2)
-          });
-          if (response2.status === 200) {
-            const userData = await response2.text();
-            return {...post, username: userData};
-          } else {
-            console.log("System Error in getting username.");
-            return post;
-          }
-        }))
-        // console.log("updated Posts are" , updatedPosts);
-        const reversedPosts = updatedPosts.reverse();
+        const allPosts = await Promise.all(postlist.map(async (post) => {
+            const data = {
+              postID: post.postid
+            };
+
+            const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            });
+            if (response.status === 200) {
+              const resdata = await response.json();
+              return resdata;
+            }
+        }));
+
+
+        // const updatedPosts = await Promise.all(postlist.map(async (post) => {
+        //   const data2 = {
+        //     userID: post.authorid,
+        //   };
+
+        //   const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
+        //     method: 'POST',
+        //     headers: {
+        //       'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(data2)
+        //   });
+        //   if (response2.status === 200) {
+        //     const userData = await response2.text();
+        //     return { ...post, username: userData };
+        //   } else {
+        //     console.log("System Error in getting username.");
+        //     return post;
+        //   }
+        // }));
+
+        const reversedPosts = allPosts.reverse();
         setPost(reversedPosts);
+        console.log(reversedPosts);
         setLoading(false);
-      } catch (error) {
-        console.log("Error in getting user homepage post. ");
-      }
-    };
+    } catch (error) {
+      console.error("Error in getHomepagePost:", error);
+    }
+  };
 
     getHomepagePost(userID);
   }, [userID]);
@@ -262,14 +268,14 @@ function UserHomepage() {
     setUnreadMessages(result2);
   };
   
-  useEffect(() => {
-    updateState();
-    const interval = setInterval(() => {
-      updateState();
-      console.log("unread messages", unreadMessages);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   updateState();
+  //   const interval = setInterval(() => {
+  //     updateState();
+  //     console.log("unread messages", unreadMessages);
+  //   }, 3000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const getSinglePost = async(postID) => {
     const data = {
