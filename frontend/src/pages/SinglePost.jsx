@@ -31,13 +31,14 @@ import AddPostForm from "./AddPostForm";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function Post({ userID, postID }) {
+function Post({ userID, postID, navigateFunc }) {
   const [post, setPost] = useState({});
   const [newcomment, setNewComment] = useState("");
   const [loadingPost, setLoadingPost] = useState(true);
   const [loadingComment, setLoadingComment] = useState(true);
   const [found, setFound] = useState(false);
   const [commentList, setCommentList] = useState([]);
+  const navigate = useNavigate();
 
   const getCommentUserName = async () => {
     if (post.comment) {
@@ -129,7 +130,9 @@ function Post({ userID, postID }) {
     });
     if (response.status === 200) {
       const resdata = await response.json();
+      const postID = resdata.postID;
       alert("Reposted");
+      navigate(`/post/${postID}`);
     } else {
       // system error
       alert("You cannot repost this post!")
@@ -137,7 +140,7 @@ function Post({ userID, postID }) {
     }
   }
 
-  useEffect(() => { getPost();}, []);
+  useEffect(() => { setLoadingPost(true); setLoadingComment(true); getPost();}, []);
   useEffect(() => { getCommentUserName(); }, [post]);
 
   if (loadingPost || loadingComment) {

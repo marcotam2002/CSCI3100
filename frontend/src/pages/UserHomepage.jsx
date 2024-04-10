@@ -8,10 +8,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import likeIcon from '../assets/like.svg';
-import likedIcon from '../assets/liked.svg';
-import commentIcon from '../assets/comment.svg';
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
@@ -32,68 +28,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
-function UserHomepageComponent({ userID, posts, changeLike }) {  
-
-
-  const renderPost = (object) => {
-
-    return (
-      <div className="post-container " key={object.post.postid}>
-        {object.isrecommend && <div>Recommended Post</div>}
-        <div className="post-header">
-          <span className="post-username">{object.authorName}</span>
-          <span className="post-time">{object.post.time}</span>
-        </div>
-        <div className="post-description">
-          {object.post.content.split('\n').map((line, index) => (
-            (index < 3 || object.post.content.split('\n').length <= 3) && (
-              <p key={index}>{line}</p>
-            )
-          ))}
-        </div>
-        <div className="post-media">
-          {object.post.mediauri !== "" && object.post.mediauri.endsWith('.mp4') ? (
-            <video controls>
-              <source src={object.post.mediauri} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <img src={object.post.mediauri} style={{ maxWidth: '500px', maxHeight: '350px', width: 'auto', height: 'auto' }} />
-          )}
-        </div>
-        {object.post.content.split('\n').length > 3 && (
-          <div className="read-more">
-            <Link to={`/post/${object.post.postid}`}>Read More</Link>
-          </div>
-        )}
-        <div className="interaction-buttons">
-          <button className="like-button" onClick={(event) => changeLike(object.liked, object.post.postid, event)}>
-            {object.post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
-          </button>
-          <p>{object.post.likes}</p>
-          <Link to={`/post/${object.post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
-          <p>{object.comment.length}</p>
-        </div>
-        <div className="comments">
-          {Array.isArray(object.comments) && object.comments.slice(0, 2).map((comment, index) => (
-            <div className="comment" key={index}>
-              <span className="comment-username"><b>{comment.username}</b></span>
-              <span className="comment-text">{comment.text}</span>
-            </div>
-          ))}
-        </div>
-        {Array.isArray(object.comments) && object.comments.length > 2 && (
-          <div className="view-all-comments">
-            <Link to={`/post/${object.post.postID}`}>View all comments</Link>
-          </div>
-        )}
-      </div>
-    );
-  };
-
+function UserHomepageComponent({ userID, posts }) {    
   return (
     <div className="user-homepage">
-      {posts.map((object) => <HomepagePostBox userID={userID} postID={object.post.postid} isrecommend={object.isrecommend} /> )}
+      {posts.map((object) =>  <HomepagePostBox userID={userID} postID={object.post.postid} isrecommend={object.isrecommend}  />)}
     </div>
   );
 }
@@ -103,8 +41,7 @@ function UserHomepage() {
   const navigate = useNavigate();
   const [post, setPost] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [singlePost, setSinglePost] = useState([]);
-  const [loading2, setLoading2] = useState(false);
+
 
   
   const openAddPost = () => {
@@ -276,102 +213,16 @@ function UserHomepage() {
     setUnreadMessages(result2);
   };
   
-  // useEffect(() => {
-  //   updateState();
-  //   const interval = setInterval(() => {
-  //     updateState();
-  //     console.log("unread messages", unreadMessages);
-  //   }, 3000);
-  //   return () => clearInterval(interval);
-  // }, []);
+  useEffect(() => {
+    updateState();
+    const interval = setInterval(() => {
+      updateState();
+      console.log("unread messages", unreadMessages);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const getSinglePost = async(postID) => {
-    const data = {
-      postID: postID,
-      userID: userID,
-    };
-    const response = await fetch(`${API_BASE_URL}/getSinglePost`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      const resdata = await response.json();
-      const singlePost = resdata.result;
 
-      const data2 ={
-        userID: singlePost.authorid,
-      };
-
-      const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data2)
-        });
-
-        if (response2.status === 200) {
-          const userData = await response2.text();
-          const updatedPost = {...singlePost, username: userData};
-          setSinglePost(updatedPost);
-          setLoading2(false);
-        } else {
-          console.log("System Error in getting username.");
-          setLoading2(false);
-          return singlePost;
-        }
-  } else {
-    console.log("System Error in getting Single Post.");
-    setLoading2(false);
-  }
-};
-
-  const replacePost = (posts, singlePost) => {
-    if (!posts || !singlePost) return posts;
-
-    const updatedPosts = posts.map(post => {
-      if (post.postID === singlePost.postID) {
-        return singlePost;
-      } else {
-        return post;
-      }
-    });
-
-    return updatedPosts;
-  };
-
-  const changeLike = async (liked, postID, event) => {
-    event.preventDefault();
-
-    // for fetch part
-    const data = {
-      postID: postID,
-      userID: userID,
-      type: liked
-    };
-    console.log(data);
-
-    const response = await fetch(`${API_BASE_URL}/api/post/likePost`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      // successful update
-      setLoading2(true);
-      getSinglePost(postID);
-      replacePost(post, singlePost);
-      console.log("successful update")
-    } else {
-      // failed update
-      console.log("failed to update")
-    }
-  };
 
   return (
     <div>
@@ -431,7 +282,7 @@ function UserHomepage() {
           {loading ? (
               <div>Loading...</div>
             ) : (
-              <UserHomepageComponent userID={userID} posts={post} changeLike={changeLike} />
+              <UserHomepageComponent userID={userID} posts={post}  />
             )}
         </div>
       </div>
