@@ -485,14 +485,13 @@ app.post("/api/user/getNotification", async(req,res)=>{
     const userHandler=new UserHandler(req.body.userID);
     const requestResult = await userHandler.getNotifications();
     const recommendedResult = await userHandler.getRecommendedUsers();
-    console.log(requestResult)
-    console.log(recommendedResult)
+    // console.log(requestResult);
+    // console.log(recommendedResult);
 
     if(requestResult.success && recommendedResult.success){
-        console.log(requestResult.message);
-        console.log(recommendedResult.message);
+        // console.log('welcome to here!');
         delete userHandler;
-        return res.status(200).send({notifications: requestResult.notifications, recommendedUsers: recommendedResult.recommendedUserIDs});
+        return res.status(200).send({requestedUsers: requestResult.notifications, recommendedUsers: recommendedResult.recommendedUserIDs});
     }
     else if(!requestResult.success){
         delete userHandler;
@@ -534,20 +533,20 @@ app.post("/api/user/rejectFollowRequest", async(req,res)=>{
     }
 })
 
-app.post("/api/user/getRecommendedUsers", async(req, res)=>{
-    console.log("User recommendation request received")
-    const userHandler=new UserHandler(req.body.userID);
-    const result = await userHandler.getRecommendedUsers();
-    if(result.success){
-        console.log(result);
-        delete userHandler;
-        return res.status(200).send();
-    }
-    else {
-        delete userHandler;
-        return res.status(404).send({message: result.message});
-    }
-})
+// app.post("/api/user/getRecommendedUsers", async(req, res)=>{
+//     console.log("User recommendation request received")
+//     const userHandler=new UserHandler(req.body.userID);
+//     const result = await userHandler.getRecommendedUsers();
+//     if(result.success){
+//         console.log(result);
+//         delete userHandler;
+//         return res.status(200).send();
+//     }
+//     else {
+//         delete userHandler;
+//         return res.status(404).send({message: result.message});
+//     }
+// })
 
 app.get("/api/user/getRecentPopularPosts", async(req, res)=>{
     console.log("Recent Popular Post request received")
