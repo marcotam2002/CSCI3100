@@ -59,9 +59,8 @@ function CommentRender({ comments }) {
     }
     setCommentList(storage);
   }
-
+  
   useEffect(() => {getCommentUserName();}, []);
-
   return (
     <div className="comments">
       {commentList.map((comment, index) => (
@@ -72,54 +71,19 @@ function CommentRender({ comments }) {
       ))}
     </div>
   );
-
 }
 
 function SinglePostFrame({ user, post, ChangeLike }) {
 
   if (!post) {
-    return (
-      <div>Post not found!</div>
-    )
+    return ( <div>Post not found!</div>)
   }
-  console.log(post);
   const [newcomment, setNewComment] = useState("");
-  const [singlePost, setSinglePost] = useState(post);
 
-  const addComment = async (postID, event) => {
-    event.preventDefault();
-    // for debugging.
-    // console.log("Submitted comment:", newcomment);
-    setNewComment("");
-
-    // for fetch part
-    const data = {
-      postID: postID,
-      userID: userID,
-      comment: newcomment,
-    };
-
-    const response = await fetch(`${API_BASE_URL}/post/commentadd`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (response.status === 200) {
-      // successful update
-      getSinglePost();
-      console.log("successful update")
-    } else {
-      // failed update
-      console.log("failed to update")
-    }
+  const addComment = async (postID) => {
+    // todo: add comment
   }
-
-
-
-  // const renderPost = (post) => {
-
+  
   return (
     <div className="single-post" key={post.post.postid}>
       <div className="post-header">
@@ -150,7 +114,7 @@ function SinglePostFrame({ user, post, ChangeLike }) {
       </div>
       <CommentRender comments={post.comment} />
       <div className="addcomments">
-        <form onSubmit={(event) => addComment(singlePost.postid, event)}>
+        <form onSubmit={(event) => addComment(post.postid, event)}>
           <input
             type="text"
             placeholder="Leave your comments here"
@@ -163,13 +127,6 @@ function SinglePostFrame({ user, post, ChangeLike }) {
       </div>
     </div>
   );
-  // };
-
-  // return (
-  //   <div className="single-homepage">
-  //     {posts.map((post) => renderPost(post))}
-  //   </div>
-  // );
 }
 
 function SinglePostPage() {
@@ -201,8 +158,8 @@ function SinglePostPage() {
       setLoading(false);
     }
   };
-  
-  useEffect(() => {getSinglePost(postID);}, []);
+
+  useEffect(() => { getSinglePost(postID); }, []);
 
   const changeLike = async (liked, postID, event) => {
     event.preventDefault();

@@ -42,7 +42,6 @@ function PostCard({ post, navigateFunc }) {
     }
   }
   const postSplit = post.content.split('\n');
-  // if postSplit.length > 3, only show the first 3 lines, add ... to the end
   const postContent = postSplit.length > 3 ? [postSplit[0], postSplit[1], postSplit[2], "..."] : postSplit;
   useEffect(() => {
     getUserName();
