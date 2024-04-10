@@ -384,6 +384,27 @@ app.put("/api/post/commentadd", async(req,res)=>{
     else return res.status(404).send({message: result.message});
 })
 
+app.post("/api/post/checkRepost", async(req,res)=>{
+    console.log("Check Repost request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.checkRepost(req.body.postID);    
+    delete userHandler;
+    if(result.success){
+        return res.status(200).send({isRepost:result.isRepost});
+    }
+    else return res.status(404).send({message: result.message});
+})
+
+app.post("/api/post/getAuthorName", async(req,res)=>{
+    console.log("Get Author Name request received")
+    const userHandler=new UserHandler();
+    const result = await userHandler.getPost(req.body.postID); 
+    const result2 = await userHandler.getUsername(result.authorid);
+    if(result2.success){
+        return res.status(200).send(result2.username);
+    }
+    else return res.status(404).send({message: result.message});
+})
 
 app.post("/getOwnPost", async(req, res)=>{
     console.log("Get User Own Post request received")

@@ -96,3 +96,17 @@
 .addcomments-btn:hover {
    font-weight: bold;
 }
+
+#repostBox {
+   padding: 20px;
+}
+
+#repostBox h6{
+   margin: 0px;
+}
+
+#repost {
+   margin-top: 10px;
+   border: 2px solid #1d67cd;
+   border-radius: 20px;
+}
