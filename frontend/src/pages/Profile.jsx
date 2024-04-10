@@ -11,10 +11,6 @@ import "./format.css";
 import "./Profile.css";
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
-import likeIcon from '../assets/like.svg';
-import likedIcon from '../assets/liked.svg';
-import commentIcon from '../assets/comment.svg';
 import { useParams } from "react-router-dom"
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
@@ -143,30 +139,8 @@ function Profile() {
     });
     if (response.status === 200) {
       const resdata = await response.json();
-
-      const updatedPosts = await Promise.all(resdata.result.map(async (post) => {
-        const data2 = {
-          userID: post.authorid,
-        };
-
-        const response2 = await fetch(`${API_BASE_URL}/getUsername`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data2)
-        });
-        if (response2.status === 200) {
-          const userData = await response2.text();
-          return { ...post, username: userData };
-        } else {
-          console.log("System Error in getting username.");
-          return post;
-        }
-      }))
-      // console.log("updated Posts are" , updatedPosts);
-      const reversedPosts = updatedPosts.reverse();
-      setPost(reversedPosts);
+      setPost(resdata.result.reverse());
+          return {post: post, username: profileUser.username };
     } else {
       const resdata = await response.json()
       console.log(resdata);
