@@ -1126,7 +1126,7 @@ class UserHandler extends AccountHandler {
       // Iterate through each tag in the provided list
       for (const tag of tags) {
         // Search for posts with exact matching tag
-        const queryResult = await client.query('SELECT postID FROM posts WHERE content ILIKE $1', [`%${tag}%`]);
+        const queryResult = await client.query('SELECT postID FROM posts WHERE content ILIKE $1 AND isRepost = false', [`%${tag}%`]);
         const matchedPostIDs = queryResult.rows;
 
         // Loop through the query result
@@ -1174,7 +1174,7 @@ class UserHandler extends AccountHandler {
       const queryResult = await client.query(`
         SELECT postID 
         FROM posts 
-        WHERE content % $1
+        WHERE content % $1 AND isRepost = false
       `, [searchContent]);
 
       const postIDs = queryResult.rows.map(row => row.postid);
