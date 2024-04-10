@@ -23,7 +23,7 @@ import logoutIcon from "../assets/log-out.svg";
 import AddPostForm from './AddPostForm';
 import { getCookie } from "./CookieHandlers";
 import { useNavigate } from 'react-router';
-
+import HomepagePostBox from './HomepagePostBox';
 import './format.css'
 import './Post.css';
 
@@ -32,7 +32,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
-function UserHomepageComponent({ posts, changeLike }) {  
+function UserHomepageComponent({ userID, posts, changeLike }) {  
 
 
   const renderPost = (object) => {
@@ -68,7 +68,7 @@ function UserHomepageComponent({ posts, changeLike }) {
         )}
         <div className="interaction-buttons">
           <button className="like-button" onClick={(event) => changeLike(object.liked, object.post.postid, event)}>
-            {object.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
+            {object.post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
           </button>
           <p>{object.post.likes}</p>
           <Link to={`/post/${object.post.postid}`} className="comment-button"><img src={commentIcon} alt="comment" /></Link>
@@ -93,7 +93,7 @@ function UserHomepageComponent({ posts, changeLike }) {
 
   return (
     <div className="user-homepage">
-      {posts.map((object) => renderPost(object))}
+      {posts.map((object) => <HomepagePostBox userID={userID} postID={object.post.postid} isrecommend={object.isrecommend} /> )}
     </div>
   );
 }
@@ -345,21 +345,16 @@ function UserHomepage() {
 
   const changeLike = async (liked, postID, event) => {
     event.preventDefault();
-    const [type,setType] = useState("");
-    if (liked){
-      setType("unlike");
-    } else {
-      setType("like");
-    }
 
     // for fetch part
     const data = {
       postID: postID,
       userID: userID,
-      type: type
+      type: liked
     };
+    console.log(data);
 
-    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
+    const response = await fetch(`${API_BASE_URL}/api/post/likePost`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -436,7 +431,7 @@ function UserHomepage() {
           {loading ? (
               <div>Loading...</div>
             ) : (
-              <UserHomepageComponent posts={post} changeLike={changeLike} />
+              <UserHomepageComponent userID={userID} posts={post} changeLike={changeLike} />
             )}
         </div>
       </div>

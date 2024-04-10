@@ -11,7 +11,6 @@
 
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
 import "./format.css";
-import './Post.css';
 import React, { useEffect, useState } from "react";
 import homeIcon from "../assets/home.svg";
 import addPostIcon from "../assets/addPost.svg";
@@ -23,11 +22,12 @@ import likeIcon from '../assets/like.svg';
 import logoutIcon from "../assets/log-out.svg";
 import likedIcon from '../assets/liked.svg';
 import commentIcon from '../assets/comment.svg';
-import repostIcon from '../assets/repost.svg';
 import { useNavigate } from 'react-router';
 import { getCookie } from "./CookieHandlers";
 import { useParams } from 'react-router-dom';
 import AddPostForm from "./AddPostForm";
+import './format.css';
+import './Post.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -104,7 +104,7 @@ function Post({ userID, postID, navigateFunc }) {
   }
 
   const likePost = async () => {
-    const data = { userID: userID, postID: postID, type: post.liked };
+    const data = {userID: userID, postID: postID, type: post.liked};
     const response = await fetch(`${API_BASE_URL}/api/post/likePost`, {
       method: 'PUT',
       headers: {
@@ -175,7 +175,7 @@ function Post({ userID, postID, navigateFunc }) {
         ))}
       </div>
       <div className="addcomments">
-        <form onSubmit={(event) => addComment(event)}>
+        <form onSubmit={(event)=>addComment(event)}>
           <input
             type="text"
             placeholder="Leave your comments here"
@@ -209,22 +209,27 @@ function PostBox({ userID, postID, navigateFunc }) {
       setRepostID(parseInt(resdata.content));
       console.log(resdata);
     } else {
-      // system error
-      console.log('Error:', resdata.message);
+      setType("like");
     }
-  }
-  
-  const getUsername = async () => {
-    const response = await fetch(`${API_BASE_URL}/api/post/getAuthorName`, {
-      method: 'POST',
+
+    // for fetch part
+    const data = {
+      postID: postID,
+      userID: userID,
+      type: type
+    };
+
+    const response = await fetch(`${API_BASE_URL}/api/post/changelikepost`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ postID: postID })
+      body: JSON.stringify(data)
     });
     if (response.status === 200) {
-      const resdata = await response.text();
-      setUsername(resdata);
+      // successful update
+      getSinglePost(postID);
+      console.log("successful update")
     } else {
       // system error
       console.log('Error:', resdata.message);
@@ -251,6 +256,7 @@ function SinglePostPage() {
   const closeAddPost = () => {
     setState(false);
   };
+
 
   const [notificationState, setNotificationState] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(false);
