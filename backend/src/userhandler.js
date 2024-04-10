@@ -53,7 +53,7 @@ class UserHandler extends AccountHandler {
     try {
         // Update user profile accordingly in the database
         const client = await pool.connect();
-
+        console.log("breakpoint 1");
         const username = content[0];
         const description = content[1];
         const privacy = content[2];
@@ -66,6 +66,7 @@ class UserHandler extends AccountHandler {
         // if the username is already taken, return an error
         if (result.rows.length > 0) {
           client.release();
+          console.log("breakpoint 2");
           return { success: false, message: 'Username already taken' };
         }
 
@@ -85,7 +86,7 @@ class UserHandler extends AccountHandler {
         await client.query(queryText3, values3);
 
         client.release();
-
+        console.log("breakpoint 3");
         return { success: true, message: 'User profile edited successfully' };
     } catch (error) {
         console.error('Error editing user profile:', error);
