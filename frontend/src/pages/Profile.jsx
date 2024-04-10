@@ -59,7 +59,7 @@ function ProfilePostComponent({ posts, username, loading2, navigateFunc }) {
   );
 }
 
-function UserProfile({ openFunc, isCurrentUser, user, access, post, isFollow, loading2, unfollowUser, followUser, followerNum, followingNum, navigateFunc }) {
+function UserProfile({ openFunc, isCurrentUser, user, access, post, isFollow, isPending, loading2, unfollowUser, followUser, followerNum, followingNum, navigateFunc }) {
 
 
   const editProfile = () => {
@@ -78,9 +78,31 @@ function UserProfile({ openFunc, isCurrentUser, user, access, post, isFollow, lo
           <p><b>{user && followingNum}</b></p>
           <p> following </p>
         </div>
-        <button onClick={isCurrentUser ? editProfile : (isFollow ? unfollowUser : followUser)}>
+        {/* <button onClick={isCurrentUser ? editProfile : (isFollow ? unfollowUser : followUser)}>
           {isCurrentUser ? "Edit Profile" : (isFollow ? "Unfollow" : "Follow")}
-        </button>
+        </button> */}
+        {isCurrentUser ? (
+            <button onClick={editProfile}>
+              Edit Profile
+            </button>
+          ) : (
+            isFollow ? (
+              <button onClick={unfollowUser}>
+                Unfollow
+              </button>
+            ) : (
+              (user.privacy == 'private') ? (
+                <button onClick={isPending ? unfollowUser : followUser}>
+                  {isPending ? 'Requested' : 'Follow'}
+                </button>
+              ) : (
+                <button onClick={isFollow ? unfollowUser : followUser}>
+                  {isFollow ? 'Unfollow' : 'Follow'}
+                </button>
+              )
+            )
+          )
+        }
       </div>
       <div id="descriptionBox">
         {user.description && user.description.split('\n').map((line, index) => (<p key={index}>{line}</p>))}
@@ -106,6 +128,7 @@ function Profile() {
   const currentUser = getCookie("userID");
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isFollow, setIsFollow] = useState("");
+  const [isPending, setIsPending] = useState(false);
   const [profileUser, setProfileUser] = useState("");
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(false);
@@ -174,6 +197,29 @@ function Profile() {
     }
   };
 
+  const getPending = async (userID) => {
+    const data = {
+      targetUserID: userID,
+      currentUserID: currentUser
+    };
+    const response = await fetch(`${API_BASE_URL}/api/user/checkFollowRequest`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    if (response.status === 200){
+      const resdata = await response.json();
+      console.log('Pending: ' + resdata.isPending);
+      setIsPending(resdata.isPending);
+    } else {
+      const resdata = await response.json()
+      console.log(resdata);
+      console.log("System Error in getting check pending qequest.");
+    }
+  }
+
   const getUser = async (userID) => {
     const data = {
       targetUserID: userID,
@@ -203,9 +249,11 @@ function Profile() {
       console.log("System Error in getting User Profile.");
     }
   }
+
   useEffect(() => {
     setLoading(true);
     getUser(userID);
+    getPending(userID);
   }, [userID]);
 
   useEffect(() => {
@@ -247,6 +295,7 @@ function Profile() {
       console.log(resdata);
       console.log("Follow user request sent.");
       getUser(userID);
+      getPending(userID);
     } else {
       const resdata = await response.text();
       console.log("System Error in sending follow user request");
@@ -268,8 +317,9 @@ function Profile() {
     if (response.status === 200) {
       const resdata = await response.text();
       console.log(resdata);
-      console.log("Follow user request sent.");
+      console.log("Unfollow user request sent.");
       getUser(userID);
+      getPending(userID);
     } else {
       const resdata = await response.text();
       console.log("System Error in sending follow user request");
@@ -343,7 +393,7 @@ function Profile() {
           {loading ? (
             <div>Loading...</div>
           ) : (
-            <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post} isFollow={isFollow} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} followerNum={followerNum} followingNum={followingNum} navigateFunc={navigate} />
+            <UserProfile openFunc={openEditProfileForm} isCurrentUser={isCurrentUser} user={profileUser} access={access} post={post} isFollow={isFollow} isPending={isPending} loading2={loading2} unfollowUser={unFollowUser} followUser={followUser} followerNum={followerNum} followingNum={followingNum} navigateFunc={navigate} />
           )}
         </div>
       </div>

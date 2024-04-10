@@ -477,6 +477,22 @@ app.post("/api/user/unfollowuser", async(req, res)=>{
     }
 })
 
+// pass if the user has pending request to target user
+app.post("/api/user/checkFollowRequest", async(req, res)=>{
+    console.log("check pending follow request")
+    const userHandler=new UserHandler(req.body.currentUserID);
+    const result = await userHandler.hasPendingFollowRequest(req.body.targetUserID);   
+    if(result.success){
+        console.log("Checking Success");
+        delete userHandler;
+        return res.status(200).send({isPending: result.isPending});
+    }
+    else {
+        delete userHandler;
+        return res.status(404).send({message: result.message});
+    }
+})
+
 
 //required input: userID, targetuserID
 app.post("/api/user/getMessage", async(req,res)=>{
@@ -615,7 +631,7 @@ app.post("/api/user/getUser", async(req,res)=>{
     const targetuserProfile = await userHandler.viewProfile(req.body.targetUserID);
     const followers = await userHandler.getFollowers(req.body.targetUserID);
     const following = await userHandler.getFollowing(req.body.targetUserID);
-    console.log("number of followers: " + followers.followers);
+    // console.log("number of followers: " + followers.followers);
     if(targetuserProfile.success){
         delete userHandler;
         // if (targetuserProfile.message === "Target user profile retrieved successfully") {
