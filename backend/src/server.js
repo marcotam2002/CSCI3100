@@ -130,10 +130,11 @@ function encodeFileAsURL(FileURL){
 
 //Code below except admin Not yet tested
 //Need to test with post exist inside database, api request for comment
-app.put("/api/post/commentadd", async(req,res)=>{
+app.put("/api/post/addComment", async(req,res)=>{
     console.log("Add Comment request received")
-    const userHandler=new UserHandler();
-    const result = await userHandler.commentPost(req.body.userID, req.body.postID, req.body.comment);    
+    const userHandler=new UserHandler(req.body.userID);
+    console.log(req.body.comment);
+    const result = await userHandler.commentPost(req.body.postID, req.body.comment);    
     if(result.success){
         console.log("User commented to a post");
         return res.status(200).send();
@@ -142,20 +143,25 @@ app.put("/api/post/commentadd", async(req,res)=>{
 })
 
 
-app.put("/api/post/changelikepost", async(req,res)=>{
+app.put("/api/post/likePost", async(req,res)=>{
     console.log("Like/Unlike Post request received")
-    const userHandler=new UserHandler(req.body.id);
-    if(req.body.type=="like"){
-        const result = await userHandler.likePost(req.body.postID);
+    const userHandler=new UserHandler(req.body.userID);
+    if(req.body.type){
+        const result = await userHandler.unlikePost(req.body.postID);
+        if(result.success){
+            console.log(result.message);
+            return res.status(200).send({message: result.message});
+        }
+        else return res.status(404).send({message: result.message});
     }
     else{
-        const result = await userHandler.unlikePost(req.body.postID);
-    }    
-    if(result.success){
-        console.log(result.message);
-        return res.status(200).send({message: result.message});
+        const result = await userHandler.likePost(req.body.postID);
+        if(result.success){
+            console.log(result.message);
+            return res.status(200).send({message: result.message});
+        }
+        else return res.status(404).send({message: result.message});
     }
-    else return res.status(404).send({message: result.message});
 })
 
 app.post("/api/search", async(req,res)=>{
