@@ -49,7 +49,7 @@ function NotificationBox({ notifcations , action}) {
                         </td>
                         <td>
                         </td>
-                        <td>
+                        <td className="notificationButton">
                         </td>
                     </tr>
                 ))}

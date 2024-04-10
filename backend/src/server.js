@@ -14,7 +14,10 @@ const cors = require("cors");
 const AccountHandler = require('./accounthandler');
 const AdminHandler = require('./adminhandler');
 const UserHandler = require('./userhandler');
-const { lookupService } = require("dns");
+
+const multer = require('multer');
+const fs = require('fs');
+
 //const pool = require("./database")
 
 /* cloudinary.config({
@@ -102,13 +105,35 @@ app.put("/api/user/forgetpw/changepw", async(req, res)=>{
         return res.status(403).send({message:result.message});}
 });
 
-app.post("/api/user/addpost", async(req, res)=>{
-    console.log("Add Post request received")
-    const userHandler=new UserHandler();
-    if(req.body.fileURL){
-        req.body.fileURL = encodeFileAsURL(req.body.fileURL);
+// npm install multer --save
+//var upload = multer({dest: "public/images/uploads"})
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, 'public')
+    },
+    filename: function (req,file, cb){
+        cb(null, file.filename + '-' + Date.now())
     }
-    const result = await userHandler.createPost(req.body.userID,req.body.description, req.body.fileURL);    //test without media first
+})
+const upload = multer({storage: storage})
+
+app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
+    console.log("Add Post request received")
+    console.log(req.file)
+    let newPath = `public/${
+        req.file.originalname
+        .substring(0, req.file.originalname.lastIndexOf("."))
+        +'-'+Date.now()
+        +"."
+        +req.body.fileType}`
+    fs.rename(req.file.path, newPath, ()=>{
+        console.log("image uploaded successful")
+    })
+    filepath = "../../../backend/"+newPath;
+    console.log(filepath)
+    const userHandler=new UserHandler();
+    
+    const result = await userHandler.createPost(req.body.userID,req.body.description, filepath);   
     if(result.success){
         console.log("New Post added to database");
         delete userHandler;
@@ -135,16 +160,6 @@ app.post("/api/user/repost", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
-
-function encodeFileAsURL(FileURL){
-    var fileReader = new FileReader();
-    fileReader.onload = function(fileLoadedEvent){
-        var base64URL = fileLoadedEvent.target.result;
-        console.log(base64URL);
-    }
-    return fileReader.readAsDataURL(FileURL);
-}
-//following the second response from here: https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript
 
 //Code below except admin Not yet tested
 //Need to test with post exist inside database, api request for comment
