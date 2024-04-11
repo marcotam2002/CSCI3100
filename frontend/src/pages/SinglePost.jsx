@@ -158,7 +158,7 @@ function Post({ userID, postID, navigateFunc }) {
       <div className="post-description">
         {post.post.content.split('\n').map((line, index) => (<p key={index}>{line}</p>))}
       </div>
-      {post.post.mediauri != "" ? <p><img src={post.post.mediauri} style={{maxHeight:700, maxWidth:700, height: "auto", width: "auto"}}/></p> : null}
+      {post.post.mediauri != "" ? <p><img src={post.post.mediauri} style={{maxHeight:700, maxWidth: 700, height:"auto", width: "auto"}}/></p> : null}
       <div className="interaction-buttons">
         <button className="like-button" onClick={() => likePost()}>
           {post.liked ? <img src={likedIcon} alt="liked" /> : <img src={likeIcon} alt="like" />}
@@ -166,6 +166,7 @@ function Post({ userID, postID, navigateFunc }) {
         <p>{post.post.likes}</p>
         <img src={commentIcon} alt="comment" /><p>{post.comment.length}</p>
         <button className="repost-button" onClick={() => rePost()}>
+          
           <img src={repostIcon} alt="repost" />
         </button>
       </div>
