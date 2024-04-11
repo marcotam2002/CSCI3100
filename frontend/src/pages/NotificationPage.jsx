@@ -28,7 +28,7 @@ function NotificationBox({ notifcations , action}) {
         <div>{(notifcations.requestedUsers.length > 0 || notifcations.recommendedUsers.length > 0) ?  
             <table id="notificationTable">
                 <tbody>
-                {notifcations.requestedUsers && Object.keys(notifcations.requestedUsers).map((key) => (
+                {notifcations.requestedUsers && Object.keys(notifcations.requestedUserIDs).map((key) => (
                     <tr key={key}>
                         <td className="notificationName">
                             <p><b>{notifcations.requestedUsers[key]}</b></p>
@@ -42,7 +42,7 @@ function NotificationBox({ notifcations , action}) {
                         </td>
                     </tr>
                 ))}
-                {notifcations.recommendedUsers && Object.keys(notifcations.recommendedUsers).map((key) => (
+                {notifcations.recommendedUsers && Object.keys(notifcations.recommendedUserIDs).map((key) => (
                     <tr key={key}>
                         <td>
                         <p>You may be interested in <b>{notifcations.recommendedUsers[key]}</b></p>
@@ -77,7 +77,9 @@ function NotificationPage() {
     const getNotification = async () => {
         const notification = {
             'requestedUsers': [],
-            'recommendedUsers': []
+            'requestedUserIDs': [],
+            'recommendedUsers': [],
+            'recommendedUserIDs': []
         };
         let data = [];
         const response = await fetch(`${API_BASE_URL}/api/user/getNotification`, {
@@ -100,6 +102,7 @@ function NotificationPage() {
                 });
                 if (response.status === 200) {
                     const user = await response.json();
+                    notification.requestedUserIDs[i] = data.requestedUsers[i];
                     notification.requestedUsers[i] = user.username;
                 }
                 else {
@@ -117,6 +120,7 @@ function NotificationPage() {
                 });
                 if (response.status === 200) {
                     const user = await response.json();
+                    notification.recommendedUserIDs[i] = data.recommendedUsers[i];
                     notification.recommendedUsers[i] = user.username;
                 }
                 else {
@@ -124,6 +128,7 @@ function NotificationPage() {
                 }
             }
         }
+        console.log(notification);
         setNotifications(notification);
         setLoading(false);
     }
