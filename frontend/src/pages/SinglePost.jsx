@@ -166,6 +166,7 @@ function Post({ userID, postID, navigateFunc }) {
         <p>{post.post.likes}</p>
         <img src={commentIcon} alt="comment" /><p>{post.comment.length}</p>
         <button className="repost-button" onClick={() => rePost()}>
+          
           <img src={repostIcon} alt="repost" />
         </button>
       </div>
