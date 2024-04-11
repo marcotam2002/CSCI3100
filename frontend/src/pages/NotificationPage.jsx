@@ -25,37 +25,37 @@ const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 function NotificationBox({ notifcations , action}) {
     return (
-        <div>{(notifcations.requestedUsers.length > 0 || notifcations.recommendedUsers.length > 0) ?  
+        <div>
+        {(notifcations.requestedUsers.length > 0 || notifcations.recommendedUsers.length > 0) ? (
             <table id="notificationTable">
-                <tbody>
-                {notifcations.requestedUsers && Object.keys(notifcations.requestedUserIDs).map((key) => (
-                    <tr key={key}>
-                        <td className="notificationName">
-                            <p><b>{notifcations.requestedUsers[key]}</b></p>
-                        </td>
-                        <td className="notificationContent">
-                            <p>request to follow you!</p>
-                        </td>
-                        <td className="notificationButton">
-                            <button className="acceptFollow" onClick={() => action(true, key)}> Accept </button>
-                            <button className="rejectFollow" onClick={() => action(false, key)}> Reject </button>
-                        </td>
-                    </tr>
+            <tbody>
+                {notifcations.requestedUsers && notifcations.requestedUsers.map((user, index) => (
+                <tr key={notifcations.requestedUserIDs[index]}>
+                    <td className="notificationName">
+                    <p><b>{user}</b></p>
+                    </td>
+                    <td className="notificationContent">
+                    <p>request to follow you!</p>
+                    </td>
+                    <td className="notificationButton">
+                    <button className="acceptFollow" onClick={() => action(true, notifcations.requestedUserIDs[index])}>Accept</button>
+                    <button className="rejectFollow" onClick={() => action(false, notifcations.requestedUserIDs[index])}>Reject</button>
+                    </td>
+                </tr>
                 ))}
-                {notifcations.recommendedUsers && Object.keys(notifcations.recommendedUserIDs).map((key) => (
-                    <tr key={key}>
-                        <td>
-                        <p>You may be interested in <b>{notifcations.recommendedUsers[key]}</b></p>
-                        </td>
-                        <td>
-                        </td>
-                        <td className="notificationButton">
-                        </td>
-                    </tr>
+                {notifcations.recommendedUsers && notifcations.recommendedUsers.map((user, index) => (
+                <tr key={notifcations.recommendedUserIDs[index]}>
+                    <td colSpan="3">
+                    <p>You may be interested in <b>{user}</b></p>
+                    </td>
+                </tr>
                 ))}
-                </tbody>
-            </table> : <h4 style={{margin:"20px"}}>No notifications</h4>}
-        </div> 
+            </tbody>
+            </table>
+        ) : (
+            <h4 style={{ margin: "20px" }}>No notifications</h4>
+        )}
+        </div>
     );
 }
 
