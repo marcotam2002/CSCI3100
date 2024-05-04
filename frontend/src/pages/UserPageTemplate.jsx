@@ -7,7 +7,8 @@
  * O Ching Lam 1155159131
  */
 
-//todo: link "Soru" to main page
+// The fllowing codes are assisted by Chatgpt
+
 import "./format.css";
 import { Header, SideBarButton } from "./components";
 import React, {useState} from "react";
