@@ -6,7 +6,8 @@
  * Leung Ka Lun 1155157403
  * O Ching Lam 1155159131
  */
-// to do : update the getPost function (should only run in the outer layer, then pass as arg to the component layer.)
+
+// The fllowing codes are assisted by Chatgpt
 
 
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
