@@ -7,6 +7,8 @@
  * O Ching Lam 1155159131
  */
 
+// The fllowing codes are assisted by Chatgpt
+
 import React from 'react';
 import './LoginPage.css';
 import './format.css';
