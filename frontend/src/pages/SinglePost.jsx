@@ -7,7 +7,7 @@
  * O Ching Lam 1155159131
  */
 
-// The fllowing codes are assisted by Chatgpt
+//Part of the code is assisted by Github Copilot, Microsoft NewBing and chatgpt
 
 
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";

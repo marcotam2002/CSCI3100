@@ -7,7 +7,8 @@
  * O Ching Lam 1155159131
  */
 
-//todo: link "Soru" to main page
+//Part of the code is assisted by Github Copilot and Microsoft NewBing
+
 import "./AdminUserPanel.css";
 import "./format.css";
 import { Header, SideBarButton } from "./components";

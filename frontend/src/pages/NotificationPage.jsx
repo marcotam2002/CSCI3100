@@ -7,6 +7,8 @@
  * O Ching Lam 1155159131
  */
 
+//Part of the code is assisted by Github Copilot and Microsoft NewBing
+
 import "./format.css";
 import "./NotificationPage.css";
 import { Header, SideBarButton, CheckUnreadMessages } from "./components";
