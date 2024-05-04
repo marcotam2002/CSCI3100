@@ -7,6 +7,8 @@
  * O Ching Lam 1155159131
  */
 
+// The fllowing codes are assisted by Chatgpt
+
 import "./format.css";
 import './Post.css';
 import React, { useEffect, useState } from "react";
@@ -23,6 +25,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 function Post({ userID, postID, isrecommend }) {
+
+    // This gives the implementation of a single post frame in the homepage.
+    
     const [post, setPost] = useState({});
     const [loadingPost, setLoadingPost] = useState(true);
     const [loadingComment, setLoadingComment] = useState(true);
