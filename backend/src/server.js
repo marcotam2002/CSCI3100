@@ -8,7 +8,7 @@
  */
 
 
-//const cloudinary=require("cloudinary").v2
+
 const express = require("express");
 const cors = require("cors");
 const AccountHandler = require('./accounthandler');
@@ -20,12 +20,7 @@ const fs = require('fs');
 
 //const pool = require("./database")
 
-/* cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-*/
+
 
 const app = express();
 app.use(cors());
@@ -37,6 +32,8 @@ app.get("/test",async(req, res)=>{
     res.json({message:"Hello!"});
 });
 
+
+//User Login api call
 app.post("/api/user/login", async(req, res)=>{
     console.log("Login request received")
     const accountHandler=new AccountHandler();
@@ -58,6 +55,7 @@ app.post("/api/user/login", async(req, res)=>{
     } 
 });
 
+//User Registration call
 app.post("/api/user/register", async(req, res)=>{
     console.log("Registration request received")
     const accountHandler=new AccountHandler();
@@ -77,6 +75,8 @@ app.post("/api/user/register", async(req, res)=>{
         return res.status(500).send("System Error");}
 });
 
+
+//Forget password security answer
 app.post("/api/user/forgetpw", async(req, res)=>{
     console.log("Forget password request received")
     const userHandler=new UserHandler();
@@ -93,6 +93,8 @@ app.post("/api/user/forgetpw", async(req, res)=>{
     }
 });
 
+
+//Password api will be called upon answering correct security answer
 app.put("/api/user/forgetpw/changepw", async(req, res)=>{
     console.log("change password request received")
     const userHandler=new UserHandler();
@@ -119,6 +121,7 @@ const storage = multer.diskStorage({
 })
 const upload = multer({storage: storage})
 
+//Post upload function
 app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
     console.log("Add Post request received")
     console.log(req.file)
@@ -134,7 +137,7 @@ app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
             console.log("image uploaded successful")
         })
         //filepath = "../../../backend/"+newPath;
-        filepath = "http://localhost:5164/"+newPath.replace("public/","");
+        filepath = "http://localhost:5164/"+newPath.replace("public/","");    //Attention: In case markers want to change the backend server address, be sure to change this link.
         console.log(filepath)
     }
     const userHandler = new UserHandler();
@@ -150,7 +153,7 @@ app.post("/api/user/addpost", upload.single("fileURL"), async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
-
+//User repost a post api request
 app.post("/api/user/repost", async(req, res)=>{
     console.log("Repost request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -167,8 +170,7 @@ app.post("/api/user/repost", async(req, res)=>{
     }
 })
 
-//Code below except admin Not yet tested
-//Need to test with post exist inside database, api request for comment
+//comment api request
 app.put("/api/post/addComment", async(req,res)=>{
     console.log("Add Comment request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -181,7 +183,7 @@ app.put("/api/post/addComment", async(req,res)=>{
     else return res.status(404).send({message: result.message});
 })
 
-
+//Like post request
 app.put("/api/post/likePost", async(req,res)=>{
     console.log("Like/Unlike Post request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -203,6 +205,7 @@ app.put("/api/post/likePost", async(req,res)=>{
     }
 })
 
+//Search request into the post database, return list of posts related according to search type of "tag", "username" or "general search"
 app.post("/api/search", async(req,res)=>{
     console.log("Search request received")
     const userHandler = new UserHandler();
@@ -245,7 +248,7 @@ app.post("/api/search", async(req,res)=>{
         }
         else return res.status(404).send({message: result.message});
     }
-}) //attention!!!!!! Consider whether we will fetch the search result id in the backend first and return to the frontend, or frontend do one more api request to fetch the content
+}) 
 
 //Get user in Profile page
 app.post("/getUsername", async(req,res)=>{
@@ -265,7 +268,7 @@ app.put("/api/profile/edit", async(req,res)=>{
     console.log("Profile Edit request received")
     const userHandler=new UserHandler(req.body.userID);
     const content = [req.body.username, req.body.description, req.body.isPrivate];
-    const result = await userHandler.editProfile(content);    //test without media first
+    const result = await userHandler.editProfile(content);    
     if(result.success){
         // console.log(result.message);
         console.log("Success update profile");
@@ -278,17 +281,8 @@ app.put("/api/profile/edit", async(req,res)=>{
     }
 })
 
-/*
-To do: 
-1. like or unlike post (halfway) 1
-2. Homepage posts fetching
-4. Like Comment(on marking?)
 
-Things may need:
-1. view own profile request, and view other user request
-2. Check if user has like certain post before
-*/
-
+//Retrieve following user number from the database
 app.post("/api/user/getFollowingUser", async(req, res)=>{
     console.log("Get following user request received");
     const userHandler = new UserHandler(req.body.userID);
@@ -301,6 +295,7 @@ app.post("/api/user/getFollowingUser", async(req, res)=>{
     else return res.status(404).send({message:"Error fetching user"});
 })
 
+//For use in user recommendation by getting mutual following users.
 app.post("/api/user/getMutualFollowing", async(req, res)=>{
     console.log("Get mutual following request received");
     const userHandler = new UserHandler(req.body.userID);
@@ -313,6 +308,7 @@ app.post("/api/user/getMutualFollowing", async(req, res)=>{
     else return res.status(404).send({message:"Error fetching mutual user"});
 })
 
+//Message box api calls
 app.post("/api/user/getUnreadMessages", async(req, res)=>{
     console.log("get unread messages request received")
     const userHandler = new UserHandler(req.body.userID);
@@ -337,6 +333,7 @@ app.post("/api/user/checkUnreadMessages", async(req, res)=>{
     else return res.status(404).send({message:"Error fetching unread messages situation"});
 })
 
+//Api requests solely for Admin User, ordinary user has no access to the api calls.
 app.get("/api/admin/getAllUser", async(req, res)=>{
     console.log("Get all user request received");
     const adminHandler= new AdminHandler();
@@ -385,7 +382,7 @@ app.put("/api/admin/deleteUser", async(req,res)=>{
     else return res.status(404).send({message: result.message});
 })
 
-
+//api call to server to update chatbox whenever user send a message.
 app.put("/api/user/sendMessage", async(req,res)=>{
     console.log("send message request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -411,7 +408,7 @@ app.put("/api/admin/deletePost", async(req,res)=>{
 })
 
 
-//Need to test with post exist inside database, api request for comment
+//api request for comment
 app.put("/api/post/commentadd", async(req,res)=>{
     console.log("Add Comment request received")
     const userHandler=new UserHandler();
@@ -422,7 +419,7 @@ app.put("/api/post/commentadd", async(req,res)=>{
     }
     else return res.status(404).send({message: result.message});
 })
-
+//Check if this post is repost for frontend to render in different way.
 app.post("/api/post/checkRepost", async(req,res)=>{
     console.log("Check Repost request received")
     const userHandler=new UserHandler();
@@ -441,7 +438,7 @@ app.post("/api/post/checkRepost", async(req,res)=>{
     }
     else return res.status(404).send({message: result.message});
 })
-
+//Get Author from the post for frontend rendering in post
 app.post("/api/post/getAuthorName", async(req,res)=>{
     console.log("Get Author Name request received")
     const userHandler=new UserHandler();
@@ -452,7 +449,7 @@ app.post("/api/post/getAuthorName", async(req,res)=>{
     }
     else return res.status(404).send({message: result.message});
 })
-
+//Get post posted by the user for Profile page post posted.
 app.post("/getOwnPost", async(req, res)=>{
     console.log("Get User Own Post request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -468,7 +465,7 @@ app.post("/getOwnPost", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
-
+//get comment from the database whenever clicking into one post.
 app.post("/api/post/getComment", async(req, res)=>{
     console.log("Get post comment request received")
     const userHandler=new UserHandler();
@@ -483,7 +480,7 @@ app.post("/api/post/getComment", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
-
+//Api call to get the related info of a post whenever user click into one post.
 app.post("/getSinglePost", async(req, res)=>{
     console.log("Access single post request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -518,8 +515,7 @@ app.post("/getSinglePost", async(req, res)=>{
     }    
 })
 
-//follow user
-//Question here: how can we obtain the userID of the user we want to follow?
+//follow user api request
 app.post("/api/user/followUser", async(req, res)=>{
     console.log("follow user request received")
     const userHandler=new UserHandler(req.body.currentUserID);
@@ -535,7 +531,7 @@ app.post("/api/user/followUser", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
-
+//Unfollow a user upon following
 app.post("/api/user/unfollowuser", async(req, res)=>{
     console.log("unfollow user request received")
     const userHandler=new UserHandler(req.body.currentUserID);
@@ -551,7 +547,7 @@ app.post("/api/user/unfollowuser", async(req, res)=>{
     }
 })
 
-// pass if the user has pending request to target user
+// pass if the user has pending request to target user, privacy mode support
 app.post("/api/user/checkFollowRequest", async(req, res)=>{
     console.log("check pending follow request")
     const userHandler=new UserHandler(req.body.currentUserID);
@@ -568,7 +564,7 @@ app.post("/api/user/checkFollowRequest", async(req, res)=>{
 })
 
 
-//required input: userID, targetuserID
+//get message for the chatbox with a particular user
 app.post("/api/user/getMessage", async(req,res)=>{
     console.log("Get message request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -584,7 +580,6 @@ app.post("/api/user/getMessage", async(req,res)=>{
     }
 })
 
-//new
 //get notifcation of follower request
 app.post("/api/user/getNotification", async(req,res)=>{
     console.log("fetching notication request received")
@@ -608,7 +603,7 @@ app.post("/api/user/getNotification", async(req,res)=>{
     }
 })
 
-//Accept follower request
+//Accept follower request api call, privacy mode support
 app.post("/api/user/acceptFollowRequest", async(req,res)=>{
     console.log("accept follower request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -624,6 +619,7 @@ app.post("/api/user/acceptFollowRequest", async(req,res)=>{
     }
 })
 
+//Reject follower request api call, privacy mode support
 app.post("/api/user/rejectFollowRequest", async(req,res)=>{
     console.log("reject follower request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -639,21 +635,7 @@ app.post("/api/user/rejectFollowRequest", async(req,res)=>{
     }
 })
 
-// app.post("/api/user/getRecommendedUsers", async(req, res)=>{
-//     console.log("User recommendation request received")
-//     const userHandler=new UserHandler(req.body.userID);
-//     const result = await userHandler.getRecommendedUsers();
-//     if(result.success){
-//         console.log(result);
-//         delete userHandler;
-//         return res.status(200).send();
-//     }
-//     else {
-//         delete userHandler;
-//         return res.status(404).send({message: result.message});
-//     }
-// })
-
+//Post recommendation api calls, consist of recommendation of recent popular posts, user-related posts.
 app.get("/api/user/getRecentPopularPosts", async(req, res)=>{
     console.log("Recent Popular Post request received")
     const userHandler=new UserHandler();
@@ -683,7 +665,7 @@ app.post("/api/user/getRecommendedPosts", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
-
+//api calls to get the post from user whos the current user is following.
 app.post("/api/user/getFollowingPosts", async(req, res)=>{
     console.log("Following posts request received")
     const userHandler=new UserHandler(req.body.userID);
@@ -698,7 +680,7 @@ app.post("/api/user/getFollowingPosts", async(req, res)=>{
         return res.status(404).send({message: result.message});
     }
 })
-
+//api request to access other user profile
 app.post("/api/user/getUser", async(req,res)=>{
     console.log("Get User request received")
     const userHandler=new UserHandler(req.body.currentUserID);
@@ -730,14 +712,6 @@ app.post("/api/user/getUser", async(req,res)=>{
         return res.status(404).send({message: targetuserProfile.message});
     }
 })
-
-//end
-/*
-app.get("/api/homepage", async(req,res)=>{
-    console.log("Fetching post from server")
-    const userHandler=new UserHandler();
-    const result = await userHandler.getPost();    //??????? Do we have a function to get a bunch of posts to the homepage?
-})*/
 
 app.listen(5164,()=>{
     console.log("server started on localhost:5164");
