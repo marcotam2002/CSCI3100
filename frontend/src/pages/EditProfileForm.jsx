@@ -7,7 +7,7 @@
  * O Ching Lam 1155159131
  */
 
-
+// The fllowing codes are assisted by Copilot
 
 import React, { useRef } from "react";
 import './Form.css'
@@ -16,6 +16,9 @@ import { CrossButton } from "./components";
 import { getCookie } from "./CookieHandlers";
 
 export default function EditProfileForm({ closeFunc, originUserName, originDescription, originPrivacy }) {
+
+    // The following gives the implementation of the form for user editing their profile information.
+    
     const usernameRef = useRef(null);
     const descriptionRef = useRef(null);
     const isPrivateRef = useRef(null);
