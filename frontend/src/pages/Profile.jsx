@@ -7,6 +7,8 @@
  * O Ching Lam 1155159131
  */
 
+// The fllowing codes are assisted by Chatgpt
+
 import "./format.css";
 import "./Profile.css";
 import { Header, SideBarButton, CheckNotification, CheckUnreadMessages } from "./components";
