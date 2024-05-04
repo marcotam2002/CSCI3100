@@ -7,7 +7,7 @@
  * O Ching Lam 1155159131
  */
 
-// The fllowing codes are assisted by Copilot
+// The fllowing codes are assisted by Chapgpt
 
 import React, { useRef } from "react";
 import './Form.css'
