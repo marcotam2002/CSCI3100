@@ -7,12 +7,19 @@
  * O Ching Lam 1155159131
  */
 
+// The fllowing codes are assisted by Chatgpt
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './ForgetPassword.css';
 const API_BASE_URL=import.meta.env.VITE_API_BASE_URL;
 
 const ForgetPasswordForm = () => {
+
+  // The following implements the form for forget password function.
+  // user will be asked to input answer to their security questions. 
+  // If the provided answer matches with the one saved in database, they can proceed to set a new password.
+  
   const [username, setUsername] = useState('');
   const [securityAnswers, setSecurityAnswers] = useState('');
   const [step, setStep] = useState(1);
