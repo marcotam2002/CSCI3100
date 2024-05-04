@@ -7,6 +7,8 @@
  * O Ching Lam 1155159131
  */
 
+// The fllowing codes are assisted by Chatgpt
+
 import React, { useState } from "react";
 import './Form.css'
 import uploadIcon from '../assets/upload.svg'
@@ -16,6 +18,8 @@ import { CrossButton } from "./components";
 
 export default function AddPostForm({ closeFunc }) {
 
+  // This function serves the add post component. The following is the implementation of the post form.
+  
   const [thought, setThought] = useState("");
   const [fileURL, setFileURL] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
