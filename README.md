@@ -129,3 +129,4 @@ That's it! The project should now be up and running.
 30/3/2024: Finish the basic framework of the project, start the connection to database and local server <br>
 07/4/2024: Finish most basic features, start working on the advanced feature <br>
 10/4/2024: Finish most advanced features and start testing for demo day <br>
+04/5/2024: Finish adding comments to the code <br>
