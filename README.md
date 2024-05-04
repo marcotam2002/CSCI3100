@@ -83,15 +83,24 @@ By following these instructions and restoring the 'default.sql' file, you will s
 
 Please first check if you have the necessary dependencies.
 
+On the frontend directory (typing "cd frontend" on the terminal), type:
 ```
 npm install pg pg-pool vite express react dotenv body-parser cors
 ```
+
+On the backend directory (typing "cd backend" on the terminal), type:
+```
+npm install pg pg-pool express react dotenv body-parser cors multer nodemon
+```
+
+Note:
+1. To enable picture uploading function by multer, create a folder called "public" on the backend folder.
 
 **Activate server:** 
 
 Now we need to activate our server.
 
-Navigate to the `backend` directory, start the frontend server
+Navigate to the `backend` directory, start the backend server
 
 ```
 npm run dev
